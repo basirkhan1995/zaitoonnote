@@ -9,7 +9,7 @@ import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
 
 class DatabaseHelper{
 
-  final databaseName = "memo987.db";
+  final databaseName = "memo00.db";
 
   String userTable = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text)";
   String userData = "insert into users (usrId, usrName, usrPassword) values(1,'admin','123456')";
@@ -119,7 +119,7 @@ class DatabaseHelper{
   //Transaction by type (filtering)
   Future <List<TransactionModel>> getByTransactionPerson (String type) async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.query('transactions',where: 'trnCategory = ?',whereArgs: [type]);
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, trnType, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId where trnPerson LIKE? ",["%$type%"]);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 

@@ -115,6 +115,11 @@ class _CreateNoteState extends State<CreateNote> {
                                 color: Colors.deepPurple.withOpacity(.1),
                                 borderRadius: BorderRadius.circular(10)),
                             child: DropdownSearch<CategoryModel>(
+                              popupProps: const PopupPropsMultiSelection.menu(
+                                showSelectedItems: true,
+                               showSearchBox: true,
+                              ),
+
                               asyncItems: (value) => db.getCategoryById(value),
                               itemAsString: (CategoryModel u) =>
                                   Locales.string(context, u.cName.toString()),

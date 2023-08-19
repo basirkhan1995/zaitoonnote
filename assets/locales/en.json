@@ -54,5 +54,14 @@
   "about": "About app",
   "other": "Other",
   "%": "All",
-  "category_required": "Category is required"
+  "category_required": "Category is required",
+  "name": "Name",
+  "name_required": "Name is required",
+  "add_person": "Add Person",
+  "category_hint": "Select category",
+  "person_hint": "Select person",
+  "person_required": "Please select a person",
+  "addcategory_hint": "Select category ",
+  "description_required": "Description is required",
+  "add_activity": "Add Activity"
 }

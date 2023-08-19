@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
+import 'package:intl/intl.dart';
 import '../../Datebase Helper/sqlite.dart';
 import '../Json Models/trn_model.dart';
 import 'create_transaction.dart';
@@ -19,6 +20,7 @@ class _AllActivitiesState extends State<AllActivities> {
   late DatabaseHelper handler;
   late Future<List<TransactionModel>> transactions;
   final db = DatabaseHelper();
+  var formatter = NumberFormat('#,##,000');
 
   @override
   void initState() {
@@ -163,7 +165,7 @@ class _AllActivitiesState extends State<AllActivities> {
                       child: RefreshIndicator(
                         onRefresh: _onRefresh,
                         child: SizedBox(
-                          height: 400,
+
                           child: ListView.builder(
                               itemCount: items.length,
                               itemBuilder: (context,index){
@@ -174,8 +176,8 @@ class _AllActivitiesState extends State<AllActivities> {
                                   padding: const EdgeInsets.symmetric(vertical: 4),
                                   height: 90,
                                 decoration: BoxDecoration(
-                                  color: Colors.deepPurple.shade900,
-                                  borderRadius: BorderRadius.circular(8),
+                                  color: Colors.deepPurple.shade900.withOpacity(.8),
+                                  borderRadius: BorderRadius.circular(10),
                                   boxShadow: const [
                                     BoxShadow(
                                       color: Colors.white,
@@ -204,7 +206,7 @@ class _AllActivitiesState extends State<AllActivities> {
                                             ),
                                           ),
                                         ),
-                                        Expanded(child: Text(items[index].amount.toString(),style: const TextStyle(fontSize: 20,color: Colors.white),)),
+                                        Expanded(child: Text(formatAmount(items[index].amount.toString()),style: const TextStyle(fontSize: 20,color: Colors.white),)),
                                       ],
                                     ),
 
@@ -222,6 +224,25 @@ class _AllActivitiesState extends State<AllActivities> {
         ),
       ),
     );
+  }
+
+  String formatAmount(value){
+    String price = value;
+    String priceInText = "";
+    int counter = 0;
+    for(int i = (price.length - 1);  i >= 0; i--){
+      counter++;
+      String str = price[i];
+      if((counter % 3) != 0 && i !=0){
+        priceInText = "$str$priceInText";
+      }else if(i == 0 ){
+        priceInText = "$str$priceInText";
+
+      }else{
+        priceInText = ",$str$priceInText";
+      }
+    }
+    return priceInText.trim();
   }
 
 

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
-import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
 import '../../Datebase Helper/sqlite.dart';
 import '../../Methods/textfield.dart';
 import '../Json Models/category_model.dart';
@@ -96,95 +95,92 @@ class _CreateTransactionState extends State<CreateTransaction> {
                       ),
                     ),
 
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                  ],
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 2),
+                    margin: const EdgeInsets.symmetric(horizontal: 2,vertical: 10),
+                    height: 60,
+                    decoration: BoxDecoration(
+                        color: Colors.deepPurple.withOpacity(.1),
+                        borderRadius: BorderRadius.circular(10)),
+                    child: DropdownSearch<CategoryModel>(
+                      validator: (value){
+                        if(value == null){
+                          return Locales.string(context, "category_required");
+                        }
+                        return null;
+                      },
+                      popupProps: PopupPropsMultiSelection.bottomSheet(
+                        fit: FlexFit.loose,
+                        title: Column(
                           children: [
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 8),
+                              height: 5,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                  color: Colors.deepPurple,
+                                  borderRadius:
+                                  BorderRadius
+                                      .circular(15)),
+                            ),
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 2),
-                                margin: const EdgeInsets.symmetric(horizontal: 2),
-                                height: 40,
-                                width: 160,
-                                decoration: BoxDecoration(
-                                    color: Colors.deepPurple.withOpacity(.1),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: DropdownSearch<CategoryModel>(
-                                  popupProps: PopupPropsMultiSelection.bottomSheet(
-                                    fit: FlexFit.loose,
-                                    title: Column(
-                                      children: [
-                                        Container(
-                                          margin: const EdgeInsets.symmetric(
-                                              vertical: 8),
-                                          height: 5,
-                                          width: 60,
-                                          decoration: BoxDecoration(
-                                              color: Colors.deepPurple,
-                                              borderRadius:
-                                              BorderRadius
-                                                  .circular(15)),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 0, left: 10),
-                                          child: ListTile(
-                                            title: const LocaleText("select_category",style: TextStyle(fontSize: 18),),
-                                            leading: const Icon(Icons.category),
-                                            trailing: Container(
-                                              height: 35,
-                                              width: 35,
-                                              decoration: BoxDecoration(
-                                                color: Colors.deepPurple,
-                                                borderRadius: BorderRadius.circular(50)
-                                              ),
-                                              child: IconButton(
-                                                  onPressed: ()=>addCategory(context),
-                                                  icon: const Icon(Icons.add,color: Colors.white,size: 18)),
-                                            ),
-                                          )
-                                        ),
-                                      ],
+                                padding: const EdgeInsets.only(top: 0, left: 10),
+                                child: ListTile(
+                                  title: const LocaleText("select_category",style: TextStyle(fontSize: 18),),
+                                  leading: const Icon(Icons.category),
+                                  trailing: Container(
+                                    height: 35,
+                                    width: 35,
+                                    decoration: BoxDecoration(
+                                        color: Colors.deepPurple,
+                                        borderRadius: BorderRadius.circular(50)
                                     ),
-
+                                    child: IconButton(
+                                        onPressed: ()=>addCategory(context),
+                                        icon: const Icon(Icons.add,color: Colors.white,size: 18)),
                                   ),
-
-                                  asyncItems: (value) => db.getCategoryById(value),
-                                  itemAsString: (CategoryModel u) =>
-                                      Locales.string(context, u.cName.toString()),
-                                  onChanged: (CategoryModel? data) {
-                                    setState(() {
-                                      selectedCategoryName = data!.cName;
-                                    });
-                                  },
-                                  dropdownButtonProps: const DropdownButtonProps(
-                                      icon: Icon(Icons.arrow_drop_down_circle_outlined, size: 22),
-                                  ),
-                                  dropdownDecoratorProps: DropDownDecoratorProps(
-                                    dropdownSearchDecoration: InputDecoration(
-                                        icon: const Padding(
-                                          padding:
-                                          EdgeInsets.symmetric(horizontal: 4.0),
-                                          child: Icon(Icons.category),
-                                        ),
-                                        hintStyle: const TextStyle(fontSize: 13),
-                                        hintText: Locales.string(
-                                            context, "select_category"),
-                                        contentPadding: const EdgeInsets.symmetric(
-                                            horizontal: 0, vertical: 4),
-                                        border: InputBorder.none),
-                                  ),
-                                ),
-                              ),
+                                )
                             ),
                           ],
                         ),
+
+                      ),
+
+                      asyncItems: (value) => db.getCategoryById(value),
+                      itemAsString: (CategoryModel u) =>
+                          Locales.string(context, u.cName.toString()),
+                      onChanged: (CategoryModel? data) {
+                        setState(() {
+                          selectedCategoryName = data!.cName;
+                        });
+                      },
+                      dropdownButtonProps: const DropdownButtonProps(
+                        icon: Icon(Icons.arrow_drop_down_circle_outlined, size: 22),
+                      ),
+                      dropdownDecoratorProps: DropDownDecoratorProps(
+                        dropdownSearchDecoration: InputDecoration(
+                            icon: const Padding(
+                              padding:
+                              EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Icon(Icons.category),
+                            ),
+                            hintStyle: const TextStyle(fontSize: 13),
+                            hintText: Locales.string(
+                                context, "select_category"),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 0, vertical: 4),
+                            border: InputBorder.none),
                       ),
                     ),
-                  ],
+                  ),
                 ),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
                   child: DropdownSearch<PersonModel>(
@@ -247,6 +243,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                 UnderlineInputField(
                   hint: "amount",
                   controller: trnAmount,
+                  inputType: TextInputType.number,
                   validator: (value){
                     if(value.isEmpty){
                       return Locales.string(context,"amount_required");
@@ -309,7 +306,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                     controller: personCtrl,
                     decoration: InputDecoration(
                         hintText: Locales.string(context, "name"),
-                        suffixIcon: Icon(Icons.person)
+                        suffixIcon: const Icon(Icons.person)
                     ),
                   ),
                 ),
@@ -371,7 +368,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                       controller: categoryCtrl,
                       decoration: InputDecoration(
                         hintText: Locales.string(context, "category_name"),
-                        suffixIcon: Icon(Icons.category_rounded)
+                        suffixIcon: const Icon(Icons.category_rounded)
                       ),
                     ),
                   ),

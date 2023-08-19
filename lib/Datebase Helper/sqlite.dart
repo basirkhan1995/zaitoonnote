@@ -9,15 +9,17 @@ import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
 
 class DatabaseHelper{
 
-  final databaseName = "memo00.db";
+  final databaseName = "memoo.db";
 
-  String userTable = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text)";
-  String userData = "insert into users (usrId, usrName, usrPassword) values(1,'admin','123456')";
-  String category = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT UNIQUE NOT NULL, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP) ";
-  String notes = "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL, noteContent Text NOT NULL,noteStatus integer,category TEXT, noteImage TEXT,createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
-  String persons = "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT,createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
-  String trn = "create table transactions (trnId INTEGER PRIMARY KEY AUTOINCREMENT, trnDescription TEXT, trnType TEXT NOT NULL, trnPerson INTEGER NOT NULL, amount INTEGER NOT NULL, trnImage TEXT, trnDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (trnPerson) REFERENCES persons (pId))";
+  String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text)";
+  String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT UNIQUE NOT NULL, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP) ";
+  String notes = "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId))";
+  String persons = "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT,pImage TEXT,createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
+  String activities = "create table transactions (trnId INTEGER PRIMARY KEY AUTOINCREMENT, trnDescription TEXT, trnType INTEGER, trnPerson INTEGER NOT NULL, amount INTEGER NOT NULL, trnImage TEXT, trnDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (trnPerson) REFERENCES persons (pId), FOREIGN KEY (trnType) REFERENCES category (cId))";
+
+  //Default Data
   String defaultCategories = "INSERT INTO category (cId, cName) values (1,'%'),(2,'paid'),(3,'received'),(4,'power'),(5,'rent')";
+  String userData = "insert into users (usrId, usrName, usrPassword) values(1,'admin','123456')";
 
   //Future init method to create a database, user table and user default data
   Future <Database> initDB()async{
@@ -26,14 +28,14 @@ class DatabaseHelper{
     return await openDatabase(path,version: 1, onCreate: (db,version)async{
       await db.execute('PRAGMA foreign_keys = ON');
       //auto execute the user table into the database
-      await db.execute(userTable);
+      await db.execute(user);
       //auto execute the user default data in the table
       await db.rawQuery(userData);
       await db.execute(notes);
       await db.execute(persons);
-      await db.execute(category);
+      await db.execute(categories);
       await db.rawQuery(defaultCategories);
-      await db.execute(trn);
+      await db.execute(activities);
     });
   }
 
@@ -91,35 +93,35 @@ class DatabaseHelper{
   }
 
   //Create a new transaction
-  Future <int> createTransaction2(String description, String category, int person, int amount)async{
+  Future <int> createTransaction2(String description, int type, int person, int amount, String? trnImage)async{
     final Database db = await initDB();
-    return db.rawInsert("insert into transactions (trnDescription, trnType, trnPerson, amount ) values (?,?,?,?)", [description, category, person, amount]);
+    return db.rawInsert("insert into transactions (trnDescription, trnType, trnPerson, amount, trnImage) values (?,?,?,?,?)", [description, type, person, amount, trnImage]);
   }
 
   //Show transactions
   Future <List<TransactionModel>> getTransactions () async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, trnType, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId ORDER BY trnId");
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId ORDER BY trnId");
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
   //Show transactions
   Future <List<TransactionModel>> transactionSearch (String keyword) async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, trnType, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId where pName LIKE? ",["%$keyword%"]);
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where pName LIKE? ",["%$keyword%"]);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 
   //Transaction by type (filtering)
   Future <List<TransactionModel>> filterTransactions (String type) async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, trnType, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId where trnType LIKE? ",["%$type%"]);
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage,pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where cName LIKE? ",["%$type%"]);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 
   //Transaction by type (filtering)
   Future <List<TransactionModel>> getByTransactionPerson (String type) async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, trnType, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId where trnPerson LIKE? ",["%$type%"]);
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId where trnPerson LIKE? ",["%$type%"]);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 

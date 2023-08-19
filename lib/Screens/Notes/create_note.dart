@@ -116,8 +116,6 @@ class _CreateNoteState extends State<CreateNote> {
                                 borderRadius: BorderRadius.circular(10)),
                             child: DropdownSearch<CategoryModel>(
                               popupProps: const PopupPropsMultiSelection.menu(
-                                showSelectedItems: true,
-                               showSearchBox: true,
                               ),
 
                               asyncItems: (value) => db.getCategoryById(value),

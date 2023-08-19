@@ -7,6 +7,7 @@ import '../../Datebase Helper/sqlite.dart';
 import '../../Methods/textfield.dart';
 import '../Json Models/category_model.dart';
 import '../Json Models/person_model.dart';
+import 'dart:io';
 
 class CreateTransaction extends StatefulWidget {
   const CreateTransaction({super.key});
@@ -23,9 +24,10 @@ class _CreateTransactionState extends State<CreateTransaction> {
   final personCtrl = TextEditingController();
   int selectedPerson = 0;
   var trnTypeValue = 0;
+  String? trnImagePath ="assets/Photos/app_logo.png";
   late DatabaseHelper handler;
   late Future <List<PersonModel>> persons;
-  var selectedCategoryName = "";
+  int selectedCategoryId = 0;
 
   @override
   void initState() {
@@ -69,7 +71,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
             child: TextButton(
                 onPressed: () {
                   if (formKey.currentState!.validate()) {
-                    db.createTransaction2(trnDescription.text, selectedCategoryName, selectedPerson, int.parse(trnAmount.text)).whenComplete(() => Navigator.pop(context));
+                    db.createTransaction2(trnDescription.text, selectedCategoryId, selectedPerson, int.parse(trnAmount.text), trnImagePath).whenComplete(() => Navigator.pop(context));
                   }
                 },
                 child: const LocaleText("create")),
@@ -154,10 +156,10 @@ class _CreateTransactionState extends State<CreateTransaction> {
 
                       asyncItems: (value) => db.getCategoryById(value),
                       itemAsString: (CategoryModel u) =>
-                          Locales.string(context, u.cName.toString()),
+                          Locales.string(context, u.cName),
                       onChanged: (CategoryModel? data) {
                         setState(() {
-                          selectedCategoryName = data!.cName;
+                          selectedCategoryId = data!.cId!.toInt();
                         });
                       },
                       dropdownButtonProps: const DropdownButtonProps(

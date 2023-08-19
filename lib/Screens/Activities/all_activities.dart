@@ -188,7 +188,7 @@ class _AllActivitiesState extends State<AllActivities> {
                                 ),
                                   child: ListTile(
                                     contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 20),
-                                    title: Text(items[index].person.toString(),style:const TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
+                                    title: Text(items[index].person,style:const TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
                                     subtitle: Text(items[index].trnDescription,style: const TextStyle(color: Colors.white),),
                                     trailing: Column(
                                       children: [

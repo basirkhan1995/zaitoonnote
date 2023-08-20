@@ -67,5 +67,7 @@
   "phone": "Phone",
   "category_details": "Add new category",
   "report_details": "Individuals transaction reports",
-  "new_account": "New account"
+  "new_account": "New account",
+  "report": "Reports",
+  "account_no": "Account no"
 }

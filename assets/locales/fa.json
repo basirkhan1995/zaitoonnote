@@ -60,12 +60,14 @@
   "add_person": "اضافه شخص جدید",
   "addcategory_hint": "انتخاب بخش",
   "category_hint": "بخش را انتخاب نمایید",
-  "person_hint": "شخص را انتخاب نمایید",
+  "person_hint": "انتخاب شخص",
   "person_required": "لطفا شخص مورد نظر خود را انتخاب نمایید",
   "description_required": "جزئیات خود را وارید نمایید",
   "add_activity": "اضافه فعالیت ",
   "phone": "شماره تماس",
   "category_details": "اضافه بخش جدید",
   "report_details": "گزارشات صورت حساب ها",
-  "new_account": "حساب جدید"
+  "new_account": "حساب جدید",
+  "report": "گزارشات",
+  "account_no": "شناسه حساب"
 }

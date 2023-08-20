@@ -1,28 +1,27 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
-import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
-import 'package:zaitoonnote/Screens/Persons/add_person.dart';
-import 'package:zaitoonnote/Screens/Settings/Views/reports.dart';
-import '../../../Datebase Helper/sqlite.dart';
-import '../../../Methods/env.dart';
-import 'dart:io';
+import '../../Datebase Helper/sqlite.dart';
+import '../Activities/create_transaction.dart';
+import '../Json Models/trn_model.dart';
 
 
-class AccountSettings extends StatefulWidget {
-  const AccountSettings({super.key});
+class PersonActivities extends StatefulWidget {
+  final PersonModel? data;
+  const PersonActivities({super.key,this.data});
 
   @override
-  State<AccountSettings> createState() => _AccountSettingsState();
+  State<PersonActivities> createState() => _PersonActivitiesState();
 }
 
-class _AccountSettingsState extends State<AccountSettings> {
+class _PersonActivitiesState extends State<PersonActivities> {
   final searchCtrl = TextEditingController();
   String keyword = "";
 
   late DatabaseHelper handler;
-  late Future<List<PersonModel>> persons;
+  late Future<List<TransactionModel>> transactions;
   final db = DatabaseHelper();
   var formatter = NumberFormat('#,##,000');
 
@@ -30,10 +29,10 @@ class _AccountSettingsState extends State<AccountSettings> {
   void initState() {
     super.initState();
     handler = DatabaseHelper();
-    persons = handler.getPersons();
+    transactions = handler.getByTransactionPerson(widget.data?.pId.toString()??"");
     handler.initDB().whenComplete(() async {
       setState(() {
-        persons = getAllPersons();
+        transactions = getTrn();
       });
     });
     _onRefresh();
@@ -41,62 +40,34 @@ class _AccountSettingsState extends State<AccountSettings> {
 
 
   //Method to get data from database
-  Future<List<PersonModel>> getAllPersons() async {
-    return await handler.getPersons();
+  Future<List<TransactionModel>> getTrn() async {
+    return await handler.getByTransactionPerson(widget.data?.pId.toString()??"");
   }
 
   //Method to refresh data on pulling the list
   Future<void> _onRefresh() async {
     setState(() {
-      persons = getAllPersons();
+      transactions = getTrn();
     });
   }
-  bool isSearch = false;
 
   @override
   Widget build(BuildContext context) {
+    print("Hellooo ${widget.data?.pId.toString()??"Empty Data"}");
     return Scaffold(
-      appBar: AppBar(
-        title: const LocaleText("accounts"),
-        actions: [
-
-          Container(
-            height: 35,
-            width: 35,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              color: zPurple,
-            ),
-            child: IconButton(
-                onPressed: (){
-                  Env.goto(const AddPerson(), context);
-                }, icon: const Icon(Icons.add,color: Colors.white)),
-          ),
-
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
-            height: 35,
-            width: 35,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50),
-              color: zPurple,
-            ),
-            child: IconButton(
-                onPressed: (){
-                  setState(() {
-                    isSearch = !isSearch;
-                  });
-                }, icon: const Icon(Icons.search,color: Colors.white)),
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>const CreateTransaction()));
+        },
       ),
-      body: SafeArea(
+      body:  SafeArea(
         child: Column(
           children: [
 
             //Search TextField
-          isSearch?  Container(
-              margin: const EdgeInsets.symmetric(horizontal: 14,vertical: 8),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
               padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 3),
               decoration: BoxDecoration(
                   color: Colors.deepPurple.withOpacity(.1),
@@ -107,7 +78,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                 onChanged: (value){
                   setState(() {
                     keyword = searchCtrl.text;
-                    persons = db.personSearch(keyword);
+                    transactions = db.transactionSearch(keyword);
                   });
                 },
                 decoration: InputDecoration(
@@ -116,12 +87,12 @@ class _AccountSettingsState extends State<AccountSettings> {
                     border: InputBorder.none
                 ),
               ),
-            ):const SizedBox(),
+            ),
 
             Expanded(
-              child: FutureBuilder<List<PersonModel>>(
-                future: persons,
-                builder: (BuildContext context, AsyncSnapshot<List<PersonModel>> snapshot) {
+              child: FutureBuilder<List<TransactionModel>>(
+                future: transactions,
+                builder: (BuildContext context, AsyncSnapshot<List<TransactionModel>> snapshot) {
                   //in case whether data is pending
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
@@ -149,12 +120,13 @@ class _AccountSettingsState extends State<AccountSettings> {
                     return Text('Error: ${snapshot.error}');
                   } else {
                     //a final variable (item) to hold the snapshot data
-                    final items = snapshot.data ?? <PersonModel>[];
+                    final items = snapshot.data ?? <TransactionModel>[];
                     return Scrollbar(
                       //The refresh indicator
                       child: RefreshIndicator(
                         onRefresh: _onRefresh,
                         child: SizedBox(
+
                           child: ListView.builder(
                               itemCount: items.length,
                               itemBuilder: (context,index){
@@ -166,7 +138,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                                       height: 90,
                                       decoration: BoxDecoration(
                                           color: Colors.deepPurple.shade900.withOpacity(.8),
-                                          borderRadius: BorderRadius.circular(12),
+                                          borderRadius: BorderRadius.circular(10),
                                           boxShadow: const [
                                             BoxShadow(
                                               color: Colors.white,
@@ -176,16 +148,33 @@ class _AccountSettingsState extends State<AccountSettings> {
                                           ]
                                       ),
                                       child: ListTile(
-                                        onTap: ()=> Env.goto(Reports(data: items[index],), context),
                                         leading: SizedBox(
                                             height: 60,width: 60,
                                             child: CircleAvatar(
                                                 radius: 50,
                                                 backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
                                         contentPadding: const EdgeInsets.symmetric(vertical: 5,horizontal: 15),
-                                        title: Text(items[index].pName,style:const TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
-                                        subtitle: Text(items[index].pPhone.toString(),style: const TextStyle(color: Colors.white),),
-                                        trailing: const Icon(Icons.arrow_forward_ios_outlined,size: 19,color: Colors.white,)
+                                        title: Text(items[index].person,style:const TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
+                                        subtitle: Text(items[index].trnDescription,style: const TextStyle(color: Colors.white),),
+                                        trailing: Column(
+                                          children: [
+                                            Expanded(
+                                              child: Container(
+                                                padding: const EdgeInsets.all(5),
+                                                decoration: BoxDecoration(
+                                                    color: Colors.white,
+                                                    borderRadius: BorderRadius.circular(4)
+                                                ),
+                                                child: LocaleText(
+                                                  items[index].trnCategory,
+                                                  style: const TextStyle(
+                                                      color: Colors.deepPurple, fontSize: 13),
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(child: Text(formatAmount(items[index].amount.toString()),style: const TextStyle(fontSize: 20,color: Colors.white),)),
+                                          ],
+                                        ),
 
                                       )),
                                 );
@@ -202,7 +191,6 @@ class _AccountSettingsState extends State<AccountSettings> {
       ),
     );
   }
-
 
   String formatAmount(value){
     String price = value;
@@ -222,4 +210,6 @@ class _AccountSettingsState extends State<AccountSettings> {
     }
     return priceInText.trim();
   }
+
+
 }

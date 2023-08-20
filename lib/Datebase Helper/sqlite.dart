@@ -126,9 +126,9 @@ class DatabaseHelper{
   }
 
   //Transaction by type (filtering)
-  Future <List<TransactionModel>> getByTransactionPerson (String type) async{
+  Future <List<TransactionModel>> getByTransactionPerson (String id) async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId where trnPerson LIKE? ",["%$type%"]);
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where b.pId = ? ", [id]);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 

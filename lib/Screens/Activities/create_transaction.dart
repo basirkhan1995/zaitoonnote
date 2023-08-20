@@ -1,3 +1,4 @@
+
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
@@ -6,7 +7,9 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Methods/z_button.dart';
 import 'package:zaitoonnote/Methods/z_field.dart';
+import 'package:zaitoonnote/Screens/Persons/add_person.dart';
 import '../../Datebase Helper/sqlite.dart';
+import '../../Methods/env.dart';
 import '../Json Models/category_model.dart';
 import '../Json Models/person_model.dart';
 import 'dart:io';
@@ -155,12 +158,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                                 hintText: Locales.string(context,"search"),
                                 border: const UnderlineInputBorder(),
                                 suffixIcon: IconButton(
-                                    onPressed: (){
-                                     setState(() {
-                                       personCtrl.clear();
-                                       addPerson(context);
-                                     });
-                                    },
+                                    onPressed: ()=>Env.goto(const AddPerson(), context),
                                     icon: const Icon(Icons.add,color: Colors.black,size: 18)),
                               )
                             ),
@@ -275,6 +273,14 @@ class _CreateTransactionState extends State<CreateTransaction> {
                   title: 'description',
                 ),
 
+
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  child: Placeholder(
+                   strokeWidth: 1,
+                    color: zPurple,
+                  ),
+                ),
               ],
             ),
           ),
@@ -283,66 +289,6 @@ class _CreateTransactionState extends State<CreateTransaction> {
     );
   }
 
-  void addPerson(context){
-    showDialog(context: context, builder: (context){
-      return AlertDialog(
-        title: const LocaleText("add_person"),
-        content: SizedBox(
-          height: 200,
-          width: double.maxFinite,
-          child: Form(
-            key: cFormKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: TextFormField(
-                    validator: (value){
-                      if(value!.isEmpty){
-                        return Locales.string(context, "name_required");
-                      }
-                      return null;
-                    },
-                    controller: personCtrl,
-                    decoration: InputDecoration(
-                        hintText: Locales.string(context, "name"),
-                        suffixIcon: const Icon(Icons.person)
-                    ),
-                  ),
-                ),
-
-                //Action Buttons
-                Expanded(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child:
-                          const LocaleText("cancel")),
-                      TextButton(
-                          onPressed: () {
-                            if(cFormKey.currentState!.validate()){
-                              db.createPerson(PersonModel(pName: personCtrl.text)).whenComplete(() => Navigator.pop(context));
-                            }
-                          },
-                          child:
-                          const LocaleText(
-                              "create")),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-      );
-    });
-  }
   void addCategory(context){
     showDialog(context: context, builder: (context){
       return AlertDialog(

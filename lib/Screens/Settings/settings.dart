@@ -19,10 +19,10 @@ class SettingsPage extends StatelessWidget {
       "about"
     ];
     List subItems = [
-      "accounts",
-      "themes",
-      "category",
-      "reports",
+      "accdetails",
+      "themesdetails",
+      "category_details",
+      "report_details",
       "about"
     ];
 

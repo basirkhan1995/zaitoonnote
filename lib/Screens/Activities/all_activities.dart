@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
@@ -187,7 +188,12 @@ class _AllActivitiesState extends State<AllActivities> {
                                   ]
                                 ),
                                   child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 20),
+                                    leading: SizedBox(
+                                        height: 60,width: 60,
+                                        child: CircleAvatar(
+                                          radius: 50,
+                                            backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 5,horizontal: 15),
                                     title: Text(items[index].person,style:const TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
                                     subtitle: Text(items[index].trnDescription,style: const TextStyle(color: Colors.white),),
                                     trailing: Column(

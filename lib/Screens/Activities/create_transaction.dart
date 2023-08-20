@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import 'package:zaitoonnote/Methods/colors.dart';
+import 'package:zaitoonnote/Methods/z_button.dart';
+import 'package:zaitoonnote/Methods/z_field.dart';
 import '../../Datebase Helper/sqlite.dart';
-import '../../Methods/textfield.dart';
 import '../Json Models/category_model.dart';
 import '../Json Models/person_model.dart';
 import 'dart:io';
@@ -24,7 +26,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
   final personCtrl = TextEditingController();
   int selectedPerson = 0;
   var trnTypeValue = 0;
-  String? trnImagePath ="assets/Photos/app_logo.png";
+  File? trnImagePath;
   late DatabaseHelper handler;
   late Future <List<PersonModel>> persons;
   int selectedCategoryId = 0;
@@ -53,7 +55,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
     final dt = DateTime.now();
 
     //Gregorian Date format
-    final gregorianDate = DateFormat('yyyy-MM-dd (HH:mm a)').format(dt);
+    final gregorianDate = DateFormat('dd/MM/yyyy - HH:mm a').format(dt);
     Jalali persianDate = dt.toJalali();
 
     //Persian Date format
@@ -68,13 +70,15 @@ class _CreateTransactionState extends State<CreateTransaction> {
         actions: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: TextButton(
-                onPressed: () {
+            child: ZButton(
+              radius: 8,
+              width: .35,
+                onTap: () {
                   if (formKey.currentState!.validate()) {
-                    db.createTransaction2(trnDescription.text, selectedCategoryId, selectedPerson, int.parse(trnAmount.text), trnImagePath).whenComplete(() => Navigator.pop(context));
+                    db.createTransaction2(trnDescription.text, selectedCategoryId, selectedPerson, int.parse(trnAmount.text), trnImagePath.toString()).whenComplete(() => Navigator.pop(context));
                   }
                 },
-                child: const LocaleText("create")),
+                label: "create"),
           ),
         ],
       ),
@@ -91,188 +95,184 @@ class _CreateTransactionState extends State<CreateTransaction> {
                       child: ListTile(
                         title: Text(
                           gregorianDate,
-                          style: const TextStyle(fontSize: 13),
+                          style: const TextStyle(fontSize: 18),
                         ),
-                        subtitle: Text(shamsiDate()),
+                        subtitle: Text(shamsiDate(),style: const TextStyle(fontSize: 15),),
                       ),
                     ),
 
                   ],
                 ),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 2),
-                    margin: const EdgeInsets.symmetric(horizontal: 2,vertical: 10),
-                    height: 60,
-                    decoration: BoxDecoration(
-                        color: Colors.deepPurple.withOpacity(.1),
-                        borderRadius: BorderRadius.circular(10)),
-                    child: DropdownSearch<CategoryModel>(
-                      validator: (value){
-                        if(value == null){
-                          return Locales.string(context, "category_required");
-                        }
-                        return null;
-                      },
-                      popupProps: PopupPropsMultiSelection.bottomSheet(
-                        fit: FlexFit.loose,
-                        title: Column(
-                          children: [
-                            Container(
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 8),
-                              height: 5,
-                              width: 60,
-                              decoration: BoxDecoration(
-                                  color: Colors.deepPurple,
-                                  borderRadius:
-                                  BorderRadius
-                                      .circular(15)),
+
+             //Select Person and Category
+                Row(
+                  children: [
+
+                    Expanded(
+                      flex: 3,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0,vertical: 8),
+                        child: DropdownSearch<PersonModel>(
+                          dropdownButtonProps: const DropdownButtonProps(
+                            icon: Icon(Icons.arrow_drop_down_rounded)
+                          ),
+                          enabled: true,
+                          validator: (value){
+                            if(value == null){
+                              return Locales.string(context, "person_required");
+                            }
+                            return null;
+                          },
+                          asyncItems: (value) => db.getPersonsByID(value),
+                          itemAsString: (PersonModel u) => u.pName.toString(),
+                          onChanged: (PersonModel? data){
+                            selectedPerson = data!.pId!.toInt();
+                          },
+                          dropdownDecoratorProps: DropDownDecoratorProps(
+
+                            dropdownSearchDecoration: InputDecoration(
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                    color: Colors.deepPurple,
+                                    width: 1.8
+                                  )
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide: const BorderSide(
+                                    width: 1.5,
+                                    color: zPurple
+                                  )
+                                ),
+                                labelText: Locales.string(context, "person_hint")),
+                          ),
+                          popupProps: PopupPropsMultiSelection.menu(
+                            searchFieldProps: TextFieldProps(
+                              decoration: InputDecoration(
+                                prefixIcon: const Icon(Icons.search),
+                                hintText: Locales.string(context,"search"),
+                                border: const UnderlineInputBorder(),
+                                suffixIcon: IconButton(
+                                    onPressed: (){
+                                     setState(() {
+                                       personCtrl.clear();
+                                       addPerson(context);
+                                     });
+                                    },
+                                    icon: const Icon(Icons.add,color: Colors.black,size: 18)),
+                              )
                             ),
-                            Padding(
-                                padding: const EdgeInsets.only(top: 0, left: 10),
-                                child: ListTile(
-                                  title: const LocaleText("select_category",style: TextStyle(fontSize: 18),),
-                                  leading: const Icon(Icons.category),
-                                  trailing: Container(
-                                    height: 35,
-                                    width: 35,
+                            showSearchBox: true,
+                            fit: FlexFit.loose,
+
+
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 2),
+                          margin: const EdgeInsets.symmetric(horizontal: 2,vertical: 10),
+                          height: 60,
+                          decoration: BoxDecoration(
+                              color: Colors.deepPurple.withOpacity(.1),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: DropdownSearch<CategoryModel>(
+                            validator: (value){
+                              if(value == null){
+                                return Locales.string(context, "category_required");
+                              }
+                              return null;
+                            },
+                            popupProps: PopupPropsMultiSelection.bottomSheet(
+                              fit: FlexFit.loose,
+                              title: Column(
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        vertical: 8),
+                                    height: 5,
+                                    width: 60,
                                     decoration: BoxDecoration(
                                         color: Colors.deepPurple,
-                                        borderRadius: BorderRadius.circular(50)
-                                    ),
-                                    child: IconButton(
-                                        onPressed: ()=>addCategory(context),
-                                        icon: const Icon(Icons.add,color: Colors.white,size: 18)),
+                                        borderRadius:
+                                        BorderRadius
+                                            .circular(15)),
                                   ),
-                                )
+                                  Padding(
+                                      padding: const EdgeInsets.only(top: 0, left: 10),
+                                      child: ListTile(
+                                        title: const LocaleText("select_category",style: TextStyle(fontSize: 18),),
+                                        leading: const Icon(Icons.category),
+                                        trailing: Container(
+                                          height: 35,
+                                          width: 35,
+                                          decoration: BoxDecoration(
+                                              color: Colors.deepPurple,
+                                              borderRadius: BorderRadius.circular(50)
+                                          ),
+                                          child: IconButton(
+                                              onPressed: ()=>addCategory(context),
+                                              icon: const Icon(Icons.add,color: Colors.white,size: 18)),
+                                        ),
+                                      )
+                                  ),
+                                ],
+                              ),
+
                             ),
-                          ],
+
+                            asyncItems: (value) => db.getCategoryById(value),
+                            itemAsString: (CategoryModel u) =>
+                                Locales.string(context, u.cName),
+                            onChanged: (CategoryModel? data) {
+                              setState(() {
+                                selectedCategoryId = data!.cId!.toInt();
+                              });
+                            },
+                            dropdownButtonProps: const DropdownButtonProps(
+                              icon: Icon(Icons.arrow_drop_down_circle_outlined, size: 22),
+                            ),
+                            dropdownDecoratorProps: DropDownDecoratorProps(
+                              dropdownSearchDecoration: InputDecoration(
+                                  hintStyle: const TextStyle(fontSize: 13),
+                                  hintText: Locales.string(
+                                      context, "select_category"),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 15, vertical: 20),
+                                  border: InputBorder.none),
+                            ),
+                          ),
                         ),
-
-                      ),
-
-                      asyncItems: (value) => db.getCategoryById(value),
-                      itemAsString: (CategoryModel u) =>
-                          Locales.string(context, u.cName),
-                      onChanged: (CategoryModel? data) {
-                        setState(() {
-                          selectedCategoryId = data!.cId!.toInt();
-                        });
-                      },
-                      dropdownButtonProps: const DropdownButtonProps(
-                        icon: Icon(Icons.arrow_drop_down_circle_outlined, size: 22),
-                      ),
-                      dropdownDecoratorProps: DropDownDecoratorProps(
-                        dropdownSearchDecoration: InputDecoration(
-                            icon: const Padding(
-                              padding:
-                              EdgeInsets.symmetric(horizontal: 4.0),
-                              child: Icon(Icons.category),
-                            ),
-                            hintStyle: const TextStyle(fontSize: 13),
-                            hintText: Locales.string(
-                                context, "select_category"),
-                            contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 0, vertical: 4),
-                            border: InputBorder.none),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: DropdownSearch<PersonModel>(
-                    dropdownButtonProps: const DropdownButtonProps(
-                      icon: Icon(Icons.arrow_drop_down_rounded)
-                    ),
-                    enabled: true,
-                    validator: (value){
-                      if(value == null){
-                        return Locales.string(context, "person_required");
-                      }
-                      return null;
-                    },
-                    asyncItems: (value) => db.getPersonsByID(value),
-                    itemAsString: (PersonModel u) => u.pName.toString(),
-                    onChanged: (PersonModel? data){
-                      selectedPerson = data!.pId!.toInt();
-                    },
-                    dropdownDecoratorProps: DropDownDecoratorProps(
-
-                      dropdownSearchDecoration: InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              color: Colors.deepPurple,
-                              width: 1.8
-                            )
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(
-                              width: 1.5,
-                            )
-                          ),
-                          labelText: Locales.string(context, "person_hint")),
-                    ),
-                    popupProps: PopupPropsMultiSelection.menu(
-                      searchFieldProps: TextFieldProps(
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.search),
-                          hintText: Locales.string(context,"search"),
-                          border: const UnderlineInputBorder(),
-                          suffixIcon: IconButton(
-                              onPressed: (){
-                               setState(() {
-                                 personCtrl.clear();
-                                 addPerson(context);
-                               });
-                              },
-                              icon: const Icon(Icons.add,color: Colors.black,size: 18)),
-                        )
-                      ),
-                      showSearchBox: true,
-                      fit: FlexFit.loose,
-
-
-                    ),
-                  ),
-                ),
-                UnderlineInputField(
+                const SizedBox(height: 15),
+                ZField(
+                  isRequire: true,
+                  icon: Icons.currency_rupee_rounded,
                   hint: "amount",
                   controller: trnAmount,
-                  inputType: TextInputType.number,
+                  keyboardInputType: TextInputType.number,
                   validator: (value){
                     if(value.isEmpty){
                       return Locales.string(context,"amount_required");
                     }
                     return null;
-                  },
+                  }, title: 'amount',
                 ),
-                IntrinsicHeight(
-                  child: ConstrainedBox(
-                    constraints:  const BoxConstraints(
-                      minHeight: 250,
-                      maxHeight: 500,
-                    ),
-                    child: UnderlineInputField(
-                      validator: (value){
-                        if(value.isEmpty){
-                          return Locales.string(context,"description_required");
-                        }
-                        return null;
-                      },
-                      hint: "description",
-                      controller: trnDescription,
-                      maxChar: 500,
-                      max: null,
-                      expand: true,
-                    ),
-                  ),
+                ZField(
+                  icon: Icons.info,
+                  hint: "description",
+                  controller: trnDescription,
+                  title: 'description',
                 ),
 
               ],

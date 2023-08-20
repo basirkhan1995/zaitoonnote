@@ -9,12 +9,12 @@ import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
 
 class DatabaseHelper{
 
-  final databaseName = "memoo.db";
+  final databaseName = "memory2.db";
 
   String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text)";
   String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT UNIQUE NOT NULL, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP) ";
   String notes = "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId))";
-  String persons = "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT,pImage TEXT,createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
+  String persons = "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT,pImage TEXT,pPhone TEXT, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
   String activities = "create table transactions (trnId INTEGER PRIMARY KEY AUTOINCREMENT, trnDescription TEXT, trnType INTEGER, trnPerson INTEGER NOT NULL, amount INTEGER NOT NULL, trnImage TEXT, trnDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (trnPerson) REFERENCES persons (pId), FOREIGN KEY (trnType) REFERENCES category (cId))";
 
   //Default Data
@@ -81,6 +81,13 @@ class DatabaseHelper{
   Future <List<PersonModel>> getPersons () async{
     final Database db = await initDB();
     final List<Map<String, Object?>>  queryResult = await db.query('persons',orderBy: 'pId');
+    return queryResult.map((e) => PersonModel.fromMap(e)).toList();
+  }
+
+  //Show transactions
+  Future <List<PersonModel>> personSearch (String keyword) async{
+    final Database db = await initDB();
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select pId, pName, pImage, pPhone, createdAt from persons where pName LIKE? ",["%$keyword%"]);
     return queryResult.map((e) => PersonModel.fromMap(e)).toList();
   }
 

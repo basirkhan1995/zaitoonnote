@@ -20,7 +20,7 @@
   "themes": "Themes",
   "themesdetails": "Change themes, colors",
   "accounts": "Accounts",
-  "accdetails": "Create new account",
+  "accdetails": "Accounts, adding new account",
   "category": "Category",
   "work": "Work",
   "payment": "Payments",
@@ -63,5 +63,9 @@
   "person_required": "Please select a person",
   "addcategory_hint": "Select category ",
   "description_required": "Description is required",
-  "add_activity": "Add Activity"
+  "add_activity": "Add Activity",
+  "phone": "Phone",
+  "category_details": "Add new category",
+  "report_details": "Individuals transaction reports",
+  "new_account": "New account"
 }

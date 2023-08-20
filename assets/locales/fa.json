@@ -18,9 +18,9 @@
   "titlevalmsg": "عنوان را بنویسید",
   "contentvalmsg": "جزئیات خود را بنویسید",
   "themes": "رنگ ها",
-  "themesdetails": "تغییر رنگ ها",
-  "accounts": "حساب کاربری",
-  "accdetails": "حساب جدید ایجاد کردن",
+  "themesdetails": "تغییر رنگ ها، قالب ها",
+  "accounts": "حساب ها",
+  "accdetails": "حساب ها، اضافه حساب جدید",
   "category": "بخش",
   "work": "کار",
   "payment": "پرداخت ها",
@@ -63,5 +63,9 @@
   "person_hint": "شخص را انتخاب نمایید",
   "person_required": "لطفا شخص مورد نظر خود را انتخاب نمایید",
   "description_required": "جزئیات خود را وارید نمایید",
-  "add_activity": "اضافه فعالیت "
+  "add_activity": "اضافه فعالیت ",
+  "phone": "شماره تماس",
+  "category_details": "اضافه بخش جدید",
+  "report_details": "گزارشات صورت حساب ها",
+  "new_account": "حساب جدید"
 }

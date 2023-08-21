@@ -4,8 +4,8 @@ const zBlackHalf = Color(0xFF212121);
 const zBlack =  Color(0xFF000000);
 const zGrey = Color(0xff434343);
 const zBlue =  Color(0xFF2d3392);
-const zBlue2 = Color (0xff04549c);
-const zPurple =  Color(0xFF874b9b);
+const zTitleColor = Color (0xff6600cc);
+const zPurpleColor =  Color(0xFF874b9b);
 const zWhite = Colors.white;
 
 const zColor1 = Color(0xFFccffcc);

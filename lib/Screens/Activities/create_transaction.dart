@@ -148,7 +148,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide: const BorderSide(
                                     width: 1.5,
-                                    color: zPurple
+                                    color: zPurpleColor
                                   )
                                 ),
                                 labelText: Locales.string(context, "person_hint")),
@@ -282,12 +282,12 @@ class _CreateTransactionState extends State<CreateTransaction> {
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     child: Placeholder(
                      strokeWidth: 1,
-                      color: zPurple,
+                      color: zPurpleColor,
                       child: Container(
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: _trnImage!=null? Image.file(_trnImage!,fit: BoxFit.cover).image:const AssetImage("assets/Photos/gallery.png"),
+                            image: _trnImage!=null? Image.file(_trnImage!,fit: BoxFit.cover).image:const AssetImage("assets/Photos/gallery2.png"),
                           )
                         ),
                       ),

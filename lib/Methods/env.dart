@@ -16,7 +16,7 @@ import 'colors.dart';
            borderRadius: BorderRadius.circular(5),
          ),
          behavior: SnackBarBehavior.floating,
-         backgroundColor: zPurple,
+         backgroundColor: zPurpleColor,
          content: Text(message,style: const TextStyle(color: Colors.white),)
      );
 

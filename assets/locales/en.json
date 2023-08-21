@@ -74,5 +74,8 @@
   "birthday": "Birthday",
   "personal": "Personal",
   "wishlist": "Wishlist",
-  "title_minimum_char": "Title must not exceed of 10 character"
+  "title_minimum_char": "Title must not exceed of 10 character",
+  "job": "Job title",
+  "card_number": "Card number",
+  "account_name": "Account name"
 }

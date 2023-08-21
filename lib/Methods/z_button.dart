@@ -8,19 +8,19 @@ class ZButton extends StatelessWidget {
   final String? label;
   final double height;
   final double width;
-  final double? fontSize;
+  final double fontSize;
   final Color? backgroundColor;
   final Color? labelColor;
   final double? radius;
   const ZButton({Key? key,
     this.onTap,
     this.label,
-    this.fontSize,
+    this.fontSize = 16,
     this.width = .9,
     this.height = 50,
-    this.radius = 10,
-    this.backgroundColor = zPurple,
-    this.labelColor = zWhite
+    this.radius = 8,
+    this.backgroundColor = zPurpleColor,
+    this.labelColor = Colors.black54
   }) : super(key: key);
 
   @override
@@ -29,15 +29,15 @@ class ZButton extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10),
       width: MediaQuery.of(context).size.width * width,
       height: height,
-      child: ElevatedButton(
+      child: TextButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: backgroundColor,
+          backgroundColor: Colors.purple.withOpacity(.2),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radius!),
           ),
         ),
         onPressed: onTap,
-        child: LocaleText(label!,style: TextStyle(color: labelColor,fontSize: fontSize,fontFamily: "Ubuntu")),
+        child: LocaleText(label!,style: TextStyle(color: labelColor,fontSize: fontSize,fontFamily: "Ubuntu",fontWeight: FontWeight.bold)),
       ),
     );
   }

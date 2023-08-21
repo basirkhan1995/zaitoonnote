@@ -65,7 +65,7 @@ class _AccountSettingsState extends State<AccountSettings> {
             width: 35,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
-              color: zPurple,
+              color: zPurpleColor,
             ),
             child: IconButton(
                 onPressed: (){
@@ -79,7 +79,7 @@ class _AccountSettingsState extends State<AccountSettings> {
             width: 35,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
-              color: zPurple,
+              color: zPurpleColor,
             ),
             child: IconButton(
                 onPressed: (){
@@ -160,34 +160,20 @@ class _AccountSettingsState extends State<AccountSettings> {
                               itemBuilder: (context,index){
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
-                                  child: Container(
-                                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                                      padding: const EdgeInsets.symmetric(vertical: 4),
-                                      height: 90,
-                                      decoration: BoxDecoration(
-                                          color: Colors.deepPurple.shade900.withOpacity(.8),
-                                          borderRadius: BorderRadius.circular(12),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.white,
-                                              blurRadius: 1,
-                                              offset: Offset(1, 0),
-                                            ),
-                                          ]
-                                      ),
-                                      child: ListTile(
-                                        onTap: ()=> Env.goto(Reports(data: items[index],), context),
-                                        leading: SizedBox(
-                                            height: 60,width: 60,
-                                            child: CircleAvatar(
-                                                radius: 50,
-                                                backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
-                                        contentPadding: const EdgeInsets.symmetric(vertical: 5,horizontal: 15),
-                                        title: Text(items[index].pName,style:const TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
-                                        subtitle: Text(items[index].pPhone.toString(),style: const TextStyle(color: Colors.white),),
-                                        trailing: const Icon(Icons.arrow_forward_ios_outlined,size: 19,color: Colors.white,)
+                                  child: ListTile(
+                                    onTap: ()=> Env.goto(Reports(data: items[index],), context),
+                                    leading: SizedBox(
+                                        height: 60,width: 60,
+                                        child: CircleAvatar(
+                                            radius: 50,
+                                            backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 18),
+                                    dense: true,
+                                    title: Text(items[index].pName,style: const TextStyle(color: zPurpleColor,fontSize: 16,fontWeight: FontWeight.bold),),
+                                    subtitle: Text(items[index].pPhone.toString(),style: const TextStyle(color: zGrey),),
+                                    trailing: const Icon(Icons.arrow_forward_ios_outlined,size: 15,color: zPurpleColor)
 
-                                      )),
+                                  ),
                                 );
                               }),
                         ),

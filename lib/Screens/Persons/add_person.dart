@@ -5,8 +5,10 @@ import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Methods/z_button.dart';
 import 'package:zaitoonnote/Methods/z_field.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
+import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
 import 'dart:io';
 import '../../Datebase Helper/sqlite.dart';
+import '../../Methods/env.dart';
 
 class AddPerson extends StatefulWidget {
   const AddPerson({super.key});
@@ -18,6 +20,9 @@ class AddPerson extends StatefulWidget {
 class _AddPersonState extends State<AddPerson> {
   final phone = TextEditingController();
   final fullName = TextEditingController();
+  final jobTitle = TextEditingController();
+  final cardNumber = TextEditingController();
+  final cardName = TextEditingController();
 
   File? _pImage;
   final db = DatabaseHelper();
@@ -26,52 +31,105 @@ class _AddPersonState extends State<AddPerson> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-     appBar: AppBar(
-       title: const LocaleText("new_account"),
-     ),
-      body: SafeArea(
-        child: Center(
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const SizedBox(height: 15),
-                InkWell(
-                  splashColor: Colors.transparent,
-                  onTap: (){
-                   getImage(ImageSource.gallery);
-                  },
-                  child: CircleAvatar(
-                    radius: 90,
-                    backgroundColor: zPurple,
+      appBar: AppBar(
+        title: const LocaleText("new_account"),
+      ),
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Center(
+            child: Form(
+              key: formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 8),
+                  InkWell(
+                    splashColor: Colors.transparent,
+                    onTap: () {
+                      getImage(ImageSource.gallery);
+                    },
                     child: CircleAvatar(
-                      radius: 88,
-                     backgroundImage: _pImage!=null? Image.file(_pImage!,fit: BoxFit.cover).image:const AssetImage("assets/Photos/no_user.jpg"),
+                      radius: 70,
+                      backgroundColor: zPurpleColor,
+                      child: CircleAvatar(
+                        radius: 68,
+                        backgroundImage: _pImage != null
+                            ? Image.file(_pImage!, fit: BoxFit.cover).image
+                            : const AssetImage("assets/Photos/no_user.jpg"),
+                      ),
                     ),
                   ),
-                ),
                   ZField(
-                    isRequire: true,
-                    validator: (value){
-                      if(value.isEmpty){
-                        return Locales.string(context,"name_required");
-                      }
-                      return null;
-                    },
-                    title: "name",icon: Icons.person,controller: fullName,),
-                  ZField(title: "phone",icon: Icons.phone,controller: phone ,keyboardInputType: TextInputType.phone),
-                  ZButton(
-                    onTap: (){
-                     if(formKey.currentState!.validate()){
-                       db.createPerson(PersonModel(pName: fullName.text, pPhone: phone.text, pImage: _pImage?.path??"")).whenComplete(() => Navigator.pop(context));
-                     }
-                    },
-                    label: "create",
-                    backgroundColor: zPurple,
-                  ),
-              ],
+                      isRequire: true,
+                      validator: (value) {
+                        if (value.isEmpty) {
+                          return Locales.string(context, "name_required");
+                        }
+                        return null;
+                      },
+                      title: "name",
+                      icon: Icons.person,
+                      controller: fullName),
+                  ZField(
+                      title: "phone",
+                      icon: Icons.phone,
+                      controller: phone,
+                      keyboardInputType: TextInputType.phone),
+                  ZField(
+                      title: "job",
+                      icon: Icons.work,
+                      controller: jobTitle,
+                      keyboardInputType: TextInputType.text),
+                  ZField(
+                      title: "card_number",
+                      icon: Icons.credit_card,
+                      controller: cardNumber,
+                      keyboardInputType: TextInputType.number),
+                  ZField(
+                      title: "account_name",
+                      icon: Icons.person,
+                      controller: cardName,
+                      keyboardInputType: TextInputType.text),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: ZButton(
+                            onTap: () {
+                              if (formKey.currentState!.validate()) {
+                                db
+                                    .createPerson(PersonModel(
+                                        pName: fullName.text,
+                                        pPhone: phone.text,
+                                        cardNumber: cardNumber.text,
+                                        accountName: cardName.text,
+                                        jobTitle: jobTitle.text,
+                                        pImage: _pImage?.path ?? ""))
+                                    .whenComplete(() => Env.goto(
+                                        const AccountSettings(), context));
+                              }
+                            },
+                            label: "create",
+                            backgroundColor: zPurpleColor,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 2,
+                          child: ZButton(
+                            onTap: () => Navigator.pop(context),
+                            label: "cancel",
+                            backgroundColor: zPurpleColor,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -79,16 +137,13 @@ class _AddPersonState extends State<AddPerson> {
     );
   }
 
-
-
-  Future <void> getImage(ImageSource imageSource)async{
+  Future<void> getImage(ImageSource imageSource) async {
     final ImagePicker picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: imageSource);
-    if(pickedFile == null)return;
-    setState((){
+    if (pickedFile == null) return;
+    setState(() {
       _pImage = File(pickedFile.path);
       print(_pImage);
     });
   }
-
 }

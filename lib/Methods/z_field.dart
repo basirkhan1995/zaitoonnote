@@ -86,11 +86,11 @@ class ZField extends StatelessWidget {
                             isDense: true,
                             enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
-                                borderSide:  const BorderSide(color: zPurple,width: 1)
+                                borderSide:  const BorderSide(color: zPurpleColor,width: 1)
                             ),
                             focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(color: zPurple,width: 1.5)),
+                                borderSide: const BorderSide(color: zPurpleColor,width: 1.5)),
                             focusedErrorBorder: UnderlineInputBorder(
                               //borderRadius: BorderRadius.circular(widget.radius!),
                               borderSide: BorderSide(color: Colors.red.shade900,width: 1.5),
@@ -99,7 +99,7 @@ class ZField extends StatelessWidget {
                               //borderRadius: BorderRadius.circular(widget.radius!),
                               borderSide: BorderSide(color: Colors.red.shade900),
                             ),
-                            prefixIcon: Icon(icon,size: 20,color: zPurple),
+                            prefixIcon: Icon(icon,size: 20,color: zPurpleColor),
                             hintText: Locales.string(context,title),
                             hintStyle: const TextStyle(fontSize: 16,fontFamily: "Dubai")
                         ),

@@ -74,5 +74,8 @@
   "birthday": "تولد",
   "personal": "شخصی",
   "wishlist": "خواسته ها",
-  "title_minimum_char": "موضوع باید کمتر از 10 حروف باشد"
+  "title_minimum_char": "موضوع باید کمتر از 10 حروف باشد",
+  "job": "وظیفه",
+  "card_number": "شماره کارت",
+  "account_name": "نام حساب"
 }

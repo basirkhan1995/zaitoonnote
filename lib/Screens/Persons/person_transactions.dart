@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import '../../Datebase Helper/sqlite.dart';
 import '../Activities/create_transaction.dart';
+import '../Json Models/category_model.dart';
 import '../Json Models/trn_model.dart';
 
 
@@ -51,10 +53,15 @@ class _PersonActivitiesState extends State<PersonActivities> {
     });
   }
 
+  var filterTitles = [
+    ""
+  ];
+
   @override
   Widget build(BuildContext context) {
     print("Hellooo ${widget.data?.pId.toString()??"Empty Data"}");
     return Scaffold(
+
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: (){
@@ -66,29 +73,98 @@ class _PersonActivitiesState extends State<PersonActivities> {
           children: [
 
             //Search TextField
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 3),
-              decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(.1),
-                  borderRadius: BorderRadius.circular(8)
-              ),
-              child: TextFormField(
-                controller: searchCtrl,
-                onChanged: (value){
-                  setState(() {
-                    keyword = searchCtrl.text;
-                    transactions = db.transactionSearch(keyword);
-                  });
-                },
-                decoration: InputDecoration(
-                    hintText: Locales.string(context,"search"),
-                    icon: const Icon(Icons.search),
-                    border: InputBorder.none
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 3),
+                      decoration: BoxDecoration(
+                          color: Colors.deepPurple.withOpacity(.1),
+                          borderRadius: BorderRadius.circular(8)
+                      ),
+                      child: TextFormField(
+                        controller: searchCtrl,
+                        onChanged: (value){
+                          setState(() {
+                            keyword = searchCtrl.text;
+                            transactions = db.transactionSearch(keyword);
+                          });
+                        },
+                        decoration: InputDecoration(
+                            hintText: Locales.string(context,"search"),
+                            icon: const Icon(Icons.search),
+                            border: InputBorder.none
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  //Filter Button
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 2),
+                        margin: const EdgeInsets.symmetric(horizontal: 2,vertical: 10),
+                        height: 60,
+                        decoration: BoxDecoration(
+                            color: Colors.deepPurple.withOpacity(.1),
+                            borderRadius: BorderRadius.circular(10)),
+                        child: DropdownSearch<CategoryModel>(
+                          popupProps: PopupPropsMultiSelection.modalBottomSheet(
+                            fit: FlexFit.loose,
+                            title: Column(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 8),
+                                  height: 5,
+                                  width: 60,
+                                  decoration: BoxDecoration(
+                                      color: Colors.deepPurple,
+                                      borderRadius:
+                                      BorderRadius
+                                          .circular(15)),
+                                ),
+
+                              ],
+                            ),
+
+                          ),
+
+                          asyncItems: (value) => db.getCategoryByType("activity"),
+                          itemAsString: (CategoryModel u) =>
+                              Locales.string(context, u.cName),
+                          onChanged: (CategoryModel? data) {
+                            setState(() {
+                              //selectedCategoryId = data!.cId!.toInt();
+                            });
+                          },
+                          dropdownButtonProps: const DropdownButtonProps(
+                            icon: Icon(Icons.filter_alt_rounded, size: 22),
+                          ),
+                          dropdownDecoratorProps: DropDownDecoratorProps(
+                            dropdownSearchDecoration: InputDecoration(
+                                hintStyle: const TextStyle(fontSize: 13),
+                                hintText: Locales.string(
+                                    context, "select_category"),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 20),
+                                border: InputBorder.none),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
 
+            //Filter
             Expanded(
               child: FutureBuilder<List<TransactionModel>>(
                 future: transactions,
@@ -106,15 +182,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Image.asset("assets/Photos/empty.png",width: 250),
-                            // MaterialButton(
-                            //   shape: RoundedRectangleBorder(
-                            //       borderRadius: BorderRadius.circular(4)),
-                            //   minWidth: 100,
-                            //   color: Theme.of(context).colorScheme.inversePrimary,
-                            //   onPressed: () => _onRefresh(),
-                            //   child: const LocaleText("refresh"),
-                            // )
-                          ],
+                          ]
                         ));
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');

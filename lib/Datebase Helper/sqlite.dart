@@ -9,16 +9,17 @@ import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
 
 class DatabaseHelper{
 
-  final databaseName = "memory2.db";
-
+  final databaseName = "mm.db";
+  int noteStatus = 1;
   String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text)";
-  String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT UNIQUE NOT NULL, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP) ";
-  String notes = "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId))";
+  String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT NOT NULL,categoryType TEXT, catCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP) ";
+  String notes = "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,noteCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId))";
   String persons = "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT,pImage TEXT,pPhone TEXT, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
   String activities = "create table transactions (trnId INTEGER PRIMARY KEY AUTOINCREMENT, trnDescription TEXT, trnType INTEGER, trnPerson INTEGER NOT NULL, amount INTEGER NOT NULL, trnImage TEXT, trnDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (trnPerson) REFERENCES persons (pId), FOREIGN KEY (trnType) REFERENCES category (cId))";
 
   //Default Data
-  String defaultCategories = "INSERT INTO category (cId, cName) values (1,'%'),(2,'paid'),(3,'received'),(4,'power'),(5,'rent')";
+  String defaultActivityData = "INSERT INTO category (cId, cName, categoryType) values (1,'%', 'activity'),(2,'paid', 'activity' ),(3,'received', 'activity'),(4,'check', 'activity'),(5,'rent', 'activity'),(6,'power', 'activity')";
+  String defaultNoteData = "INSERT INTO category (cId, cName, categoryType) values (8,'%', 'note'), (9,'home', 'note'),(10,'work', 'note'),(11,'personal', 'note'),(12,'wishlist', 'note'),(13,'birthday','note')";
   String userData = "insert into users (usrId, usrName, usrPassword) values(1,'admin','123456')";
 
   //Future init method to create a database, user table and user default data
@@ -34,7 +35,8 @@ class DatabaseHelper{
       await db.execute(notes);
       await db.execute(persons);
       await db.execute(categories);
-      await db.rawQuery(defaultCategories);
+      await db.rawQuery(defaultActivityData);
+      await db.rawQuery(defaultNoteData);
       await db.execute(activities);
     });
   }
@@ -46,18 +48,17 @@ class DatabaseHelper{
   }
 
 
-  //Show Persons
-  Future<List<CategoryModel>> getCategories () async{
+  //Get Categories by type
+  Future<List<CategoryModel>> getCategories (String type) async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.query('category',orderBy: 'cId');
+    final List<Map<String, Object?>>  queryResult = await db.query('category',orderBy: 'cId',where: 'categoryType = ?' ,whereArgs: [type]);
     return queryResult.map((e) => CategoryModel.fromMap(e)).toList();
   }
 
-
   //Show Persons
-  Future <List<CategoryModel>> getCategoryById (value) async{
+  Future <List<CategoryModel>> getCategoryByType (value) async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.query('category',orderBy: 'cId',where: 'cName like ?', whereArgs: ["%$value%"]);
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select * from category where categoryType = ? AND cName != ?",[value,"%"]);
     return queryResult.map((e) => CategoryModel.fromMap(e)).toList();
   }
 
@@ -100,7 +101,7 @@ class DatabaseHelper{
   }
 
   //Create a new transaction
-  Future <int> createTransaction2(String description, int type, int person, int amount, String? trnImage)async{
+  Future <int> createTransaction2(String description, int type, int person, int amount, trnImage)async{
     final Database db = await initDB();
     return db.rawInsert("insert into transactions (trnDescription, trnType, trnPerson, amount, trnImage) values (?,?,?,?,?)", [description, type, person, amount, trnImage]);
   }
@@ -132,13 +133,19 @@ class DatabaseHelper{
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 
+  //Transaction by type (filtering)
+  Future <List<TransactionModel>> getTransactionsByDate (String date) async{
+    final Database db = await initDB();
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage,pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where trnDate = ? ",["%$date%"]);
+    return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
+  }
 
   //Notes ----------------------------------------------------------------------
 
   //Create a new note
-  Future <int> createNote(Notes note)async{
+  Future <int> createNote(title, content,int category,image)async{
     final Database db = await initDB();
-    return db.insert('notes', note.toMap());
+    return db.rawInsert("insert into notes (noteTitle, noteContent, noteStatus,noteCategory, noteImage) values (?,?,$noteStatus,?,?)", [title, content, category, image]);
   }
 
   //Show incomplete notes with 1 status
@@ -151,7 +158,14 @@ class DatabaseHelper{
   //show completed notes with 0 status
   Future <List<Notes>> getFilteredNotes (String category) async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.query('notes',where: 'category = ?',whereArgs: [category]);
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select noteId, noteTitle, noteContent, noteStatus, noteCreatedAt, cName, noteImage from notes As a INNER JOIN category As b ON a.noteCategory = b.cId where cName = ? ",["%$category%"]);
+    return queryResult.map((e) => Notes.fromMap(e)).toList();
+  }
+
+  //show completed notes with 0 status
+  Future <List<Notes>> getAllNotes() async{
+    final Database db = await initDB();
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select noteId, noteTitle, noteContent, noteStatus, noteCreatedAt, cName, noteImage from notes As a INNER JOIN category As b ON a.noteCategory = b.cId where b.categoryType = ? ",["note"]);
     return queryResult.map((e) => Notes.fromMap(e)).toList();
   }
 
@@ -191,19 +205,6 @@ class DatabaseHelper{
     return res;
   }
 
-  //Total note count
-  Future <int?> totalNotes() async {
-    final Database db = await initDB();
-    final count = Sqflite.firstIntValue(await db.rawQuery("select count(*) from notes"));
-    return count;
-  }
-
-  Future <int?> totalCategory() async {
-    final Database db = await initDB();
-    final count = Sqflite.firstIntValue(await db.rawQuery("select count (*) from notes where category group by category"));
-    return count;
-  }
-
   //Search by title
   Future<List<Notes>> searchMemo(String keyword)async{
     final Database db = await initDB();
@@ -223,4 +224,29 @@ class DatabaseHelper{
     final Database db = await initDB();
     db.close();
   }
+
+  //Reports, Count
+  ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  //Total note count
+  Future <int?> totalNotes() async {
+    final Database db = await initDB();
+    final count = Sqflite.firstIntValue(await db.rawQuery("select count(*) from notes"));
+    return count;
+  }
+
+  Future <int?> totalCategory() async {
+    final Database db = await initDB();
+    final count = Sqflite.firstIntValue(await db.rawQuery("select count (*) from notes where category group by category"));
+    return count;
+  }
+
+
+  Future <int?> categoryCounts() async {
+    final Database db = await initDB();
+    final count = Sqflite.firstIntValue(await db.rawQuery("select cName, count (cId) from transactions group by cName ORDER BY COUNT(cId) DESC"));
+    return count;
+  }
+
+
 }

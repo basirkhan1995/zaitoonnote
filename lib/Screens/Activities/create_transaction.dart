@@ -2,6 +2,7 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
@@ -29,10 +30,11 @@ class _CreateTransactionState extends State<CreateTransaction> {
   final personCtrl = TextEditingController();
   int selectedPerson = 0;
   var trnTypeValue = 0;
-  File? trnImagePath;
+  File? _trnImage;
   late DatabaseHelper handler;
   late Future <List<PersonModel>> persons;
   int selectedCategoryId = 0;
+  String categoryType = "activity";
 
   @override
   void initState() {
@@ -78,7 +80,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
               width: .35,
                 onTap: () {
                   if (formKey.currentState!.validate()) {
-                    db.createTransaction2(trnDescription.text, selectedCategoryId, selectedPerson, int.parse(trnAmount.text), trnImagePath.toString()).whenComplete(() => Navigator.pop(context));
+                    db.createTransaction2(trnDescription.text, selectedCategoryId, selectedPerson, int.parse(trnAmount.text), _trnImage?.path??"").whenComplete(() => Navigator.pop(context));
                   }
                 },
                 label: "create"),
@@ -154,7 +156,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                           popupProps: PopupPropsMultiSelection.menu(
                             searchFieldProps: TextFieldProps(
                               decoration: InputDecoration(
-                                prefixIcon: const Icon(Icons.search),
+                                //prefixIcon: const Icon(Icons.search),
                                 hintText: Locales.string(context,"search"),
                                 border: const UnderlineInputBorder(),
                                 suffixIcon: IconButton(
@@ -164,7 +166,6 @@ class _CreateTransactionState extends State<CreateTransaction> {
                             ),
                             showSearchBox: true,
                             fit: FlexFit.loose,
-
 
                           ),
                         ),
@@ -182,13 +183,14 @@ class _CreateTransactionState extends State<CreateTransaction> {
                               color: Colors.deepPurple.withOpacity(.1),
                               borderRadius: BorderRadius.circular(10)),
                           child: DropdownSearch<CategoryModel>(
+
                             validator: (value){
                               if(value == null){
                                 return Locales.string(context, "category_required");
                               }
                               return null;
                             },
-                            popupProps: PopupPropsMultiSelection.bottomSheet(
+                            popupProps: PopupPropsMultiSelection.modalBottomSheet(
                               fit: FlexFit.loose,
                               title: Column(
                                 children: [
@@ -207,7 +209,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                                       padding: const EdgeInsets.only(top: 0, left: 10),
                                       child: ListTile(
                                         title: const LocaleText("select_category",style: TextStyle(fontSize: 18),),
-                                        leading: const Icon(Icons.category),
+                                        leading: const Icon(Icons.ac_unit_outlined),
                                         trailing: Container(
                                           height: 35,
                                           width: 35,
@@ -226,7 +228,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
 
                             ),
 
-                            asyncItems: (value) => db.getCategoryById(value),
+                            asyncItems: (value) => db.getCategoryByType("activity"),
                             itemAsString: (CategoryModel u) =>
                                 Locales.string(context, u.cName),
                             onChanged: (CategoryModel? data) {
@@ -234,9 +236,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                                 selectedCategoryId = data!.cId!.toInt();
                               });
                             },
-                            dropdownButtonProps: const DropdownButtonProps(
-                              icon: Icon(Icons.arrow_drop_down_circle_outlined, size: 22),
-                            ),
+
                             dropdownDecoratorProps: DropDownDecoratorProps(
                               dropdownSearchDecoration: InputDecoration(
                                   hintStyle: const TextStyle(fontSize: 13),
@@ -273,14 +273,27 @@ class _CreateTransactionState extends State<CreateTransaction> {
                   title: 'description',
                 ),
 
-
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  child: Placeholder(
-                   strokeWidth: 1,
-                    color: zPurple,
-                  ),
+                 //Get Image
+                 InkWell(
+                   onTap: (){
+                     getImage(ImageSource.gallery);
+                   },
+                   child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    child: Placeholder(
+                     strokeWidth: 1,
+                      color: zPurple,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            fit: BoxFit.cover,
+                            image: _trnImage!=null? Image.file(_trnImage!,fit: BoxFit.cover).image:const AssetImage("assets/Photos/gallery.png"),
+                          )
+                        ),
+                      ),
+                    ),
                 ),
+                 ),
               ],
             ),
           ),
@@ -335,12 +348,11 @@ class _CreateTransactionState extends State<CreateTransaction> {
                         TextButton(
                             onPressed: () {
                               if(cFormKey.currentState!.validate()){
-                                db.createCategory(CategoryModel(cName: categoryCtrl.text)).whenComplete(() => Navigator.pop(context));
+                                db.createCategory(CategoryModel(cName: categoryCtrl.text,categoryType: categoryType)).whenComplete(() => Navigator.pop(context));
                               }
                             },
                             child:
-                            const LocaleText(
-                                "create")),
+                            const LocaleText("create")),
                       ],
                     ),
                   )
@@ -350,6 +362,16 @@ class _CreateTransactionState extends State<CreateTransaction> {
           ),
         ),
       );
+    });
+  }
+
+  Future <void> getImage(ImageSource imageSource)async{
+    final ImagePicker picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: imageSource);
+    if(pickedFile == null)return;
+    setState((){
+      _trnImage = File(pickedFile.path);
+      print(_trnImage);
     });
   }
 }

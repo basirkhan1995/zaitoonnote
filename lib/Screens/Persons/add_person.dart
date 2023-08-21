@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,7 +6,6 @@ import 'package:zaitoonnote/Methods/z_button.dart';
 import 'package:zaitoonnote/Methods/z_field.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import 'dart:io';
-
 import '../../Datebase Helper/sqlite.dart';
 
 class AddPerson extends StatefulWidget {
@@ -20,9 +18,8 @@ class AddPerson extends StatefulWidget {
 class _AddPersonState extends State<AddPerson> {
   final phone = TextEditingController();
   final fullName = TextEditingController();
-  Uint8List? _bytesImage;
+
   File? _pImage;
-  String? base64Image;
   final db = DatabaseHelper();
 
   final formKey = GlobalKey<FormState>();

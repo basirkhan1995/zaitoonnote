@@ -35,7 +35,7 @@ class _ReportsState extends State<Reports> {
               children: [
                 PersonProfile(profileDetails: widget.data),
                 PersonActivities(data: widget.data),
-                PersonReports(),
+                const PersonReports(),
               ],
             ),
           ),

@@ -22,6 +22,7 @@ class _AllNotesState extends State<AllNotes> {
   final searchCtrl = TextEditingController();
   final formKey = GlobalKey<FormState>();
   String keyword = "";
+  String noteTypeCategory = "note";
 
   late DatabaseHelper handler;
   late Future<List<Notes>> notes;
@@ -33,8 +34,8 @@ class _AllNotesState extends State<AllNotes> {
   void initState() {
     super.initState();
     handler = DatabaseHelper();
-    notes = handler.getNotes();
-    category = handler.getCategories();
+    notes = handler.getAllNotes();
+    category = handler.getCategories(noteTypeCategory);
 
     handler.initDB().whenComplete(() async {
       setState(() {
@@ -46,12 +47,12 @@ class _AllNotesState extends State<AllNotes> {
 
   //Method to get data from database
   Future<List<Notes>> getList() async {
-    return await handler.getNotes();
+    return await handler.getAllNotes();
   }
 
   //Method to get data from database
   Future<List<CategoryModel>> getCategories() async {
-    return await handler.getCategories();
+    return await handler.getCategories(noteTypeCategory);
   }
 
   //Method to refresh data on pulling the list
@@ -62,8 +63,6 @@ class _AllNotesState extends State<AllNotes> {
     });
   }
 
-  var filterTitle = ["all", "work", "payment", "received", "meeting"];
-  var filterData = ["%", "work", "payment", "received", "meeting"];
   int currentFilterIndex = 0;
 
   @override
@@ -89,27 +88,10 @@ class _AllNotesState extends State<AllNotes> {
                 future: category,
                 builder: (BuildContext context, AsyncSnapshot<List<CategoryModel>> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      //To show a circular progress indicator
-                      child: CircularProgressIndicator(),
-                    );
+                    return const SizedBox();
                     //If snapshot has error
                   } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-                    return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset("assets/Photos/empty.png", width: 250),
-                            // MaterialButton(
-                            //   shape: RoundedRectangleBorder(
-                            //       borderRadius: BorderRadius.circular(4)),
-                            //   minWidth: 100,
-                            //   color: Theme.of(context).colorScheme.inversePrimary,
-                            //   onPressed: () => _onRefresh(),
-                            //   child: const LocaleText("refresh"),
-                            // )
-                          ],
-                        ));
+                    return const SizedBox();
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
@@ -126,7 +108,7 @@ class _AllNotesState extends State<AllNotes> {
                            onTap: (){
                              setState(() {
                                currentFilterIndex = index;
-                               notes = db.filterMemo(items[index].cName);
+                               notes = db.getFilteredNotes(items[index].cName);
                              });
                            },
                           child: Container(
@@ -136,16 +118,15 @@ class _AllNotesState extends State<AllNotes> {
                               decoration: BoxDecoration(
                                   borderRadius:
                                   BorderRadius.circular(10),
-                                  color: currentFilterIndex == index? Colors.deepPurple.withOpacity(.1): Colors.transparent,
+                                  color: currentFilterIndex == index? Colors.deepPurple.withOpacity(.5): Colors.deepPurple.withOpacity(.1),
                                  ),
                               child: Center(
                                 child: LocaleText(
                                   items[index].cName,
-                                  style: const TextStyle(
-                                      color: Colors.deepPurple,
-                                      fontSize: 15,
-                                      fontWeight:
-                                      FontWeight.bold),
+                                  style: TextStyle(
+                                      color: currentFilterIndex == index? Colors.white: Colors.deepPurple,
+                                      fontSize: 14,
+                                      fontWeight: currentFilterIndex == index? FontWeight.bold: FontWeight.w400),
                                 ),
                               )),
                         );
@@ -180,7 +161,7 @@ class _AllNotesState extends State<AllNotes> {
               ),
             ),
 
-            //Notes to show
+            //All Notes
             Expanded(
               child: SafeArea(
                 child: FutureBuilder<List<Notes>>(

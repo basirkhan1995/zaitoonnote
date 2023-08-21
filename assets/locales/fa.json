@@ -69,5 +69,10 @@
   "report_details": "گزارشات صورت حساب ها",
   "new_account": "حساب جدید",
   "report": "گزارشات",
-  "account_no": "شناسه حساب"
+  "account_no": "شناسه حساب",
+  "check": "چک",
+  "birthday": "تولد",
+  "personal": "شخصی",
+  "wishlist": "خواسته ها",
+  "title_minimum_char": "موضوع باید کمتر از 10 حروف باشد"
 }

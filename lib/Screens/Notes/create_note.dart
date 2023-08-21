@@ -1,10 +1,11 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
-
+import 'dart:io';
 import '../../Datebase Helper/sqlite.dart';
 import '../../Methods/textfield.dart';
 import '../Json Models/note_model.dart';
@@ -20,13 +21,18 @@ class _CreateNoteState extends State<CreateNote> {
   final formKey = GlobalKey<FormState>();
   final cFormKey = GlobalKey <FormState>();
   final db = DatabaseHelper();
+
+  late Future<List<Notes>> notes;
+  File? _noteImage;
+  var dropValue = 0;
+  var selectedDate = "";
+
+  int selectedCategoryId = 0;
+  String categoryType = "note";
+
   final titleCtrl = TextEditingController();
   final contentCtrl = TextEditingController();
   final categoryCtrl = TextEditingController();
-  late Future<List<Notes>> notes;
-  var dropValue = 0;
-  var selectedDate = "";
-  var selectedCategoryName = "";
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +65,7 @@ class _CreateNoteState extends State<CreateNote> {
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       setState(() {
-                        db.createNote(Notes(noteTitle: titleCtrl.text, noteContent: contentCtrl.text,category: selectedCategoryName)).whenComplete(() => Navigator.pop(context));
+                       db.createNote(titleCtrl.text, contentCtrl.text, selectedCategoryId, "imageval").whenComplete(() => Navigator.pop(context));
                       });
                     }
                   },
@@ -115,92 +121,64 @@ class _CreateNoteState extends State<CreateNote> {
                                 color: Colors.deepPurple.withOpacity(.1),
                                 borderRadius: BorderRadius.circular(10)),
                             child: DropdownSearch<CategoryModel>(
-                              popupProps: const PopupPropsMultiSelection.menu(
+                              popupProps: PopupPropsMultiSelection.modalBottomSheet(
+                                fit: FlexFit.loose,
+                                title: Column(
+                                  children: [
+                                    Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          vertical: 8),
+                                      height: 5,
+                                      width: 60,
+                                      decoration: BoxDecoration(
+                                          color: Colors.deepPurple,
+                                          borderRadius:
+                                          BorderRadius
+                                              .circular(15)),
+                                    ),
+                                    Padding(
+                                        padding: const EdgeInsets.only(top: 0, left: 10),
+                                        child: ListTile(
+                                          title: const LocaleText("select_category",style: TextStyle(fontSize: 18),),
+                                          leading: const Icon(Icons.category),
+                                          trailing: Container(
+                                            height: 35,
+                                            width: 35,
+                                            decoration: BoxDecoration(
+                                                color: Colors.deepPurple,
+                                                borderRadius: BorderRadius.circular(50)
+                                            ),
+                                            child: IconButton(
+                                                onPressed: ()=> addCategory(),
+                                                icon: const Icon(Icons.add,color: Colors.white,size: 18)),
+                                          ),
+                                        )
+                                    ),
+                                  ],
+                                ),
+
                               ),
 
-                              asyncItems: (value) => db.getCategoryById(value),
+                              asyncItems: (value) => db.getCategoryByType("note"),
                               itemAsString: (CategoryModel u) =>
                                   Locales.string(context, u.cName.toString()),
                               onChanged: (CategoryModel? data) {
                                 setState(() {
-                                  selectedCategoryName = data!.cName;
+                                  selectedCategoryId = data?.cId??2;
                                 });
                               },
                               dropdownButtonProps: DropdownButtonProps(
-                                  icon: const Icon(Icons.add, size: 22),
+                                  icon: const Icon(Icons.arrow_drop_down_circle_outlined, size: 22),
                                   onPressed: () {
-                                    showModalBottomSheet(
-                                        isScrollControlled: true,
-                                        context: context,
-                                        builder: (context) {
-                                          return Padding(
-                                            padding: MediaQuery.of(context).viewInsets,
-                                            child: SizedBox(
-                                              height: 200,
-                                              width: double.maxFinite,
-                                              child: Form(
-                                                key: cFormKey,
-                                                child: Column(
-                                                  children: [
-                                                    Container(
-                                                      margin: const EdgeInsets.symmetric(
-                                                          vertical: 10),
-                                                      height: 5,
-                                                      width: 60,
-                                                      decoration: BoxDecoration(
-                                                          color: Colors.grey,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(8)),
-                                                    ),
-                                                    UnderlineInputField(
-                                                      validator: (value){
-                                                        if(value.isEmpty){
-                                                          return Locales.string(context, "category_required");
-                                                        }
-                                                        return null;
-                                                      },
-                                                      hint: "category_name",
-                                                      controller: categoryCtrl,
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        TextButton(
-                                                            onPressed: () {
-                                                              Navigator.pop(context);
-                                                            },
-                                                            child:
-                                                                const LocaleText("cancel")),
-                                                        TextButton(
-                                                            onPressed: () {
-                                                            if(cFormKey.currentState!.validate()){
-                                                              db.createCategory(CategoryModel(cName: categoryCtrl.text)).whenComplete(() => Navigator.pop(context));
-                                                            }
-                                                            },
-                                                            child:
-                                                                const LocaleText(
-                                                                    "create")),
-                                                      ],
-                                                    )
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                          );
-                                        });
+
                                   }),
                               dropdownDecoratorProps: DropDownDecoratorProps(
                                 dropdownSearchDecoration: InputDecoration(
-                                    icon: const Padding(
-                                      padding:
-                                          EdgeInsets.symmetric(horizontal: 4.0),
-                                      child: Icon(Icons.category),
-                                    ),
                                     hintStyle: const TextStyle(fontSize: 13),
                                     hintText: Locales.string(
                                         context, "select_category"),
                                     contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 0, vertical: 4),
+                                        horizontal: 12, vertical: 6),
                                     border: InputBorder.none),
                               ),
                             ),
@@ -215,6 +193,8 @@ class _CreateNoteState extends State<CreateNote> {
                 validator: (value) {
                   if (value.isEmpty) {
                     return Locales.string(context, "title_required");
+                  }else if(titleCtrl.text.length >10){
+                    return "title_minimum_char";
                   }
                   return null;
                 },
@@ -248,4 +228,77 @@ class _CreateNoteState extends State<CreateNote> {
       ),
     );
   }
+
+  void addCategory(){
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (context) {
+          return Padding(
+            padding: MediaQuery.of(context).viewInsets,
+            child: SizedBox(
+              height: 200,
+              width: double.maxFinite,
+              child: Form(
+                key: cFormKey,
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 10),
+                      height: 5,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius:
+                          BorderRadius
+                              .circular(8)),
+                    ),
+                    UnderlineInputField(
+                      validator: (value){
+                        if(value.isEmpty){
+                          return Locales.string(context, "category_required");
+                        }
+                        return null;
+                      },
+                      hint: "category_name",
+                      controller: categoryCtrl,
+                    ),
+                    Row(
+                      children: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child:
+                            const LocaleText("cancel")),
+                        TextButton(
+                            onPressed: () {
+                              if(cFormKey.currentState!.validate()){
+                                db.createCategory(CategoryModel(cName: categoryCtrl.text,categoryType: categoryType)).whenComplete(() => Navigator.pop(context));
+                              }
+                            },
+                            child:
+                            const LocaleText(
+                                "create")),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  Future <void> getImage(ImageSource imageSource)async{
+    final ImagePicker picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: imageSource);
+    if(pickedFile == null)return;
+    setState((){
+      _noteImage = File(pickedFile.path);
+      print(_noteImage);
+    });
+  }
+
 }

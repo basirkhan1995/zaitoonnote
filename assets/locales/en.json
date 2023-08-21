@@ -69,5 +69,10 @@
   "report_details": "Individuals transaction reports",
   "new_account": "New account",
   "report": "Reports",
-  "account_no": "Account no"
+  "account_no": "Account no",
+  "check": "Check",
+  "birthday": "Birthday",
+  "personal": "Personal",
+  "wishlist": "Wishlist",
+  "title_minimum_char": "Title must not exceed of 10 character"
 }

@@ -2,7 +2,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
+import 'package:zaitoonnote/Screens/Activities/transaction_details.dart';
+import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import '../../Datebase Helper/sqlite.dart';
+import '../../Methods/env.dart';
 import '../Json Models/trn_model.dart';
 import 'create_transaction.dart';
 
@@ -17,9 +20,11 @@ class AllActivities extends StatefulWidget {
 class _AllActivitiesState extends State<AllActivities> {
   final searchCtrl = TextEditingController();
   String keyword = "";
-
+  String noteTypeCategory = "activity";
   late DatabaseHelper handler;
   late Future<List<TransactionModel>> transactions;
+  late Future<List<CategoryModel>> category;
+
   final db = DatabaseHelper();
   var formatter = NumberFormat('#,##,000');
 
@@ -31,6 +36,8 @@ class _AllActivitiesState extends State<AllActivities> {
     handler.initDB().whenComplete(() async {
       setState(() {
         transactions = getTrn();
+        category = handler.getCategories(noteTypeCategory);
+
       });
     });
     _onRefresh();
@@ -46,25 +53,26 @@ class _AllActivitiesState extends State<AllActivities> {
   Future<void> _onRefresh() async {
     setState(() {
       transactions = getTrn();
+      category = getCategories();
     });
   }
 
+  //Method to get category from database
+  Future<List<CategoryModel>> getCategories() async {
+    return await handler.getCategories(noteTypeCategory);
+  }
 
-  var filterTitle = [
-    "all",
-    "paid",
-    "received",
-    "debt",
-    "removed"
-  ];
-  var filterData = [
-    "%",
-    "paid",
-    "received",
-    "debt",
-    "removed"
-  ];
   int currentFilterIndex = 0;
+
+  List filterTitle = [
+    "today",
+    "yesterday",
+  ];
+  List dates = [
+    DateTime.now(),
+    DateTime.saturday,
+  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -82,27 +90,57 @@ class _AllActivitiesState extends State<AllActivities> {
             //Filter buttons
             SizedBox(
               height: 50,
-              child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: filterTitle.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context,index){
-                    return Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 0,vertical: 7),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: currentFilterIndex==index? Colors.deepPurple.withOpacity(.1):Colors.transparent,
-                      ),
-                      child: TextButton(
-                          onPressed: (){
-                            setState(() {
-                              currentFilterIndex = index;
-                              transactions = db.filterTransactions(filterData[currentFilterIndex]);
-                            });
-                          },
-                          child: LocaleText(filterTitle[index])),
-                    );
-                  }),
+              child: FutureBuilder<List<CategoryModel>>(
+                  future: category,
+                  builder: (BuildContext context, AsyncSnapshot<List<CategoryModel>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox();
+                      //If snapshot has error
+                    } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+                      return const SizedBox();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      //a final variable (item) to hold the snapshot data
+                      final items = snapshot.data ?? <CategoryModel>[];
+                      return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        padding: const EdgeInsets.symmetric(horizontal: 0),
+                        shrinkWrap: true,
+                        itemCount: items.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return InkWell(
+                            splashColor: Colors.transparent,
+                            onTap: (){
+                              setState(() {
+                                currentFilterIndex = index;
+                                transactions = db.filterTransactions(items[index].cName);
+                              });
+                            },
+                            child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                    horizontal: 4, vertical: 6),
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                  BorderRadius.circular(10),
+                                  color: currentFilterIndex == index? Colors.deepPurple.withOpacity(.5): Colors.deepPurple.withOpacity(.1),
+                                ),
+                                child: Center(
+                                  child: LocaleText(
+                                    items[index].cName,
+                                    style: TextStyle(
+                                        color: currentFilterIndex == index? Colors.white: Colors.deepPurple,
+                                        fontSize: 14,
+                                        fontWeight: currentFilterIndex == index? FontWeight.bold: FontWeight.w400),
+                                  ),
+                                )),
+                          );
+                        },
+                      );
+                    }
+                  }
+              ),
             ),
 
             //Search TextField
@@ -188,6 +226,7 @@ class _AllActivitiesState extends State<AllActivities> {
                                   ]
                                 ),
                                   child: ListTile(
+                                    onTap: ()=> Env.goto(TransactionDetails(data: items[index]), context),
                                     leading: SizedBox(
                                         height: 60,width: 60,
                                         child: CircleAvatar(

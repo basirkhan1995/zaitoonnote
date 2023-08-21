@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:zaitoonnote/Datebase%20Helper/sqlite.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import 'dart:io';
 
-class PersonProfile extends StatelessWidget {
+class PersonProfile extends StatefulWidget {
   final PersonModel? profileDetails;
   const PersonProfile({super.key, this.profileDetails});
 
   @override
+  State<PersonProfile> createState() => _PersonProfileState();
+}
+
+class _PersonProfileState extends State<PersonProfile> {
+  
+  File? _pImage;
+    
+   @override
   Widget build(BuildContext context) {
+    final db = DatabaseHelper();
     return Scaffold(
       body: SafeArea(
           child: Padding(
@@ -20,20 +31,47 @@ class PersonProfile extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CircleAvatar(
-                        radius: 62,
-                        backgroundColor: zPurple,
-                        child: CircleAvatar(
-                            radius: 60,
-                            backgroundImage: profileDetails!.pImage!.isNotEmpty
-                                ? Image.file(
-                                    File(profileDetails!.pImage.toString()),
-                                    fit: BoxFit.cover,
-                                  ).image
-                                : const AssetImage("assets/Photos/no_user.jpg")),
-                      ),
+                    Stack(
+                      children: [
+
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CircleAvatar(
+                            radius: 62,
+                            backgroundColor: zPurple,
+                            child: CircleAvatar(
+                                radius: 60,
+                                backgroundImage: widget.profileDetails!.pImage!.isNotEmpty
+                                    ? Image.file(
+                                        File(widget.profileDetails!.pImage.toString()),
+                                        fit: BoxFit.cover,
+                                      ).image
+                                    : const AssetImage("assets/Photos/no_user.jpg")),
+                          ),
+                        ),
+                        Positioned(
+                          top: 95,
+                            left: 90,
+                            child: Container(
+                              height: 35,
+                              width: 35,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: Colors.deepPurple
+                              ),
+                              child: IconButton(
+                                  onPressed: (){
+                                    setState(() {
+                                      getImage(ImageSource.gallery).whenComplete(() {
+                                        if(_pImage == null) return;
+                                        db.updateProfileImage(_pImage?.path??widget.profileDetails?.pImage??"", widget.profileDetails?.pId??0);
+                                      });
+                                    });
+
+
+                                  }, icon: const Icon(Icons.camera_alt,color: Colors.white,size: 18,)),
+                            )),
+                      ],
                     ),
                   ],
                 ),
@@ -46,7 +84,7 @@ class PersonProfile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        profileDetails?.pName ?? "",
+                        widget.profileDetails?.pName ?? "",
                         style: const TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ),
@@ -55,20 +93,20 @@ class PersonProfile extends StatelessWidget {
                           const LocaleText("account_no",style: TextStyle(fontWeight: FontWeight.bold),),
                           const SizedBox(width: 6),
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6,vertical: 0),
+                            padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(4),
                               color: zPurple
                             ),
                             child: Text(
-                              profileDetails?.pId.toString() ?? "",
+                              widget.profileDetails?.pId.toString() ?? "",
                               style: const TextStyle(fontSize: 16,color: Colors.white),
                             ),
                           ),
                         ],
                       ),
                       Text(
-                        profileDetails?.pPhone ?? "",
+                        widget.profileDetails?.pPhone ?? "",
                         style: const TextStyle(fontSize: 16),
                       ),
                     ],
@@ -86,7 +124,7 @@ class PersonProfile extends StatelessWidget {
               onTap: () {
 
               },
-              subtitle: Text(profileDetails?.pName??"",style: const TextStyle(fontWeight: FontWeight.bold),),
+              subtitle: Text(widget.profileDetails?.pName??"",style: const TextStyle(fontWeight: FontWeight.bold),),
               leading: Container(
                 margin: const EdgeInsets.all(0),
                 height: 50,
@@ -121,7 +159,7 @@ class PersonProfile extends StatelessWidget {
               onTap: () {
 
               },
-              subtitle: Text(profileDetails?.pId.toString()??"",style: const TextStyle(fontWeight: FontWeight.bold),),
+              subtitle: Text(widget.profileDetails?.pId.toString()??"",style: const TextStyle(fontWeight: FontWeight.bold),),
               leading: Container(
                 margin: const EdgeInsets.all(0),
                 height: 50,
@@ -156,7 +194,7 @@ class PersonProfile extends StatelessWidget {
               onTap: () {
 
               },
-              subtitle: Text(profileDetails?.pPhone??"",style: const TextStyle(fontWeight: FontWeight.bold),),
+              subtitle: Text(widget.profileDetails?.pPhone??"",style: const TextStyle(fontWeight: FontWeight.bold),),
               leading: Container(
                 margin: const EdgeInsets.all(0),
                 height: 50,
@@ -232,5 +270,15 @@ class PersonProfile extends StatelessWidget {
       ),
           )),
     );
+  }
+
+  Future <void> getImage(ImageSource imageSource)async{
+    final ImagePicker picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: imageSource);
+    if(pickedFile == null)return;
+    setState((){
+      _pImage = File(pickedFile.path);
+      print(_pImage);
+    });
   }
 }

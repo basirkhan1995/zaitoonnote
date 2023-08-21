@@ -63,6 +63,8 @@ class DatabaseHelper{
   }
 
 
+
+
   //Persons --------------------------------------------------------------------
 
   //Create a new person
@@ -91,6 +93,14 @@ class DatabaseHelper{
     final List<Map<String, Object?>>  queryResult = await db.rawQuery("select pId, pName, pImage, pPhone, createdAt from persons where pName LIKE? ",["%$keyword%"]);
     return queryResult.map((e) => PersonModel.fromMap(e)).toList();
   }
+
+  //Update note
+  Future <int> updateProfileImage(String image, pId)async{
+    final Database db = await initDB();
+    var result = await db.rawUpdate("update persons set pImage = ? where pId  = ? ",[image,pId]);
+    return result;
+  }
+
 
   //Transactions -----------------------------------------------------------------
 

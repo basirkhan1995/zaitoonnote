@@ -77,5 +77,16 @@
   "title_minimum_char": "Title must not exceed of 10 character",
   "job": "Job title",
   "card_number": "Card number",
-  "account_name": "Account name"
+  "account_name": "Account name",
+  "update": "Update",
+  "created_at": "Created date",
+  "updated_at": "Last time updated",
+  "show_persian_date": "Show persian date",
+  "true": "Enabled",
+  "false": "Disabled",
+  "properties": "Properties",
+  "show_or_hide_properties": "Show or hide properties",
+  "backup": "Back up",
+  "backup_data": "Data reservation ",
+  "show_login": "Enable login page"
 }

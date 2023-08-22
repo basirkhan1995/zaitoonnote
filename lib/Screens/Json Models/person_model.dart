@@ -7,8 +7,9 @@ class PersonModel{
   final String jobTitle;
   final String? pImage;
   final String? pPhone;
+  final String? updatedAt;
   final String? createdAt;
-  PersonModel({this.pId, required this.pName,required this.jobTitle,required this.cardNumber,required this.accountName, this.pImage,this.pPhone, this.createdAt});
+  PersonModel({this.pId, required this.pName,required this.jobTitle,required this.cardNumber,required this.accountName, this.pImage,this.pPhone, this.createdAt,this.updatedAt});
 
   factory PersonModel.fromMap(Map<String, dynamic> json) => PersonModel(
     pId: json['pId'],
@@ -18,6 +19,7 @@ class PersonModel{
     jobTitle: json['jobTitle'],
     pImage: json['pImage'],
     pPhone: json['pPhone'],
+    updatedAt: json['updatedAt'],
     createdAt: json['createdAt'],
   );
 
@@ -30,6 +32,7 @@ class PersonModel{
       'jobTitle':jobTitle,
       'pImage':pImage,
       'pPhone':pPhone,
+      'updatedAt': updatedAt??DateTime.now().toIso8601String(),
       'createdAt': DateTime.now().toIso8601String(),
     };
   }

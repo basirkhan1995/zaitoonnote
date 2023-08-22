@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
+import 'package:zaitoonnote/Screens/Home/start_screen.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import 'package:zaitoonnote/Screens/Persons/add_person.dart';
-import 'package:zaitoonnote/Screens/Settings/Views/reports.dart';
+import 'package:zaitoonnote/Screens/Settings/Views/individuals_records.dart';
 import '../../../Datebase Helper/sqlite.dart';
 import '../../../Methods/env.dart';
 import 'dart:io';
@@ -58,6 +59,9 @@ class _AccountSettingsState extends State<AccountSettings> {
     return Scaffold(
       appBar: AppBar(
         title: const LocaleText("accounts"),
+        leading: IconButton(
+          onPressed: ()=> Env.goto(BottomNavBar(), context), icon: Icon(Icons.arrow_back_ios),
+        ),
         actions: [
 
           Container(
@@ -74,7 +78,7 @@ class _AccountSettingsState extends State<AccountSettings> {
           ),
 
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 20),
+            margin: const EdgeInsets.symmetric(horizontal: 20),
             height: 35,
             width: 35,
             decoration: BoxDecoration(
@@ -161,7 +165,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                                 return Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
                                   child: ListTile(
-                                    onTap: ()=> Env.goto(Reports(data: items[index],), context),
+                                    onTap: ()=> Env.goto(IndividualsRecords(data: items[index],), context),
                                     leading: SizedBox(
                                         height: 60,width: 60,
                                         child: CircleAvatar(

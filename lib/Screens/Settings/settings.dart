@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/category.dart';
+import 'package:zaitoonnote/Screens/Settings/Views/properties.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/themes.dart';
 import '../About App/about_app.dart';
-import 'Views/reports.dart';
+import 'Views/individuals_records.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -16,6 +17,8 @@ class SettingsPage extends StatelessWidget {
       "themes",
       "category",
       "reports",
+      "properties",
+      "backup",
       "about"
     ];
     List subItems = [
@@ -23,6 +26,8 @@ class SettingsPage extends StatelessWidget {
       "themesdetails",
       "category_details",
       "report_details",
+      "show or hide properties",
+      "backup_data",
       "about"
     ];
 
@@ -31,13 +36,17 @@ class SettingsPage extends StatelessWidget {
       Icons.color_lens,
       Icons.category,
       Icons.insert_chart,
+      Icons.settings_rounded,
+      Icons.backup,
       Icons.info
     ];
     List pages = <Widget>[
       const AccountSettings(),
       const ChangeThemes(),
       const AddCategory(),
-      const Reports(),
+      const IndividualsRecords(),
+      const AppProperties(),
+      const AppProperties(),
       const AboutApp(),
     ];
     return Scaffold(

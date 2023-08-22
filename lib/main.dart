@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
+import 'package:zaitoonnote/Screens/Authentications/login.dart';
 import 'Provider/provider.dart';
 import 'Screens/Home/start_screen.dart';
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (BuildContext context) => MyProvider(),
+      create: (BuildContext context) => MyProvider()..initialize(),
       child: Consumer<MyProvider>(
         builder: (context, MyProvider notifier,child){
           final controller = Provider.of<MyProvider>(context, listen: false);
@@ -46,7 +47,7 @@ class MyApp extends StatelessWidget {
                       colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
                       useMaterial3: true,
                     ),
-                    home: const BottomNavBar(),
+                    home: controller.rememberMe? const BottomNavBar(): controller.enableDisableLogin? const LoginPage() : const BottomNavBar(),
                   )
           );},
       ),

@@ -5,15 +5,15 @@ import 'package:zaitoonnote/Screens/Persons/person_transactions.dart';
 import 'package:zaitoonnote/Screens/Persons/profile.dart';
 import 'package:zaitoonnote/Screens/Persons/reports.dart';
 
-class Reports extends StatefulWidget {
+class IndividualsRecords extends StatefulWidget {
   final PersonModel? data;
-  const Reports({super.key,this.data});
+  const IndividualsRecords({super.key,this.data});
 
   @override
-  State<Reports> createState() => _ReportsState();
+  State<IndividualsRecords> createState() => _IndividualsRecordsState();
 }
 
-class _ReportsState extends State<Reports> {
+class _IndividualsRecordsState extends State<IndividualsRecords> {
 
   @override
   Widget build(BuildContext context) {

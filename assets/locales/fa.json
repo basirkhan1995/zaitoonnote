@@ -77,5 +77,16 @@
   "title_minimum_char": "موضوع باید کمتر از 10 حروف باشد",
   "job": "وظیفه",
   "card_number": "شماره کارت",
-  "account_name": "نام حساب"
+  "account_name": "نام حساب",
+  "update": "بروز رسانی",
+  "created_at": "تاریخ ایجاد",
+  "updated_at": "آخرین بروز رسانی",
+  "show_persian_date": "فعال سازی تاریخ شمسی",
+  "true": "فعال",
+  "false": "غیرفعال",
+  "properties": "تنظیمات سیستم",
+  "show_or_hide_properties": "فعال و غیر فعال سازی تنظیمات",
+  "backup": "تهیه پشتیبانی",
+  "backup_data": "ذخیره اطلاعات",
+  "show_login": "فعال سازی صفحه ورود"
 }

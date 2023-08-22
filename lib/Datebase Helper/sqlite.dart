@@ -9,12 +9,12 @@ import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
 
 class DatabaseHelper{
 
-  final databaseName = "mmm.db";
+  final databaseName = "mn.db";
   int noteStatus = 1;
   String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text)";
   String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT NOT NULL,categoryType TEXT, catCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP) ";
   String notes = "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,noteCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId))";
-  String persons = "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT, jobTitle TEXT, cardNumber TEXT, accountName TEXT, pImage TEXT,pPhone TEXT, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
+  String persons = "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT, jobTitle TEXT, cardNumber TEXT, accountName TEXT, pImage TEXT,pPhone TEXT,updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
   String activities = "create table transactions (trnId INTEGER PRIMARY KEY AUTOINCREMENT, trnDescription TEXT, trnType INTEGER, trnPerson INTEGER NOT NULL, amount INTEGER NOT NULL, trnImage TEXT, trnDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (trnPerson) REFERENCES persons (pId), FOREIGN KEY (trnType) REFERENCES category (cId))";
 
   //Default Data
@@ -98,6 +98,13 @@ class DatabaseHelper{
   Future <int> updateProfileImage(String image, pId)async{
     final Database db = await initDB();
     var result = await db.rawUpdate("update persons set pImage = ? where pId  = ? ",[image,pId]);
+    return result;
+  }
+
+  //Update note
+  Future <int> updateProfileDetails(pName,jobTitle,cardNumber,accountName,pPhone,updatedAt, pId)async{
+    final Database db = await initDB();
+    var result = await db.rawUpdate("update persons set pName = ?, jobTitle =?, cardNumber = ?, accountName =?, pPhone = ?, updatedAt = ? where pId  = ? ",[pName,jobTitle, cardNumber, accountName,pPhone, updatedAt, pId]);
     return result;
   }
 

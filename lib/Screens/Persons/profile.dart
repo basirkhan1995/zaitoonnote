@@ -1,10 +1,17 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:zaitoonnote/Datebase%20Helper/sqlite.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import 'dart:io';
+
+import '../../Provider/provider.dart';
 
 class PersonProfile extends StatefulWidget {
   final PersonModel? profileDetails;
@@ -18,14 +25,62 @@ class _PersonProfileState extends State<PersonProfile> {
   
   File? _pImage;
     bool isUpdate = false;
-  final phone = TextEditingController();
-  final fullName = TextEditingController();
-  final jobTitle = TextEditingController();
-  final cardNumber = TextEditingController();
-  final cardName = TextEditingController();
+  var phone = TextEditingController();
+  var fullName = TextEditingController();
+  var jobTitle = TextEditingController();
+  var cardNumber = TextEditingController();
+  var cardName = TextEditingController();
+  var db = DatabaseHelper();
+
+  void update()async{
+    int res = await db.updateProfileDetails(fullName.text, jobTitle.text, cardNumber.text, cardName.text, phone.text, DateTime.now().toIso8601String(), widget.profileDetails?.pId);
+    if(res >0){
+      if (kDebugMode) {
+        print("success");
+        //Env.showSnackBar("Update","success",context);
+      }
+    }else{
+      if (kDebugMode) {
+        print("failed");
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Check for phone call support.
+    canLaunchUrl(Uri(scheme: 'tel', path: '123')).then((bool result) {
+      setState(() {
+      });
+    });
+  }
+
    @override
   Widget build(BuildContext context) {
-    final db = DatabaseHelper();
+     final controller = Provider.of<MyProvider>(context, listen: false);
+     final dt = DateTime.parse(widget.profileDetails!.createdAt.toString());
+     final updated = DateTime.parse(widget.profileDetails!.updatedAt.toString());
+
+     final updatedWestern = DateFormat('yyyy/MM/dd - HH:mm a').format(updated);
+     Jalali updatedPersian = updated.toJalali();
+     //Persian Date format
+     String updatedPersianDate() {
+       final f = updatedPersian.formatter;
+       return '${f.yyyy}/${f.mm}/${f.dd}';
+     }
+
+     //Created Gregorian Date format
+     final createdWesternDate = DateFormat('yyyy/MM/dd - HH:mm a').format(dt);
+     Jalali persianDate = dt.toJalali();
+
+     //Persian Date format
+     String createdPersianDate() {
+       final f = persianDate.formatter;
+       return '${f.yyyy}/${f.mm}/${f.dd}';
+     }
+
+
     return Scaffold(
       body: SingleChildScrollView(
         child: SafeArea(
@@ -111,10 +166,12 @@ class _PersonProfileState extends State<PersonProfile> {
                             ),
                           ],
                         ),
-                        Text(
-                          widget.profileDetails?.pPhone ?? "",
-                          style: const TextStyle(fontSize: 16),
+                        const SizedBox(height: 6),
+                        const LocaleText(
+                          "updated_at",style: TextStyle(fontWeight: FontWeight.bold),
                         ),
+                        Text(updatedWestern),
+                        controller.showHidePersianDate? Text(updatedPersianDate()):const SizedBox(),
                       ],
                     ),
                   ),
@@ -130,10 +187,9 @@ class _PersonProfileState extends State<PersonProfile> {
                 horizontalTitleGap: 15,
                 subtitle: isUpdate? TextFormField(
                   controller: fullName,
-                  decoration: InputDecoration(
-                    contentPadding:const EdgeInsets.symmetric(horizontal: 1),
+                  decoration: const InputDecoration(
+                    contentPadding:EdgeInsets.symmetric(horizontal: 1),
                     isDense: true,
-
                   ),
                 ) : Text(widget.profileDetails?.pName??"",style: const TextStyle(fontWeight: FontWeight.bold),),
                 leading: Container(
@@ -168,9 +224,17 @@ class _PersonProfileState extends State<PersonProfile> {
                 contentPadding: const EdgeInsets.symmetric(horizontal: 20),
                 horizontalTitleGap: 15,
                 onTap: () {
-
+                 setState(() {
+                  _makePhoneCall(widget.profileDetails?.pPhone.toString()??"");
+                 });
                 },
-                subtitle: Text(widget.profileDetails?.pPhone??"",style: const TextStyle(fontWeight: FontWeight.bold),),
+                subtitle: isUpdate? TextFormField(
+                  controller: phone,
+                  decoration: const InputDecoration(
+                    contentPadding:EdgeInsets.symmetric(horizontal: 1),
+                    isDense: true,
+                  ),
+                ):Text(widget.profileDetails?.pPhone??"",style: const TextStyle(fontWeight: FontWeight.bold),),
                 leading: Container(
                   margin: const EdgeInsets.all(0),
                   height: 50,
@@ -205,7 +269,13 @@ class _PersonProfileState extends State<PersonProfile> {
                 onTap: () {
 
                 },
-                subtitle: Text(widget.profileDetails?.jobTitle??"",style: const TextStyle(fontWeight: FontWeight.bold),),
+                subtitle: isUpdate? TextFormField(
+                  controller: jobTitle,
+                  decoration: const InputDecoration(
+                    contentPadding:EdgeInsets.symmetric(horizontal: 1),
+                    isDense: true,
+                  ),
+                ):Text(widget.profileDetails?.jobTitle??"",style: const TextStyle(fontWeight: FontWeight.bold),),
                 leading: Container(
                   margin: const EdgeInsets.all(0),
                   height: 50,
@@ -240,7 +310,13 @@ class _PersonProfileState extends State<PersonProfile> {
                 onTap: () {
 
                 },
-                subtitle: SelectableText(widget.profileDetails?.cardNumber??"",style: const TextStyle(fontWeight: FontWeight.bold),),
+                subtitle: isUpdate? TextFormField(
+                  controller: cardNumber,
+                  decoration: const InputDecoration(
+                    contentPadding:EdgeInsets.symmetric(horizontal: 1),
+                    isDense: true,
+                  ),
+                ): SelectableText(widget.profileDetails?.cardNumber??"",style: const TextStyle(fontWeight: FontWeight.bold),),
                 leading: Container(
                   margin: const EdgeInsets.all(0),
                   height: 50,
@@ -275,7 +351,13 @@ class _PersonProfileState extends State<PersonProfile> {
                 onTap: () {
 
                 },
-                subtitle: Text(widget.profileDetails?.accountName??"",style: const TextStyle(fontWeight: FontWeight.bold),),
+                subtitle:isUpdate? TextFormField(
+                  controller: cardName,
+                  decoration: const InputDecoration(
+                    contentPadding:EdgeInsets.symmetric(horizontal: 1),
+                    isDense: true,
+                  ),
+                ): Text(widget.profileDetails?.accountName??"",style: const TextStyle(fontWeight: FontWeight.bold),),
                 leading: Container(
                   margin: const EdgeInsets.all(0),
                   height: 50,
@@ -304,8 +386,15 @@ class _PersonProfileState extends State<PersonProfile> {
             ),
 
 
-            const SizedBox(height: 20),
-            
+            ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 35,vertical: 15),
+              visualDensity: const VisualDensity(vertical: -4),
+              title: Text(createdWesternDate),
+              subtitle: Text(createdPersianDate()),
+              trailing:const LocaleText("created_at",style: TextStyle(fontSize: 15),),
+            ),
+            const SizedBox(height: 5),
+
             //End
             SizedBox(
 
@@ -317,22 +406,39 @@ class _PersonProfileState extends State<PersonProfile> {
                   Expanded(
                     flex: 2,
                     child: Container(
-                      margin: EdgeInsets.all(8),
+                      margin: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                         color: zPurpleColor,
                       ),
-                      child: TextButton(
+                      child: isUpdate? TextButton(
                           onPressed: (){
-                               setState(() {
+                            setState(() {
+                              isUpdate = !isUpdate;
+                              // widget.profileDetails?.pName = fullName.text ;
+                              // widget.profileDetails?.pPhone = phone.text;
+                              // widget.profileDetails?.jobTitle = jobTitle.text;
+                              // widget.profileDetails?.cardNumber = cardNumber.text;
+                              // widget.profileDetails?.accountName = cardName.text;
+                              update();
+                            });
+                          }, child: const LocaleText("update",style: TextStyle(color: Colors.white),)) : TextButton(
+                          onPressed: (){
+                               setState((){
                                  isUpdate = !isUpdate;
+                                 fullName.text = widget.profileDetails?.pName??"";
+                                 phone.text = widget.profileDetails?.pPhone??"";
+                                 jobTitle.text = widget.profileDetails?.jobTitle??"";
+                                 cardNumber.text = widget.profileDetails?.cardNumber??"";
+                                 cardName.text = widget.profileDetails?.accountName??"";
                                });
                           }, child: const LocaleText("settings",style: TextStyle(color: Colors.white),)),
                     ),
                   ),
+
                   Expanded(
                     child: Container(
-                      margin: EdgeInsets.all(8),
+                      margin: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                         color: Colors.red.shade900,
@@ -353,13 +459,25 @@ class _PersonProfileState extends State<PersonProfile> {
     );
   }
 
+  Future<void> _makePhoneCall(String phoneNumber) async {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    await launchUrl(launchUri);
+  }
+
   Future <void> getImage(ImageSource imageSource)async{
     final ImagePicker picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: imageSource);
     if(pickedFile == null)return;
     setState((){
       _pImage = File(pickedFile.path);
-      print(_pImage);
+      if (kDebugMode) {
+        print(_pImage);
+      }
     });
   }
+
+
 }

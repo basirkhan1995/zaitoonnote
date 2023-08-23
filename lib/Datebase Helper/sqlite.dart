@@ -49,8 +49,9 @@ class DatabaseHelper{
   
 
   //SQLITE backup
-  backUpDB()async{
-   var status = await Permission.manageExternalStorage.status;
+   backUpDB()async{
+
+    var status = await Permission.manageExternalStorage.status;
    if(!status.isGranted){
      await Permission.manageExternalStorage.request();
    }
@@ -59,10 +60,12 @@ class DatabaseHelper{
      await Permission.storage.request();
    }
    try{
+
      File ourDBFile = File("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
      Directory? folderPathForDbFile = Directory("/storage/emulated/0/ZaitoonBackup/");
      await folderPathForDbFile.create();
-     await ourDBFile.copy("/storage/emulated/0/ZaitoonBackup/$databaseName");
+     ourDBFile.copy("/storage/emulated/0/ZaitoonBackup/$databaseName");
+
    }catch(e){
      print("Exception Message: ${e.toString()}");
    }
@@ -79,21 +82,22 @@ class DatabaseHelper{
     }
 
     try{
-      // var databasesPath = await getDatabasesPath();
-      // FilePickerResult? result = await FilePicker.platform.pickFiles();
-      // if (result != null) {
-      //   File source = File(result.files.single.path!);
-      //   await source.copy(dbPath);
-      //
-      // } else {
-      //   print("user canceled permission");
-      // }
+      // File ourDBFile = File("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
+      //   var databasesPath = await getDatabasesPath();
+      //  FilePickerResult? result = await FilePicker.platform.pickFiles();
+      //   if (result != null) {
+      //    File source = File(result.files.single.path!);
+      //   var result2 = await source.copy("$databasesPath/$databaseName");
+      //    print("Heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee : $result2");
+      //   } else {
+      //     print("user canceled permission");
+      //   }
+
       File savedFile = File("/storage/emulated/0/ZaitoonBackup/$databaseName");
       await savedFile.copy("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
     }catch(e){
       print("Exception Message: ${e.toString()}");
     }
-
   }
 
   //Delete Db

@@ -13,6 +13,7 @@ class BottomNavBar extends StatefulWidget {
   State<BottomNavBar> createState() => _BottomNavBarState();
 }
 
+
 class _BottomNavBarState extends State<BottomNavBar> {
   int currentIndex = 0;
 
@@ -34,6 +35,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
     const AllActivities(),
     const SettingsPage(),
   ];
+
+
 
   @override
   Widget build(BuildContext context) {

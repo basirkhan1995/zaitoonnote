@@ -1,15 +1,18 @@
+import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/note_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
-
+import 'dart:io';
 
 class DatabaseHelper{
 
-  final databaseName = "mn.db";
+  final databaseName = "club.db";
   int noteStatus = 1;
   String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text)";
   String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT NOT NULL,categoryType TEXT, catCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP) ";
@@ -39,6 +42,83 @@ class DatabaseHelper{
       await db.rawQuery(defaultNoteData);
       await db.execute(activities);
     });
+  }
+
+
+  
+  
+
+  //SQLITE backup
+  backUpDB()async{
+   var status = await Permission.manageExternalStorage.status;
+   if(!status.isGranted){
+     await Permission.manageExternalStorage.request();
+   }
+   var status1 = await Permission.storage.status;
+   if(!status1.isGranted){
+     await Permission.storage.request();
+   }
+   try{
+     File ourDBFile = File("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
+     Directory? folderPathForDbFile = Directory("/storage/emulated/0/ZaitoonBackup/");
+     await folderPathForDbFile.create();
+     // if ((await ourDBFile.exists())) {
+     //   deleteDatabase(ourDBFile.path);
+     //   await ourDBFile.copy("/storage/emulated/0/ZaitoonBackup/$databaseName");
+     // }else{
+     //   await ourDBFile.copy("/storage/emulated/0/ZaitoonBackup/$databaseName");
+     // }
+     await ourDBFile.copy("/storage/emulated/0/ZaitoonBackup/$databaseName");
+   }catch(e){
+     print("Exception Message: ${e.toString()}");
+   }
+  }
+
+  restoreDb ()async{
+    var status = await Permission.manageExternalStorage.status;
+    if(!status.isGranted){
+      await Permission.manageExternalStorage.request();
+    }
+    var status1 = await Permission.storage.status;
+    if(!status1.isGranted){
+      await Permission.storage.request();
+    }
+
+    try{
+      var databasesPath = await getDatabasesPath();
+      var dbPath = join(databasesPath, databaseName);
+
+      FilePickerResult? result = await FilePicker.platform.pickFiles();
+
+      if (result != null) {
+        File source = File(result.files.single.path!);
+        await source.copy(dbPath);
+
+      } else {
+        print("user canceled permission");
+      }
+    }catch(e){
+      print("Exception Message: ${e.toString()}");
+    }
+
+  }
+
+  //Delete Db
+
+  deleteDb()async{
+    try{
+      deleteDatabase("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
+      print("success deleted");
+    }catch(e){
+      print("Exception Message: ${e.toString()}");
+    }
+  }
+
+  getDbPath()async{
+    final databasePath = await getDatabasesPath();
+    print("-----------------Database Path: $databasePath");
+    Directory? externalStoragePath = await getExternalStorageDirectory();
+    print("-----------------External Stroage Path: $externalStoragePath");
   }
 
   //Create a new category
@@ -267,3 +347,4 @@ class DatabaseHelper{
 
 
 }
+

@@ -14,7 +14,7 @@ class AppProperties extends StatefulWidget {
 class _AppPropertiesState extends State<AppProperties> {
   @override
   void initState() {
-    // TODO: implement initState
+
     super.initState();
   }
 

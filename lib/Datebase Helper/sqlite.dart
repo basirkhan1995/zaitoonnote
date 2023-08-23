@@ -48,9 +48,8 @@ class DatabaseHelper{
   
   
 
-  //SQLITE backup
+  //SQLITE backup database
    backUpDB()async{
-
     var status = await Permission.manageExternalStorage.status;
    if(!status.isGranted){
      await Permission.manageExternalStorage.request();

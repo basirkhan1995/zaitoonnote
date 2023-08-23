@@ -62,12 +62,6 @@ class DatabaseHelper{
      File ourDBFile = File("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
      Directory? folderPathForDbFile = Directory("/storage/emulated/0/ZaitoonBackup/");
      await folderPathForDbFile.create();
-     // if ((await ourDBFile.exists())) {
-     //   deleteDatabase(ourDBFile.path);
-     //   await ourDBFile.copy("/storage/emulated/0/ZaitoonBackup/$databaseName");
-     // }else{
-     //   await ourDBFile.copy("/storage/emulated/0/ZaitoonBackup/$databaseName");
-     // }
      await ourDBFile.copy("/storage/emulated/0/ZaitoonBackup/$databaseName");
    }catch(e){
      print("Exception Message: ${e.toString()}");
@@ -85,18 +79,17 @@ class DatabaseHelper{
     }
 
     try{
-      var databasesPath = await getDatabasesPath();
-      var dbPath = join(databasesPath, databaseName);
-
-      FilePickerResult? result = await FilePicker.platform.pickFiles();
-
-      if (result != null) {
-        File source = File(result.files.single.path!);
-        await source.copy(dbPath);
-
-      } else {
-        print("user canceled permission");
-      }
+      // var databasesPath = await getDatabasesPath();
+      // FilePickerResult? result = await FilePicker.platform.pickFiles();
+      // if (result != null) {
+      //   File source = File(result.files.single.path!);
+      //   await source.copy(dbPath);
+      //
+      // } else {
+      //   print("user canceled permission");
+      // }
+      File savedFile = File("/storage/emulated/0/ZaitoonBackup/$databaseName");
+      await savedFile.copy("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
     }catch(e){
       print("Exception Message: ${e.toString()}");
     }

@@ -204,7 +204,6 @@ class _AllActivitiesState extends State<AllActivities> {
                       child: RefreshIndicator(
                         onRefresh: _onRefresh,
                         child: SizedBox(
-
                           child: ListView.builder(
                               itemCount: items.length,
                               itemBuilder: (context,index){
@@ -227,7 +226,7 @@ class _AllActivitiesState extends State<AllActivities> {
                                   ),
                                 ),
                                 Container(
-                                  decoration: const BoxDecoration(color: Colors.grey),
+                                  decoration: BoxDecoration(color: Colors.grey.withOpacity(.3)),
                                   width: MediaQuery.of(context).size.width *.9,
                                   height: 1,
                                   margin: EdgeInsets.zero,

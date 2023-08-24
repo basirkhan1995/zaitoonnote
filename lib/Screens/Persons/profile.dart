@@ -11,6 +11,7 @@ import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import 'dart:io';
 
+import '../../Methods/env.dart';
 import '../../Provider/provider.dart';
 
 class PersonProfile extends StatefulWidget {
@@ -59,16 +60,13 @@ class _PersonProfileState extends State<PersonProfile> {
    @override
   Widget build(BuildContext context) {
      final controller = Provider.of<MyProvider>(context, listen: false);
+
      final dt = DateTime.parse(widget.profileDetails!.createdAt.toString());
      final updated = DateTime.parse(widget.profileDetails!.updatedAt.toString());
 
      final updatedWestern = DateFormat('yyyy/MM/dd - HH:mm a').format(updated);
      Jalali updatedPersian = updated.toJalali();
-     //Persian Date format
-     String updatedPersianDate() {
-       final f = updatedPersian.formatter;
-       return '${f.yyyy}/${f.mm}/${f.dd}';
-     }
+
 
      //Created Gregorian Date format
      final createdWesternDate = DateFormat('yyyy/MM/dd - HH:mm a').format(dt);
@@ -171,7 +169,7 @@ class _PersonProfileState extends State<PersonProfile> {
                           "updated_at",style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(updatedWestern),
-                        controller.showHidePersianDate? Text(updatedPersianDate()):const SizedBox(),
+                        controller.showHidePersianDate? Text(Env.persianDateTimeFormat(dt)):const SizedBox(),
                       ],
                     ),
                   ),

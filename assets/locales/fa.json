@@ -100,5 +100,8 @@
   "login": "ورود",
   "login_hint": "وارید شوید تا به اطلاعات خود دسترسی پیدا یابید",
   "username_required": "حساب کاربر خود را وارید نمایید",
-  "password_required": "کلمه عبور را وارید نمایید"
+  "password_required": "کلمه عبور را وارید نمایید",
+  "total_paid": "پرداختی ها",
+  "total_received": "دریافتی ها",
+  "total_accounts": "حساب ها"
 }

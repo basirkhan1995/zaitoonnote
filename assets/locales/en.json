@@ -100,5 +100,8 @@
   "login": "Login",
   "login_hint": "Login to unlock your potential",
   "username_required": "Username is required",
-  "password_required": "Password is required"
+  "password_required": "Password is required",
+  "total_paid": "Paid",
+  "total_received": "Received",
+  "total_accounts": "Accounts"
 }

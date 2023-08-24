@@ -46,7 +46,12 @@ class DatabaseHelper{
   }
 
 
-  
+  //Show Persons
+  Future <List<CategoryModel>> getStatistics (value) async{
+    final Database db = await initDB();
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select * from category where categoryType = ? AND cName != ?",[value,"%"]);
+    return queryResult.map((e) => CategoryModel.fromMap(e)).toList();
+  }
   
 
   //SQLITE backup database
@@ -327,18 +332,23 @@ class DatabaseHelper{
   ////////////////////////////////////////////////////////////////////////////////////////////////////
 
   //Total note count
-  Future <int?> totalNotes() async {
+  Future <int?> totalUsers() async {
     final Database db = await initDB();
-    final count = Sqflite.firstIntValue(await db.rawQuery("select count(*) from notes"));
+    final count = Sqflite.firstIntValue(await db.rawQuery("select count(*) from persons"));
     return count;
   }
 
-  Future <int?> totalCategory() async {
+  Future <int?> totalPaidToday() async {
     final Database db = await initDB();
-    final count = Sqflite.firstIntValue(await db.rawQuery("select count (*) from notes where category group by category"));
+    final count = Sqflite.firstIntValue(await db.rawQuery("select sum(amount) from transactions where  trnPerson = ? "));
     return count;
   }
 
+  Future <int?> totalPaidToPerson(int trnType, int person) async {
+    final Database db = await initDB();
+    final count = Sqflite.firstIntValue(await db.rawQuery("select sum(amount) from transactions where trnType = ? AND trnPerson = ?",[trnType, person]));
+    return count;
+  }
 
   Future <int?> categoryCounts() async {
     final Database db = await initDB();

@@ -1,20 +1,21 @@
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/note_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
-import 'dart:io';
+import '../Methods/env.dart';
+
 
 class DatabaseHelper{
 
-  final databaseName = "club.db";
+  final databaseName = "zaitoon.db";
   int noteStatus = 1;
-  String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text)";
+  String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text, personInfo int, FOREIGN KEY (personInfo) REFERENCES persons (pId))";
   String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT NOT NULL,categoryType TEXT, catCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP) ";
   String notes = "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,noteCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId))";
   String persons = "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT, jobTitle TEXT, cardNumber TEXT, accountName TEXT, pImage TEXT,pPhone TEXT,updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
@@ -49,7 +50,7 @@ class DatabaseHelper{
   
 
   //SQLITE backup database
-   backUpDB()async{
+   backUpDB(contentType,context)async{
     var status = await Permission.manageExternalStorage.status;
    if(!status.isGranted){
      await Permission.manageExternalStorage.request();
@@ -59,18 +60,20 @@ class DatabaseHelper{
      await Permission.storage.request();
    }
    try{
+     final dbPath = await getDatabasesPath();
+     File databasePath = File("$dbPath/$databaseName");
+     Directory? backUpDestination = Directory("/storage/emulated/0/ZaitoonBackup/");
 
-     File ourDBFile = File("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
-     Directory? folderPathForDbFile = Directory("/storage/emulated/0/ZaitoonBackup/");
-     await folderPathForDbFile.create();
-     ourDBFile.copy("/storage/emulated/0/ZaitoonBackup/$databaseName");
-
+     await backUpDestination.create();
+     databasePath.copy("/storage/emulated/0/ZaitoonBackup/$databaseName").whenComplete(() => Env.showSnackBar2("backup", "backup_success",contentType,context));
    }catch(e){
-     print("Exception Message: ${e.toString()}");
+     if (kDebugMode) {
+       print(e.toString());
+     }
    }
   }
 
-  restoreDb ()async{
+  restoreDb (contentType,context)async{
     var status = await Permission.manageExternalStorage.status;
     if(!status.isGranted){
       await Permission.manageExternalStorage.request();
@@ -81,21 +84,25 @@ class DatabaseHelper{
     }
 
     try{
-      // File ourDBFile = File("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
-      //   var databasesPath = await getDatabasesPath();
-      //  FilePickerResult? result = await FilePicker.platform.pickFiles();
-      //   if (result != null) {
-      //    File source = File(result.files.single.path!);
-      //   var result2 = await source.copy("$databasesPath/$databaseName");
-      //    print("Heeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee : $result2");
-      //   } else {
-      //     print("user canceled permission");
-      //   }
+        var databasesPath = await getDatabasesPath();
+        await FilePicker.platform.clearTemporaryFiles();
 
-      File savedFile = File("/storage/emulated/0/ZaitoonBackup/$databaseName");
-      await savedFile.copy("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
+        FilePickerResult? result = await FilePicker.platform.pickFiles();
+        if(result != null){
+          String recoveryPath = "$databasesPath/$databaseName";
+          String newPath = join('${result.files.single.path}');
+          File backupFile = File(newPath);
+          backupFile.copy(recoveryPath).whenComplete(() => Env.showSnackBar2("backup", "backup_restored",contentType, context));
+        }else{
+        }
+
+        //Direct method to copy
+      //File newPath = File("/storage/emulated/0/ZaitoonBackup/$databaseName");
+      //await newPath.copy("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
     }catch(e){
-      print("Exception Message: ${e.toString()}");
+      if (kDebugMode) {
+        print("Exception Message: ${e.toString()}");
+      }
     }
   }
 
@@ -104,18 +111,16 @@ class DatabaseHelper{
   deleteDb()async{
     try{
       deleteDatabase("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
-      print("success deleted");
+      if (kDebugMode) {
+        print("success deleted");
+      }
     }catch(e){
-      print("Exception Message: ${e.toString()}");
+      if (kDebugMode) {
+        print(e.toString());
+      }
     }
   }
 
-  getDbPath()async{
-    final databasePath = await getDatabasesPath();
-    print("-----------------Database Path: $databasePath");
-    Directory? externalStoragePath = await getExternalStorageDirectory();
-    print("-----------------External Stroage Path: $externalStoragePath");
-  }
 
   //Create a new category
   Future <int> createCategory(CategoryModel category)async{

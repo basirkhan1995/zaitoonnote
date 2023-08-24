@@ -148,7 +148,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                                   borderRadius: BorderRadius.circular(8),
                                   borderSide: const BorderSide(
                                     width: 1.5,
-                                    color: zPurpleColor
+                                    color: zPrimaryColor
                                   )
                                 ),
                                 labelText: Locales.string(context, "person_hint")),
@@ -273,6 +273,9 @@ class _CreateTransactionState extends State<CreateTransaction> {
                   title: 'description',
                 ),
 
+                 const ListTile(
+                   title: LocaleText("attachment"),
+                 ),
                  //Get Image
                  InkWell(
                    onTap: (){
@@ -282,7 +285,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     child: Placeholder(
                      strokeWidth: 1,
-                      color: zPurpleColor,
+                      color: zPrimaryColor,
                       child: Container(
                         decoration: BoxDecoration(
                           image: DecorationImage(

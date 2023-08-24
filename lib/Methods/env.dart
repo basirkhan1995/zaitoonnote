@@ -1,5 +1,6 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'colors.dart';
 
  class Env{
@@ -9,29 +10,33 @@ import 'colors.dart';
      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>route));
    }
 
-   static void showSnackBar2(String? message){
-     if(message == null) return;
+   static showSnackBar2(String title, String message, snackType, context){
      final snackBar = SnackBar(
-         shape: RoundedRectangleBorder(
-           borderRadius: BorderRadius.circular(5),
-         ),
-         behavior: SnackBarBehavior.floating,
-         backgroundColor: zPurpleColor,
-         content: Text(message,style: const TextStyle(color: Colors.white),)
+       elevation: 0,
+       behavior: SnackBarBehavior.floating,
+       backgroundColor: Colors.transparent,
+       content: AwesomeSnackbarContent(
+         color: Colors.deepPurple,
+         title: Locales.string(context, title),
+         message: Locales.string(context, message),
+         contentType: snackType,
+       ),
      );
-     messengerKey.currentState!..removeCurrentSnackBar()..showSnackBar(snackBar);
+     ScaffoldMessenger.of(context)
+       ..hideCurrentSnackBar()
+       ..showSnackBar(snackBar);
    }
 
 
-   static void showSnackBar(String title,String? message,context){
+   static showSnackBar(String title,String? message,context){
      if(message == null) return;
      final materialBanner = MaterialBanner(
        elevation: 0,
        backgroundColor: Colors.transparent,
        forceActionsBelow: true,
        content: AwesomeSnackbarContent(
-         title: title,
-         message: message,
+         title: Locales.string(context, title),
+         message: Locales.string(context, message),
          inMaterialBanner: true,
          contentType: ContentType.success,
        ), actions: const [SizedBox.shrink()],

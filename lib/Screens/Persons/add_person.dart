@@ -51,7 +51,7 @@ class _AddPersonState extends State<AddPerson> {
                     },
                     child: CircleAvatar(
                       radius: 70,
-                      backgroundColor: zPurpleColor,
+                      backgroundColor: zPrimaryColor,
                       child: CircleAvatar(
                         radius: 68,
                         backgroundImage: _pImage != null
@@ -113,7 +113,7 @@ class _AddPersonState extends State<AddPerson> {
                               }
                             },
                             label: "create",
-                            backgroundColor: zPurpleColor,
+                            backgroundColor: zPrimaryColor,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -122,7 +122,7 @@ class _AddPersonState extends State<AddPerson> {
                           child: ZButton(
                             onTap: () => Navigator.pop(context),
                             label: "cancel",
-                            backgroundColor: zPurpleColor,
+                            backgroundColor: zPrimaryColor,
                           ),
                         ),
                       ],

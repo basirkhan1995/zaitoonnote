@@ -99,7 +99,7 @@ class _PersonProfileState extends State<PersonProfile> {
                             padding: const EdgeInsets.all(8.0),
                             child: CircleAvatar(
                               radius: 62,
-                              backgroundColor: zPurpleColor,
+                              backgroundColor: zPrimaryColor,
                               child: CircleAvatar(
                                   radius: 60,
                                   backgroundImage: widget.profileDetails!.pImage!.isNotEmpty
@@ -157,7 +157,7 @@ class _PersonProfileState extends State<PersonProfile> {
                               padding: const EdgeInsets.symmetric(horizontal: 6,vertical: 0),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(4),
-                                color: zPurpleColor
+                                color: zPrimaryColor
                               ),
                               child: Text(
                                 widget.profileDetails?.pId.toString() ?? "",
@@ -409,7 +409,7 @@ class _PersonProfileState extends State<PersonProfile> {
                       margin: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
-                        color: zPurpleColor,
+                        color: zPrimaryColor,
                       ),
                       child: isUpdate? TextButton(
                           onPressed: (){

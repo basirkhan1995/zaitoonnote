@@ -19,8 +19,8 @@ class ZButton extends StatelessWidget {
     this.width = .9,
     this.height = 50,
     this.radius = 8,
-    this.backgroundColor = zPurpleColor,
-    this.labelColor = Colors.black54
+    this.backgroundColor = zPrimaryColor,
+    this.labelColor = Colors.white
   }) : super(key: key);
 
   @override
@@ -31,7 +31,7 @@ class ZButton extends StatelessWidget {
       height: height,
       child: TextButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.purple.withOpacity(.2),
+          backgroundColor: zPrimaryColor,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(radius!),
           ),

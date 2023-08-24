@@ -208,23 +208,10 @@ class _AllActivitiesState extends State<AllActivities> {
                           child: ListView.builder(
                               itemCount: items.length,
                               itemBuilder: (context,index){
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
-                              child: Container(
-                                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                                  padding: const EdgeInsets.symmetric(vertical: 4),
-                                  height: 90,
-                                decoration: BoxDecoration(
-                                  color: Colors.deepPurple.shade900.withOpacity(.8),
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.white,
-                                      blurRadius: 1,
-                                      offset: Offset(1, 0),
-                                    ),
-                                  ]
-                                ),
+                            return Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 0),
                                   child: ListTile(
                                     onTap: ()=> Env.goto(TransactionDetails(data: items[index]), context),
                                     leading: SizedBox(
@@ -232,30 +219,20 @@ class _AllActivitiesState extends State<AllActivities> {
                                         child: CircleAvatar(
                                           radius: 50,
                                             backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 5,horizontal: 15),
-                                    title: Text(items[index].person,style:const TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
-                                    subtitle: Text(items[index].trnDescription,style: const TextStyle(color: Colors.white),),
-                                    trailing: Column(
-                                      children: [
-                                        Expanded(
-                                          child: Container(
-                                            padding: const EdgeInsets.all(5),
-                                            decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.circular(4)
-                                            ),
-                                            child: LocaleText(
-                                              items[index].trnCategory,
-                                              style: const TextStyle(
-                                                  color: Colors.deepPurple, fontSize: 13),
-                                            ),
-                                          ),
-                                        ),
-                                        Expanded(child: Text(formatAmount(items[index].amount.toString()),style: const TextStyle(fontSize: 20,color: Colors.white),)),
-                                      ],
-                                    ),
-
-                                  )),
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 15),
+                                    title: Text(items[index].person,style:const TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
+                                    subtitle: Text(items[index].createdAt.toString(),style: const TextStyle(),),
+                                    trailing: Text(formatAmount(items[index].amount.toString()),style: const TextStyle(fontSize: 18),),
+                                    dense: true,
+                                  ),
+                                ),
+                                Container(
+                                  decoration: const BoxDecoration(color: Colors.grey),
+                                  width: MediaQuery.of(context).size.width *.9,
+                                  height: 1,
+                                  margin: EdgeInsets.zero,
+                                )
+                              ],
                             );
                           }),
                         ),

@@ -28,59 +28,84 @@ class _LoginPageState extends State<LoginPage> {
         child: SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-              ZField(
-                controller: username,
-                title: "username",
-                icon: Icons.account_circle,
+            Container(
+                height: MediaQuery.of(context).size.width / 2,
+                width: MediaQuery.of(context).size.width *.7,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    image: const DecorationImage(
+                        fit: BoxFit.cover,
+                        image: AssetImage("assets/Photos/login_bg.jpg")
+                    )
+                ),
+            ),
+            const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4.0),
+                child: ListTile(
+                  title: LocaleText("login",style: TextStyle(fontWeight: FontWeight.bold),),
+                  subtitle: LocaleText("login_hint"),
+                ),
+            ),
+
+                ZField(
+                  controller: username,
+                  title: "username",
+                  icon: Icons.account_circle,
+                  validator: (value) {
+                    if (value.isEmpty) {
+                      return Locales.string(context, "username_required");
+                    }
+                    return null;
+                  },
+                ),
+            ZField(
+                controller: password,
+                title: "password",
+                icon: Icons.lock,
                 validator: (value) {
                   if (value.isEmpty) {
-                    return Locales.string(context, "username_required");
+                    return Locales.string(context, "password_required");
                   }
                   return null;
                 },
-              ),
-            ZField(
-              controller: password,
-              title: "password",
-              icon: Icons.lock,
-              validator: (value) {
-                if (value.isEmpty) {
-                  return Locales.string(context, "password_required");
-                }
-                return null;
-              },
             ),
 
             Consumer<MyProvider>(
-              builder: (context,provider,child) {
-                return ListTile(
-                  title: const LocaleText("remember_me"),
-                  leading: Checkbox(
-                    value: provider.rememberMe,
-                    onChanged: (value){
-                      provider.setRememberMe();
-                      provider.storeSharedPreferences();
-                    },
-                  ),
-                );
-              }
+                builder: (context,provider,child) {
+                  return ListTile(
+                    horizontalTitleGap: 0,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                    title: const LocaleText("remember_me"),
+                    leading: Checkbox(
+                      value: provider.rememberMe,
+                      onChanged: (value){
+                        provider.setRememberMe();
+                        provider.storeSharedPreferences();
+                      },
+                    ),
+                  );
+                }
             ),
 
             ZButton(
-              label: "login",
-              onTap:(){
-               if(formKey.currentState!.validate()){
-                 if(username.text == "admin" && password.text == "123"){
-                   Env.goto(BottomNavBar(), context);
+                label: "login",
+                onTap:(){
+                 if(formKey.currentState!.validate()){
+                   if(username.text == "admin" && password.text == "123"){
+                     Env.goto(const BottomNavBar(), context);
+                   }
                  }
-               }
-              },
-              width: .95,
+                },
+                width: .91,
             ),
           ],
         ),
+              ),
             )),
       ),
     );

@@ -69,7 +69,7 @@ class _AccountSettingsState extends State<AccountSettings> {
             width: 35,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
-              color: zPurpleColor,
+              color: zPrimaryColor,
             ),
             child: IconButton(
                 onPressed: (){
@@ -83,7 +83,7 @@ class _AccountSettingsState extends State<AccountSettings> {
             width: 35,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(50),
-              color: zPurpleColor,
+              color: zPrimaryColor,
             ),
             child: IconButton(
                 onPressed: (){
@@ -173,9 +173,9 @@ class _AccountSettingsState extends State<AccountSettings> {
                                             backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
                                     contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 18),
                                     dense: true,
-                                    title: Text(items[index].pName,style: const TextStyle(color: zPurpleColor,fontSize: 16,fontWeight: FontWeight.bold),),
+                                    title: Text(items[index].pName,style: const TextStyle(color: zPrimaryColor,fontSize: 16,fontWeight: FontWeight.bold),),
                                     subtitle: Text(items[index].pPhone.toString(),style: const TextStyle(color: zGrey),),
-                                    trailing: const Icon(Icons.arrow_forward_ios_outlined,size: 15,color: zPurpleColor)
+                                    trailing: const Icon(Icons.arrow_forward_ios_outlined,size: 15,color: zPrimaryColor)
 
                                   ),
                                 );

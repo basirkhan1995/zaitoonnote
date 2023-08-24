@@ -86,7 +86,19 @@
   "false": "Disabled",
   "properties": "Properties",
   "show_or_hide_properties": "Show or hide properties",
-  "backup": "Back up",
+  "backup": "Backup",
   "backup_data": "Data reservation ",
-  "show_login": "Enable login page"
+  "show_login": "Enable login page",
+  "backup_success": "Back up successfuly",
+  "backup_restored": "Back up restored successfully",
+  "restore_backup": "Restore backup",
+  "backup_hint": "Backup your data to keep it in its own vita",
+  "zaitoon": "Zaitoon",
+  "remember_me": "Remember me",
+  "username": "Username",
+  "password": "Password",
+  "login": "Login",
+  "login_hint": "Login to unlock your potential",
+  "username_required": "Username is required",
+  "password_required": "Password is required"
 }

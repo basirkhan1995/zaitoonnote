@@ -15,8 +15,6 @@ class MyProvider extends ChangeNotifier{
   bool get enableDisableLogin => _enableDisableLogin;
   bool get isLogin => _isLogin;
 
-
-
   late SharedPreferences secureStorage;
 
   void loginTrueFalse(){
@@ -24,7 +22,7 @@ class MyProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  //To enable a login page
+  //To enable authentication page
   void enableLoginPage(){
     _enableDisableLogin = !_enableDisableLogin;
     _rememberMe = false;

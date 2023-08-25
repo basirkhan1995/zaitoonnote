@@ -73,6 +73,13 @@ class _DatabaseBackupState extends State<DatabaseBackup> {
               //     db.deleteDb();
               //   },
               // ),
+              // ZButton(
+              //   width: .9,
+              //   label: "get path",
+              //   onTap: (){
+              //     db.backUp();
+              //   },
+              // ),
 
               ZButton(
                 width: .9,

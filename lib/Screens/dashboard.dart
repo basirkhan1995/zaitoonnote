@@ -7,9 +7,15 @@ class Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: const Drawer(),
+
       appBar: AppBar(
         title: const LocaleText("dashboard"),
+      ),
+
+      body: Column(
+        children: [
+
+        ],
       ),
     );
   }

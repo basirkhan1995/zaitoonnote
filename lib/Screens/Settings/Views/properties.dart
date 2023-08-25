@@ -35,7 +35,6 @@ class _AppPropertiesState extends State<AppProperties> {
                        value: provider.showHidePersianDate,
                        onChanged: (value){
                          provider.toggle();
-                         provider.storeSharedPreferences();
                        }),
                    title: const LocaleText("show_persian_date"),
                   trailing: LocaleText(provider.showHidePersianDate.toString(),style: const TextStyle(fontSize: 16),),
@@ -46,7 +45,6 @@ class _AppPropertiesState extends State<AppProperties> {
                       value: provider.enableDisableLogin,
                       onChanged: (value){
                         provider.enableLoginPage();
-                        provider.storeSharedPreferences();
                       }),
                   title: const LocaleText("show_login"),
                   trailing: LocaleText(provider.enableDisableLogin.toString(),style: const TextStyle(fontSize: 16),),

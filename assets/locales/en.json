@@ -103,5 +103,17 @@
   "password_required": "Password is required",
   "total_paid": "Paid",
   "total_received": "Received",
-  "total_accounts": "Accounts"
+  "total_accounts": "Accounts",
+  "access_denied": "Access denied",
+  "access_denied_message": "Username or password is incorrect",
+  "logout": "Sign out",
+  "change_password": "Change password",
+  "current_password": "Current password",
+  "confirm_password": "Confirm password",
+  "password_change_failed_message": "Current password is incorrect",
+  "password_change_success_message": "Password has successfully changed",
+  "operation_failed": "Operation failed",
+  "operation_success": "Operation succeed",
+  "new_password": "New password",
+  "change_password_hint": "Change your password "
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
+import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Screens/Activities/all_activities.dart';
 import 'package:zaitoonnote/Screens/Notes/all_notes.dart';
 import 'package:zaitoonnote/Screens/Settings/settings.dart';
@@ -18,10 +19,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
   int currentIndex = 0;
 
   List<IconData> icons =[
-    Icons.home_rounded,
+   Icons.home,
     Icons.event_note,
-    Icons.newspaper_rounded,
-    Icons.settings
+    Icons.event,
+    Icons.settings,
   ];
   List titles = [
     "dashboard",
@@ -53,7 +54,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         child: ListView.builder(
             itemCount: 4,
             scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: size.width *.035),
+            padding: EdgeInsets.symmetric(horizontal: size.width *.015),
             itemBuilder: (context,index)=>InkWell(
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,

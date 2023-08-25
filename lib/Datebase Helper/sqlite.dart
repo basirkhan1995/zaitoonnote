@@ -3,11 +3,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/note_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
+import 'package:zaitoonnote/Screens/Json%20Models/users.dart';
 import '../Methods/env.dart';
 
 
@@ -15,6 +17,7 @@ class DatabaseHelper{
 
   final databaseName = "zaitoon.db";
   int noteStatus = 1;
+  String dirName = "Backup";
   String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text, personInfo int, FOREIGN KEY (personInfo) REFERENCES persons (pId))";
   String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT NOT NULL,categoryType TEXT, catCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP) ";
   String notes = "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,noteCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId))";
@@ -46,13 +49,70 @@ class DatabaseHelper{
   }
 
 
-  //Show Persons
-  Future <List<CategoryModel>> getStatistics (value) async{
-    final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select * from category where categoryType = ? AND cName != ?",[value,"%"]);
-    return queryResult.map((e) => CategoryModel.fromMap(e)).toList();
+  Future<Directory?> getLocalDirectory()async{
+    return Platform.isAndroid? await getExternalStorageDirectory() : await getApplicationSupportDirectory();
   }
-  
+
+  Future<String> createFolder(String cow)async{
+    final dir = Directory('${(Platform.isAndroid? await getExternalStorageDirectory():await getApplicationSupportDirectory())!.path}$dirName');
+    var status = await Permission.storage.status;
+    if(!status.isGranted){
+      await Permission.storage.request();
+    }
+    if((await dir.exists())){
+      return dir.path;
+    }else{
+      dir.create();
+      return dir.path;
+    }
+  }
+
+
+
+  backUp()async{
+    Directory? directory;
+    var status = await Permission.manageExternalStorage.status;
+    if(!status.isGranted){
+      await Permission.manageExternalStorage.request();
+    }
+    var status1 = await Permission.storage.status;
+    if(!status1.isGranted){
+      await Permission.storage.request();
+    }
+
+    try{
+
+      if(Platform.isAndroid){
+        directory = await getExternalStorageDirectory();
+        String newPath = "";
+        List<String>? folders = directory?.path.split("/");
+        for(int x =1; x<folders!.length;x++){
+          String folder = folders[x];
+          if(folder!="Android"){
+            newPath +="/$folder";
+          }else{
+            break;
+          }
+        }
+        newPath = "$newPath/$dirName";
+        directory = Directory(newPath);
+        print(directory.path);
+
+      }else{
+        directory = await getTemporaryDirectory();
+      }
+      if(await directory.exists()){
+        await directory.create(recursive: true);
+      }
+      if(await directory.exists()){
+        File saveFile = File("${directory.path}/$databaseName");
+      }
+    }catch(e){
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    }
+  }
 
   //SQLITE backup database
    backUpDB(contentType,context)async{
@@ -66,9 +126,9 @@ class DatabaseHelper{
    }
    try{
      final dbPath = await getDatabasesPath();
-     File databasePath = File("$dbPath/$databaseName");
+     var path = join("$dbPath/$databaseName");
+     File databasePath = File(path);
      Directory? backUpDestination = Directory("/storage/emulated/0/ZaitoonBackup/");
-
      await backUpDestination.create();
      databasePath.copy("/storage/emulated/0/ZaitoonBackup/$databaseName").whenComplete(() => Env.showSnackBar2("backup", "backup_success",contentType,context));
    }catch(e){
@@ -126,6 +186,25 @@ class DatabaseHelper{
     }
   }
 
+  //Auth
+  //-----------------------------------------------
+  //Login Screen
+  Future<bool> authenticateUser(UsersModel user) async {
+    final Database db = await initDB();
+    var response = await db.rawQuery("select * from users where usrName='${user.usrName}' and usrPassword='${user.usrPassword}'");
+    if (response.isNotEmpty) {
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  //Update note
+  Future <int> changePassword(String newPassword,String oldPassword)async{
+    final Database db = await initDB();
+    var result = await db.rawUpdate("update users set usrPassword = ? where usrPassword = ? ",[newPassword ,oldPassword]);
+    return result;
+  }
 
   //Create a new category
   Future <int> createCategory(CategoryModel category)async{
@@ -344,9 +423,9 @@ class DatabaseHelper{
     return count;
   }
 
-  Future <int?> totalPaidToPerson(int trnType, int person) async {
+  Future <int?> totalSumByCategoryAndPerson(int trnType, int person) async {
     final Database db = await initDB();
-    final count = Sqflite.firstIntValue(await db.rawQuery("select sum(amount) from transactions where trnType = ? AND trnPerson = ?",[trnType, person]));
+    final count = Sqflite.firstIntValue(await db.rawQuery("select sum(amount) from transactions where trnType = ? AND trnPerson = ? AND trnDate (DATETIME)>=? AND trnDate(DATETIME)<= ? ",[trnType, person ,'2023-25-8','2023-25-8']));
     return count;
   }
 

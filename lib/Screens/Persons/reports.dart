@@ -47,22 +47,22 @@ class _PersonReportsState extends State<PersonReports> {
 
   //Total Paid
   Future<int> sumPaid()async{
-    int? count = await handler.totalPaidToPerson(2,widget.person?.pId??0);
+    int? count = await handler.totalSumByCategoryAndPerson(2, widget.person?.pId??0);
     setState(() => totalPaid = count??0);
     return totalPaid;
   }
   //Total Received count
   Future<int> sumReceived()async{
-    int? count = await handler.totalPaidToPerson(3,widget.person?.pId??0);
+    int? count = await handler.totalSumByCategoryAndPerson(3,widget.person?.pId??0);
     setState(() => totalReceived = count??0);
     return totalReceived;
   }
 
-  String label = '';
+  String label = DateTime.now().toIso8601String();
   String selectedDate = Jalali.now().toJalaliDateTime();
-
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -97,7 +97,7 @@ class _PersonReportsState extends State<PersonReports> {
                 });
               }
             },
-            title:Text(label,style: TextStyle(color: Colors.black54),),
+            title:Text(Env.persianDateTimeFormat(DateTime.parse(label)),style: const TextStyle(color: Colors.black54),),
 
           ),
 

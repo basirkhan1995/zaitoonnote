@@ -17,7 +17,7 @@ void main() {
         systemNavigationBarIconBrightness: Brightness.dark,
         statusBarIconBrightness: Brightness.dark,
       ));
-  Locales.init(['en', 'fa']);
+  Locales.init(['fa', 'en']);
   runApp(const MyApp());
 }
 
@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
                       colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
                       useMaterial3: true,
                     ),
-                    home: controller.rememberMe? const BottomNavBar(): controller.enableDisableLogin? const LoginPage() : const BottomNavBar(),
+                    home: controller.isLogin? const BottomNavBar(): controller.enableDisableLogin? const LoginPage() : const BottomNavBar(),
                   )
           );},
       ),

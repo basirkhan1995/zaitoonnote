@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MyProvider extends ChangeNotifier{
@@ -17,37 +18,45 @@ class MyProvider extends ChangeNotifier{
 
   late SharedPreferences secureStorage;
 
-  void loginTrueFalse(){
-    _isLogin = ! _isLogin;
+  //Language Switch
+  void switchLanguage(context, languageCode) async {
+    Locales.change(context, languageCode);
+    notifyListeners();
+  }
+
+   setLoginTrue(){
+    _isLogin = true;
+    secureStorage.setBool("isLogin", _isLogin);
+    notifyListeners();
+  }
+
+  void logout(){
+    _isLogin = false;
+    secureStorage.setBool("isLogin", _isLogin);
     notifyListeners();
   }
 
   //To enable authentication page
-  void enableLoginPage(){
+  void enableLoginPage()async{
     _enableDisableLogin = !_enableDisableLogin;
-    _rememberMe = false;
+    _isLogin = false;
+    secureStorage.setBool("enableLoginPage", _enableDisableLogin);
+    secureStorage.setBool("isLogin", _isLogin);
     notifyListeners();
   }
 
-   void toggle(){
+   void toggle()async{
+     secureStorage = await SharedPreferences.getInstance();
      _showHidePersianDate = !_showHidePersianDate;
+     secureStorage.setBool("persianDate", _showHidePersianDate);
      notifyListeners();
    }
-
-
-   storeSharedPreferences()async{
-    secureStorage = await SharedPreferences.getInstance();
-    secureStorage.setBool("persianDate", _showHidePersianDate);
-    secureStorage.setBool("enableLoginPage", _enableDisableLogin);
-    secureStorage.setBool("rememberMe", _rememberMe);
-    notifyListeners();
-  }
 
   initialize()async{
      secureStorage = await SharedPreferences.getInstance();
      _showHidePersianDate = secureStorage.getBool("persianDate")??false;
      _enableDisableLogin = secureStorage.getBool("enableLoginPage")??false;
-     _rememberMe = secureStorage.getBool("rememberMe")??false;
+     _isLogin = secureStorage.getBool("isLogin")??false;
      notifyListeners();
    }
 

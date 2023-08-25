@@ -103,5 +103,17 @@
   "password_required": "کلمه عبور را وارید نمایید",
   "total_paid": "پرداختی ها",
   "total_received": "دریافتی ها",
-  "total_accounts": "حساب ها"
+  "total_accounts": "حساب ها",
+  "access_denied": "عملیات نا موفق",
+  "access_denied_message": "کلمه عبور و حساب کاربر نادرست میباشد",
+  "logout": "خروج از حساب",
+  "change_password": "تغییر کلمه عبور",
+  "current_password": "کلمه عبور فعلی",
+  "confirm_password": "تائید کلمه عبور",
+  "password_change_failed_message": "کلمه عبور فعلی خود را اشتباه وارید کردید",
+  "password_change_success_message": "کلمه عبور موفقانه برو رسانی گردید",
+  "operation_failed": "عملیات نا موفقانه",
+  "operation_success": "عملیات موفقانه",
+  "new_password": "کلمه عبور جدید",
+  "change_password_hint": "تغییر کلمه عبور"
 }

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
+import 'package:provider/provider.dart';
+import 'package:zaitoonnote/Provider/provider.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
-import 'package:zaitoonnote/Screens/Settings/Views/category.dart';
+import 'package:zaitoonnote/Screens/Settings/Views/change_password.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/properties.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/themes.dart';
 import 'package:zaitoonnote/Screens/Settings/backup/db_backup.dart';
+import '../../Methods/env.dart';
 import '../About App/about_app.dart';
 import 'Views/individuals_records.dart';
 
@@ -13,10 +16,10 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<MyProvider>(context, listen: false);
     List items = [
       "accounts",
       "themes",
-      "category",
       "reports",
       "properties",
       "backup",
@@ -25,7 +28,6 @@ class SettingsPage extends StatelessWidget {
     List subItems = [
       "accdetails",
       "themesdetails",
-      "category_details",
       "report_details",
       "show or hide properties",
       "backup_data",
@@ -35,7 +37,6 @@ class SettingsPage extends StatelessWidget {
     List icons = [
       Icons.person_rounded,
       Icons.color_lens,
-      Icons.category,
       Icons.insert_chart,
       Icons.settings_rounded,
       Icons.backup,
@@ -44,7 +45,6 @@ class SettingsPage extends StatelessWidget {
     List pages = <Widget>[
       const AccountSettings(),
       const ChangeThemes(),
-      const AddCategory(),
       const IndividualsRecords(),
       const AppProperties(),
       const DatabaseBackup(),
@@ -53,10 +53,17 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           titleSpacing: 20,
-          actions: const [
+          actions:  [
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.0),
-              child: Icon(Icons.settings),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: InkWell(
+                onTap: (){
+
+                },
+                child: const CircleAvatar(
+                  backgroundImage: AssetImage("assets/Photos/no_user.jpg"),
+                ),
+              ),
             )
           ],
           title: const LocaleText("settings"),
@@ -145,6 +152,80 @@ class SettingsPage extends StatelessWidget {
                       child: const Icon(Icons.arrow_forward_ios_rounded, size: 12)),
                 ),
               ),
+
+              controller.enableDisableLogin? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                        horizontalTitleGap: 15,
+                        onTap: () {
+                          Env.goto(const ChangePassword(), context);
+                        },
+                        leading: Container(
+                          margin: const EdgeInsets.all(0),
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.deepPurple.withOpacity(.09)),
+                          child: const Icon(
+                            Icons.lock,
+                            color: Colors.deepPurple,
+                            size: 24,
+                          ),
+                        ),
+                        title: const LocaleText(
+                          "change_password",
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        subtitle: const LocaleText("change_password_hint"),
+                        trailing: Container(
+                            height: 25,
+                            width: 25,
+                            decoration: BoxDecoration(
+                                color: Colors.deepPurple.withOpacity(.09),
+                                borderRadius: BorderRadius.circular(50)),
+                            child: const Icon(Icons.arrow_forward_ios_rounded, size: 12)),
+                      ),
+              ):const SizedBox(),
+              controller.enableDisableLogin? Consumer<MyProvider>(
+                  builder: (context,provider,child) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 8),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                        horizontalTitleGap: 15,
+                        onTap: () {
+                          provider.logout();
+                        },
+                        leading: Container(
+                          margin: const EdgeInsets.all(0),
+                          height: 50,
+                          width: 50,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.deepPurple.withOpacity(.09)),
+                          child: const Icon(
+                            Icons.logout_outlined,
+                            color: Colors.deepPurple,
+                            size: 24,
+                          ),
+                        ),
+                        title: const LocaleText(
+                          "logout",
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        trailing: Container(
+                            height: 25,
+                            width: 25,
+                            decoration: BoxDecoration(
+                                color: Colors.deepPurple.withOpacity(.09),
+                                borderRadius: BorderRadius.circular(50)),
+                            child: const Icon(Icons.arrow_forward_ios_rounded, size: 12)),
+                      ),
+                    );
+                  }
+              ):const SizedBox(),
             ],
           ),
         ));

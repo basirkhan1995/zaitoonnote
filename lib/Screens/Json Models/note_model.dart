@@ -1,4 +1,6 @@
 
+import 'package:intl/intl.dart';
+
 class Notes{
   final int? noteId;
   final String noteTitle;
@@ -27,7 +29,7 @@ class Notes{
       'noteStatus':noteStatus,
       'cName':category,
       'noteImage':noteImage,
-      'noteCreatedAt': DateTime.now().toIso8601String(),
+      'noteCreatedAt': createdAt??DateTime.now().toIso8601String(),
     };
   }
 

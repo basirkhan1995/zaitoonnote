@@ -1,8 +1,10 @@
 
+import 'package:intl/intl.dart';
+
 class CategoryModel{
   final int? cId;
-  final String cName;
-  final String categoryType;
+  final String? cName;
+  final String? categoryType;
   final String? createdAt;
   CategoryModel({this.cId, required this.cName,required this.categoryType, this.createdAt});
 
@@ -18,7 +20,7 @@ class CategoryModel{
       'cId':cId,
       'cName':cName,
       'categoryType':categoryType,
-      'catCreatedAt': DateTime.now().toIso8601String(),
+      'catCreatedAt': createdAt??DateTime.now().toIso8601String(),
     };
   }
 

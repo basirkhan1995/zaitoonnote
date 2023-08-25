@@ -17,6 +17,7 @@ class DatabaseHelper{
 
   final databaseName = "zaitoon.db";
   int noteStatus = 1;
+
   String dirName = "Backup";
   String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text, personInfo int, FOREIGN KEY (personInfo) REFERENCES persons (pId))";
   String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT NOT NULL,categoryType TEXT, catCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP) ";
@@ -311,7 +312,7 @@ class DatabaseHelper{
   //Transaction by type (filtering)
   Future <List<TransactionModel>> getByTransactionPerson (String id) async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where b.pId = ? ", [id]);
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where b.pId = ? AND Date(a.trnDate) BETWEEN ? AND ?", [id,'2023-08-01','2023,08-29']);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 
@@ -425,7 +426,7 @@ class DatabaseHelper{
 
   Future <int?> totalSumByCategoryAndPerson(int trnType, int person) async {
     final Database db = await initDB();
-    final count = Sqflite.firstIntValue(await db.rawQuery("select sum(amount) from transactions where trnType = ? AND trnPerson = ? AND trnDate (DATETIME)>=? AND trnDate(DATETIME)<= ? ",[trnType, person ,'2023-25-8','2023-25-8']));
+    final count = Sqflite.firstIntValue(await db.rawQuery("select sum(amount) from transactions where trnType = ? AND trnPerson = ? AND DATE(trnDate) BETWEEN ? AND ?", [trnType, person ,'2023-01-01','2023-12-12']));
     return count;
   }
 

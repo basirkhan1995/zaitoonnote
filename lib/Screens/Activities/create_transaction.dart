@@ -230,7 +230,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
 
                             asyncItems: (value) => db.getCategoryByType("activity"),
                             itemAsString: (CategoryModel u) =>
-                                Locales.string(context, u.cName),
+                                Locales.string(context, u.cName??""),
                             onChanged: (CategoryModel? data) {
                               setState(() {
                                 selectedCategoryId = data!.cId!.toInt();

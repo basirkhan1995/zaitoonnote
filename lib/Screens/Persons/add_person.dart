@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Methods/z_button.dart';
 import 'package:zaitoonnote/Methods/z_field.dart';
@@ -100,8 +101,7 @@ class _AddPersonState extends State<AddPerson> {
                           child: ZButton(
                             onTap: () {
                               if (formKey.currentState!.validate()) {
-                                db
-                                    .createPerson(PersonModel(
+                                db.createPerson(PersonModel(
                                         pName: fullName.text,
                                         pPhone: phone.text,
                                         cardNumber: cardNumber.text,

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:zaitoonnote/Screens/Authentications/login.dart';
+
+import '../Methods/env.dart';
 
 class MyProvider extends ChangeNotifier{
 
@@ -30,9 +33,10 @@ class MyProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  void logout(){
+   logout(context){
     _isLogin = false;
     secureStorage.setBool("isLogin", _isLogin);
+    Env.goto(const LoginPage(), context);
     notifyListeners();
   }
 

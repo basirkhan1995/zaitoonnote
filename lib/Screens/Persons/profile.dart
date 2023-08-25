@@ -2,8 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
-import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zaitoonnote/Datebase%20Helper/sqlite.dart';
@@ -34,7 +32,7 @@ class _PersonProfileState extends State<PersonProfile> {
   var db = DatabaseHelper();
 
   void update()async{
-    int res = await db.updateProfileDetails(fullName.text, jobTitle.text, cardNumber.text, cardName.text, phone.text, DateTime.now().toIso8601String(), widget.profileDetails?.pId);
+    int res = await db.updateProfileDetails(fullName.text, jobTitle.text, cardNumber.text, cardName.text, phone.text, DateTime.now().millisecondsSinceEpoch, widget.profileDetails?.pId);
     if(res >0){
       if (kDebugMode) {
         print("success");
@@ -59,25 +57,7 @@ class _PersonProfileState extends State<PersonProfile> {
 
    @override
   Widget build(BuildContext context) {
-     final controller = Provider.of<MyProvider>(context, listen: false);
-
-     final dt = DateTime.parse(widget.profileDetails!.createdAt.toString());
-     final updated = DateTime.parse(widget.profileDetails!.updatedAt.toString());
-
-     final updatedWestern = DateFormat('yyyy/MM/dd - HH:mm a').format(updated);
-     Jalali updatedPersian = updated.toJalali();
-
-
-     //Created Gregorian Date format
-     final createdWesternDate = DateFormat('yyyy/MM/dd - HH:mm a').format(dt);
-     Jalali persianDate = dt.toJalali();
-
-     //Persian Date format
-     String createdPersianDate() {
-       final f = persianDate.formatter;
-       return '${f.yyyy}/${f.mm}/${f.dd}';
-     }
-
+     final provider = Provider.of<MyProvider>(context, listen: false);
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -168,8 +148,7 @@ class _PersonProfileState extends State<PersonProfile> {
                         const LocaleText(
                           "updated_at",style: TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        Text(updatedWestern),
-                        controller.showHidePersianDate? Text(Env.persianDateTimeFormat(dt)):const SizedBox(),
+                        Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(widget.profileDetails?.updatedAt??"")):Env.gregorianDateTimeForm(DateTime.parse(widget.profileDetails?.updatedAt??""))),
                       ],
                     ),
                   ),
@@ -387,8 +366,8 @@ class _PersonProfileState extends State<PersonProfile> {
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 35,vertical: 15),
               visualDensity: const VisualDensity(vertical: -4),
-              title: Text(createdWesternDate),
-              subtitle: Text(createdPersianDate()),
+              title: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(widget.profileDetails?.createdAt??"")):Env.gregorianDateTimeForm(DateTime.parse(widget.profileDetails?.createdAt??""))),
+
               trailing:const LocaleText("created_at",style: TextStyle(fontSize: 15),),
             ),
             const SizedBox(height: 5),
@@ -413,11 +392,6 @@ class _PersonProfileState extends State<PersonProfile> {
                           onPressed: (){
                             setState(() {
                               isUpdate = !isUpdate;
-                              // widget.profileDetails?.pName = fullName.text ;
-                              // widget.profileDetails?.pPhone = phone.text;
-                              // widget.profileDetails?.jobTitle = jobTitle.text;
-                              // widget.profileDetails?.cardNumber = cardNumber.text;
-                              // widget.profileDetails?.accountName = cardName.text;
                               update();
                             });
                           }, child: const LocaleText("update",style: TextStyle(color: Colors.white),)) : TextButton(

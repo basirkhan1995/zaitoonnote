@@ -1,4 +1,6 @@
 
+import 'package:intl/intl.dart';
+
 class PersonModel{
   final int? pId;
   final String pName;
@@ -33,7 +35,7 @@ class PersonModel{
       'pImage':pImage,
       'pPhone':pPhone,
       'updatedAt': updatedAt??DateTime.now().toIso8601String(),
-      'createdAt': DateTime.now().toIso8601String(),
+      'createdAt': createdAt??DateTime.now().toIso8601String(),
     };
   }
 

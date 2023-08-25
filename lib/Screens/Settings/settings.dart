@@ -196,7 +196,7 @@ class SettingsPage extends StatelessWidget {
                         contentPadding: const EdgeInsets.symmetric(horizontal: 20),
                         horizontalTitleGap: 15,
                         onTap: () {
-                          provider.logout();
+                          provider.logout(context);
                         },
                         leading: Container(
                           margin: const EdgeInsets.all(0),

@@ -108,7 +108,7 @@ class _AllNotesState extends State<AllNotes> {
                            onTap: (){
                              setState(() {
                                currentFilterIndex = index;
-                               notes = db.getFilteredNotes(items[index].cName);
+                               notes = db.getFilteredNotes(items[index].cName??"");
                              });
                            },
                           child: Container(
@@ -122,7 +122,7 @@ class _AllNotesState extends State<AllNotes> {
                                  ),
                               child: Center(
                                 child: LocaleText(
-                                  items[index].cName,
+                                  items[index].cName??"",
                                   style: TextStyle(
                                       color: currentFilterIndex == index? Colors.white: Colors.deepPurple,
                                       fontSize: 14,

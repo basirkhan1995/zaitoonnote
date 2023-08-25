@@ -152,8 +152,6 @@ class _LoginPageState extends State<LoginPage> {
                                 if (result == true) {
                                   if (controller.rememberMe == true) {
                                     controller.setLoginTrue();
-                                  } else {
-                                    controller.logout();
                                   }
                                   if (!mounted) return;
                                   Navigator.pushReplacement(

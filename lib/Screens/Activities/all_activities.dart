@@ -2,10 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:zaitoonnote/Screens/Activities/transaction_details.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import '../../Datebase Helper/sqlite.dart';
 import '../../Methods/env.dart';
+import '../../Provider/provider.dart';
 import '../Json Models/trn_model.dart';
 import 'create_transaction.dart';
 
@@ -27,7 +29,7 @@ class _AllActivitiesState extends State<AllActivities> {
 
   final db = DatabaseHelper();
   var formatter = NumberFormat('#,##,000');
-
+  DateTime? date;
   @override
   void initState() {
     super.initState();
@@ -76,6 +78,7 @@ class _AllActivitiesState extends State<AllActivities> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<MyProvider>(context, listen: false);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
@@ -114,7 +117,7 @@ class _AllActivitiesState extends State<AllActivities> {
                             onTap: (){
                               setState(() {
                                 currentFilterIndex = index;
-                                transactions = db.filterTransactions(items[index].cName);
+                                transactions = db.filterTransactions(items[index].cName??"");
                               });
                             },
                             child: Container(
@@ -128,7 +131,7 @@ class _AllActivitiesState extends State<AllActivities> {
                                 ),
                                 child: Center(
                                   child: LocaleText(
-                                    items[index].cName,
+                                    items[index].cName??"",
                                     style: TextStyle(
                                         color: currentFilterIndex == index? Colors.white: Colors.deepPurple,
                                         fontSize: 14,
@@ -219,9 +222,9 @@ class _AllActivitiesState extends State<AllActivities> {
                                           radius: 50,
                                             backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
                                     contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 15),
-                                    title: Text(items[index].person,style:const TextStyle(fontSize: 18,fontWeight: FontWeight.bold),),
-                                    subtitle: Text(items[index].createdAt.toString(),style: const TextStyle(),),
-                                    trailing: Text(formatAmount(items[index].amount.toString()),style: const TextStyle(fontSize: 18),),
+                                    title: Text(items[index].person,style:const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                                    subtitle: Text( provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt??"")):Env.gregorianDateTimeForm(DateTime.parse(items[index].createdAt??""))),
+                                    trailing: Text(Env.amountFormat(items[index].amount.toString()),style: const TextStyle(fontSize: 18),),
                                     dense: true,
                                   ),
                                 ),
@@ -246,25 +249,7 @@ class _AllActivitiesState extends State<AllActivities> {
       ),
     );
   }
-
-  String formatAmount(value){
-    String price = value;
-    String priceInText = "";
-    int counter = 0;
-    for(int i = (price.length - 1);  i >= 0; i--){
-      counter++;
-      String str = price[i];
-      if((counter % 3) != 0 && i !=0){
-        priceInText = "$str$priceInText";
-      }else if(i == 0 ){
-        priceInText = "$str$priceInText";
-
-      }else{
-        priceInText = ",$str$priceInText";
-      }
-    }
-    return priceInText.trim();
-  }
+  
 
 
 }

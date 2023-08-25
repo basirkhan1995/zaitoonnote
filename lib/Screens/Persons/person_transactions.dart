@@ -3,8 +3,12 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import '../../Datebase Helper/sqlite.dart';
+import '../../Methods/env.dart';
+import '../../Provider/provider.dart';
 import '../Activities/create_transaction.dart';
 import '../Json Models/category_model.dart';
 import '../Json Models/trn_model.dart';
@@ -22,11 +26,16 @@ class _PersonActivitiesState extends State<PersonActivities> {
   final searchCtrl = TextEditingController();
   String keyword = "";
 
+  int selectedCategoryId = 0;
+  String selectedCategoryName = "";
+  DateTime? startDate;
+  DateTime? endDate;
+
   late DatabaseHelper handler;
   late Future<List<TransactionModel>> transactions;
   final db = DatabaseHelper();
   var formatter = NumberFormat('#,##,000');
-
+  String now = DateTime.now().toString();
   @override
   void initState() {
     super.initState();
@@ -53,13 +62,9 @@ class _PersonActivitiesState extends State<PersonActivities> {
     });
   }
 
-  var filterTitles = [
-    ""
-  ];
-
   @override
   Widget build(BuildContext context) {
-    print("Hellooo ${widget.data?.pId.toString()??"Empty Data"}");
+    final provider = Provider.of<MyProvider>(context, listen: false);
     return Scaffold(
 
       floatingActionButton: FloatingActionButton(
@@ -72,95 +77,68 @@ class _PersonActivitiesState extends State<PersonActivities> {
         child: Column(
           children: [
 
-            //Search TextField
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 3),
-                      decoration: BoxDecoration(
-                          color: Colors.deepPurple.withOpacity(.1),
-                          borderRadius: BorderRadius.circular(8)
+            //filter
+            ListTile(
+              dense: true,
+              visualDensity: const VisualDensity(vertical: -4),
+              title: SizedBox(
+                width: 40,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  child: DropdownSearch<CategoryModel>(
+                    popupProps: PopupPropsMultiSelection.modalBottomSheet(
+                      fit: FlexFit.loose,
+                      title: Column(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.zero,
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 8),
+                            height: 5,
+                            width: 60,
+                            decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius:
+                                BorderRadius
+                                    .circular(15)),
+                          ),
+                        ],
                       ),
-                      child: TextFormField(
-                        controller: searchCtrl,
-                        onChanged: (value){
-                          setState(() {
-                            keyword = searchCtrl.text;
-                            transactions = db.transactionSearch(keyword);
-                          });
-                        },
-                        decoration: InputDecoration(
-                            hintText: Locales.string(context,"search"),
-                            icon: const Icon(Icons.search),
-                            border: InputBorder.none
-                        ),
-                      ),
+
+                    ),
+
+                    asyncItems: (value) => db.getCategories("activity"),
+                    itemAsString: (CategoryModel u) =>
+                        Locales.string(context, u.cName??""),
+                    onChanged: (CategoryModel? data) {
+                      setState(() {
+                        selectedCategoryId = data!.cId!.toInt();
+                        selectedCategoryName = data.cName.toString();
+                        transactions = db.filterTransactions(selectedCategoryName);
+                      });
+                    },
+                    dropdownButtonProps: const DropdownButtonProps(
+                      icon: Icon(Icons.filter_alt_rounded, size: 22),
+                    ),
+                    dropdownDecoratorProps: DropDownDecoratorProps(
+                      dropdownSearchDecoration: InputDecoration(
+                          hintStyle: const TextStyle(fontSize: 13),
+                          hintText: Locales.string(
+                              context, "select_category"),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 15, vertical: 20),
+                          border: InputBorder.none),
                     ),
                   ),
-
-                  //Filter Button
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 2),
-                        margin: const EdgeInsets.symmetric(horizontal: 2,vertical: 10),
-                        height: 60,
-                        decoration: BoxDecoration(
-                            color: Colors.deepPurple.withOpacity(.1),
-                            borderRadius: BorderRadius.circular(10)),
-                        child: DropdownSearch<CategoryModel>(
-                          popupProps: PopupPropsMultiSelection.modalBottomSheet(
-                            fit: FlexFit.loose,
-                            title: Column(
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.symmetric(
-                                      vertical: 8),
-                                  height: 5,
-                                  width: 60,
-                                  decoration: BoxDecoration(
-                                      color: Colors.deepPurple,
-                                      borderRadius:
-                                      BorderRadius
-                                          .circular(15)),
-                                ),
-
-                              ],
-                            ),
-
-                          ),
-
-                          asyncItems: (value) => db.getCategoryByType("activity"),
-                          itemAsString: (CategoryModel u) =>
-                              Locales.string(context, u.cName),
-                          onChanged: (CategoryModel? data) {
-                            setState(() {
-                              //selectedCategoryId = data!.cId!.toInt();
-                            });
-                          },
-                          dropdownButtonProps: const DropdownButtonProps(
-                            icon: Icon(Icons.filter_alt_rounded, size: 22),
-                          ),
-                          dropdownDecoratorProps: DropDownDecoratorProps(
-                            dropdownSearchDecoration: InputDecoration(
-                                hintStyle: const TextStyle(fontSize: 13),
-                                hintText: Locales.string(
-                                    context, "select_category"),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 20),
-                                border: InputBorder.none),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
+              ),
+              trailing: IconButton(
+                onPressed: (){
+                  setState(() {
+                    datePicker();
+                  });
+                },
+                icon: Icon(Icons.date_range),
               ),
             ),
 
@@ -194,59 +172,59 @@ class _PersonActivitiesState extends State<PersonActivities> {
                       child: RefreshIndicator(
                         onRefresh: _onRefresh,
                         child: SizedBox(
-
                           child: ListView.builder(
                               itemCount: items.length,
                               itemBuilder: (context,index){
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
-                                  child: Container(
-                                      margin: const EdgeInsets.symmetric(horizontal: 10),
-                                      padding: const EdgeInsets.symmetric(vertical: 4),
-                                      height: 90,
-                                      decoration: BoxDecoration(
-                                          color: Colors.deepPurple.shade900.withOpacity(.8),
-                                          borderRadius: BorderRadius.circular(10),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                              color: Colors.white,
-                                              blurRadius: 1,
-                                              offset: Offset(1, 0),
-                                            ),
-                                          ]
-                                      ),
+                                return Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
                                       child: ListTile(
+                                        dense: true,
+
                                         leading: SizedBox(
                                             height: 60,width: 60,
                                             child: CircleAvatar(
                                                 radius: 50,
-                                                backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
-                                        contentPadding: const EdgeInsets.symmetric(vertical: 5,horizontal: 15),
-                                        title: Text(items[index].person,style:const TextStyle(color: Colors.white,fontSize: 18,fontWeight: FontWeight.bold),),
-                                        subtitle: Text(items[index].trnDescription,style: const TextStyle(color: Colors.white),),
-                                        trailing: Column(
+                                                backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover).image:const AssetImage("assets/Photos/no_user.jpg"))),
+                                        contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 15),
+                                        title: Row(
                                           children: [
-                                            Expanded(
-                                              child: Container(
-                                                padding: const EdgeInsets.all(5),
-                                                decoration: BoxDecoration(
-                                                    color: Colors.white,
-                                                    borderRadius: BorderRadius.circular(4)
-                                                ),
-                                                child: LocaleText(
-                                                  items[index].trnCategory,
-                                                  style: const TextStyle(
-                                                      color: Colors.deepPurple, fontSize: 13),
-                                                ),
+                                            Text(items[index].person,style:const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                                            const SizedBox(width: 8),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
+                                              decoration: BoxDecoration(
+                                                  color: items[index].trnCategory == "received"? Colors.lightGreen:Colors.red.shade700,
+                                                  borderRadius: BorderRadius.circular(4)
+                                              ),
+                                              child: Icon(
+                                                items[index].trnCategory == "received"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
                                               ),
                                             ),
-                                            Expanded(child: Text(formatAmount(items[index].amount.toString()),style: const TextStyle(fontSize: 20,color: Colors.white),)),
+                                          ],
+                                        ),
+                                        subtitle: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt??"")):Env.gregorianDateTimeForm(DateTime.parse(items[index].createdAt??"")),style: const TextStyle(),),
+                                        trailing: Column(
+                                          children: [
+
+                                            const SizedBox(height: 6),
+                                            Expanded(child: Text(Env.amountFormat(items[index].amount.toString()),style: const TextStyle(fontSize: 20),)),
                                           ],
                                         ),
 
-                                      )),
+                                      ),
+                                    ),
+                                    Container(
+                                      decoration: BoxDecoration(color: Colors.grey.withOpacity(.3)),
+                                      width: MediaQuery.of(context).size.width *.9,
+                                      height: 1,
+                                      margin: EdgeInsets.zero,
+                                    )
+                                  ],
                                 );
                               }),
+
                         ),
                       ),
                     );
@@ -260,24 +238,23 @@ class _PersonActivitiesState extends State<PersonActivities> {
     );
   }
 
-  String formatAmount(value){
-    String price = value;
-    String priceInText = "";
-    int counter = 0;
-    for(int i = (price.length - 1);  i >= 0; i--){
-      counter++;
-      String str = price[i];
-      if((counter % 3) != 0 && i !=0){
-        priceInText = "$str$priceInText";
-      }else if(i == 0 ){
-        priceInText = "$str$priceInText";
-
-      }else{
-        priceInText = ",$str$priceInText";
-      }
+  datePicker()async{
+    final picked = await showDateRangePicker(
+      context: context,
+      lastDate: DateTime(2030),
+      firstDate: DateTime(2010),
+    );
+    if (picked != null) {
+      print(picked);
+      setState(() {
+        startDate = picked.start;
+        endDate = picked.end;
+        print("startDate: $startDate");
+        print("endDate: $endDate");
+      });
     }
-    return priceInText.trim();
   }
 
-
 }
+
+

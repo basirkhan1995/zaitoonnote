@@ -275,7 +275,7 @@ class _CreateNoteState extends State<CreateNote> {
                         TextButton(
                             onPressed: () {
                               if(cFormKey.currentState!.validate()){
-                                db.createCategory(CategoryModel(cName: categoryCtrl.text,categoryType: categoryType,createdAt: DateFormat.yMd().format(DateTime.now()))).whenComplete(() => Navigator.pop(context));
+                                db.createCategory(CategoryModel(cName: categoryCtrl.text,categoryType: categoryType)).whenComplete(() => Navigator.pop(context));
                               }
                             },
                             child:

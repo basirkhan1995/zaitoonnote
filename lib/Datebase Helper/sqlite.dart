@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
@@ -19,11 +20,11 @@ class DatabaseHelper{
   int noteStatus = 1;
 
   String dirName = "Backup";
-  String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text, personInfo int, FOREIGN KEY (personInfo) REFERENCES persons (pId))";
-  String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT NOT NULL,categoryType TEXT, catCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP) ";
-  String notes = "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,noteCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId))";
+  String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text, personInfo int, FOREIGN KEY (personInfo) REFERENCES persons (pId) ON DELETE CASCADE)";
+  String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT NOT NULL,categoryType TEXT) ";
+  String notes = "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,noteCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId) ON DELETE CASCADE)";
   String persons = "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT, jobTitle TEXT, cardNumber TEXT, accountName TEXT, pImage TEXT,pPhone TEXT,updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
-  String activities = "create table transactions (trnId INTEGER PRIMARY KEY AUTOINCREMENT, trnDescription TEXT, trnType INTEGER, trnPerson INTEGER NOT NULL, amount INTEGER NOT NULL, trnImage TEXT, trnDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (trnPerson) REFERENCES persons (pId), FOREIGN KEY (trnType) REFERENCES category (cId))";
+  String activities = "create table transactions (trnId INTEGER PRIMARY KEY AUTOINCREMENT, trnDescription TEXT, trnType INTEGER, trnPerson INTEGER NOT NULL, amount INTEGER NOT NULL, trnImage TEXT, trnDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (trnPerson) REFERENCES persons (pId) ON DELETE CASCADE, FOREIGN KEY (trnType) REFERENCES category (cId)ON DELETE CASCADE)";
 
   //Default Data
   String defaultActivityData = "INSERT INTO category (cId, cName, categoryType) values (1,'%', 'activity'),(2,'paid', 'activity' ),(3,'received', 'activity'),(4,'check', 'activity'),(5,'rent', 'activity'),(6,'power', 'activity')";
@@ -267,11 +268,23 @@ class DatabaseHelper{
     return result;
   }
 
-  //Update note
-  Future <int> updateProfileDetails(pName,jobTitle,cardNumber,accountName,pPhone,updatedAt, pId)async{
+  //Update person Details
+  Future <int> updateProfileDetails(pName,jobTitle,cardNumber,accountName,pPhone, pId)async{
     final Database db = await initDB();
-    var result = await db.rawUpdate("update persons set pName = ?, jobTitle =?, cardNumber = ?, accountName =?, pPhone = ?, updatedAt = ? where pId  = ? ",[pName,jobTitle, cardNumber, accountName,pPhone, updatedAt, pId]);
+    var result = await db.rawUpdate("update persons set pName = ?, jobTitle =?, cardNumber = ?, accountName =?, pPhone = ?, updatedAt = ? where pId  = ? ",[pName,jobTitle, cardNumber, accountName,pPhone, pId]);
     return result;
+  }
+
+  // Delete
+  Future<void> deletePerson(String id,context) async {
+    final db = await initDB();
+    try {
+       await db.delete("persons", where: "pId = ?", whereArgs: [id]);
+    } catch (err) {
+      if (kDebugMode){
+        print("deleting failed: $err");
+      }
+    }
   }
 
 
@@ -292,7 +305,7 @@ class DatabaseHelper{
   //Show transactions
   Future <List<TransactionModel>> getTransactions () async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId ORDER BY trnId");
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where date(trnDate) = ?",[DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toIso8601String()))]);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
   //Show transactions
@@ -310,16 +323,16 @@ class DatabaseHelper{
   }
 
   //Transaction by type (filtering)
-  Future <List<TransactionModel>> getByTransactionPerson (String id) async{
+  Future <List<TransactionModel>> getByTransactionPerson (String id,start,end) async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where b.pId = ? AND Date(a.trnDate) BETWEEN ? AND ?", [id,'2023-08-01','2023,08-29']);
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where b.pId = ? AND date(trnDate) BETWEEN ? AND ? ", [id,start,end]);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 
   //Transaction by type (filtering)
-  Future <List<TransactionModel>> getTransactionsByDate (String date) async{
+  Future <List<TransactionModel>> getTransactionByDateRange (String id, first, end) async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage,pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where trnDate = ? ",["%$date%"]);
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where b.pId = ? AND date(trnDate) BETWEEN ? AND ? ", [id,first,end]);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 
@@ -418,15 +431,16 @@ class DatabaseHelper{
     return count;
   }
 
-  Future <int?> totalPaidToday() async {
+  Future <int?> totalAmountToday(int trnType) async {
     final Database db = await initDB();
-    final count = Sqflite.firstIntValue(await db.rawQuery("select sum(amount) from transactions where  trnPerson = ? "));
+    final count = Sqflite.firstIntValue(await db.rawQuery("select sum(amount) from transactions where trnType = ? AND date(trnDate) = ? ",[trnType,'2023-08-26']));
     return count;
   }
 
-  Future <int?> totalSumByCategoryAndPerson(int trnType, int person) async {
+
+  Future <int?> totalSumByCategoryAndPerson(int trnType, int person,start,end) async {
     final Database db = await initDB();
-    final count = Sqflite.firstIntValue(await db.rawQuery("select sum(amount) from transactions where trnType = ? AND trnPerson = ? AND DATE(trnDate) BETWEEN ? AND ?", [trnType, person ,'2023-01-01','2023-12-12']));
+    final count = Sqflite.firstIntValue(await db.rawQuery("select sum(amount) from transactions where trnType = ? AND trnPerson = ? AND date(trnDate) BETWEEN ? AND ?", [trnType, person,start,end]));
     return count;
   }
 

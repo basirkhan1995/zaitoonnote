@@ -28,7 +28,6 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
        ..showSnackBar(snackBar);
    }
 
-
    static showSnackBar(String title,String? message,context){
      if(message == null) return;
      final materialBanner = MaterialBanner(
@@ -68,9 +67,10 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
      return priceInText.trim();
    }
 
-   static gregorianDateTimeForm(DateTime date){
-     final updated = DateTime.parse(date.toString());
-     final gregorian = DateFormat('yyyy-MM-dd - HH:mm a').format(updated);
+
+   static gregorianDateTimeForm(String date){
+     final format = DateTime.parse(date);
+     final gregorian = DateFormat('yyyy-MM-dd').format(format);
      return gregorian;
    }
 

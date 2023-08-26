@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Screens/Activities/transaction_details.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import '../../Datebase Helper/sqlite.dart';
@@ -66,14 +67,6 @@ class _AllActivitiesState extends State<AllActivities> {
 
   int currentFilterIndex = 0;
 
-  List filterTitle = [
-    "today",
-    "yesterday",
-  ];
-  List dates = [
-    DateTime.now(),
-    DateTime.saturday,
-  ];
 
 
   @override
@@ -117,7 +110,7 @@ class _AllActivitiesState extends State<AllActivities> {
                             onTap: (){
                               setState(() {
                                 currentFilterIndex = index;
-                                transactions = db.filterTransactions(items[index].cName??"");
+                               transactions = db.filterTransactions(items[index].cName??"");
                               });
                             },
                             child: Container(
@@ -222,8 +215,24 @@ class _AllActivitiesState extends State<AllActivities> {
                                           radius: 50,
                                             backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
                                     contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 15),
-                                    title: Text(items[index].person,style:const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-                                    subtitle: Text( provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt??"")):Env.gregorianDateTimeForm(DateTime.parse(items[index].createdAt??""))),
+
+                                    title: Row(
+                                      children: [
+                                        Text(items[index].person,style:const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                                        const SizedBox(width: 8),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
+                                          decoration: BoxDecoration(
+                                              color: items[index].trnCategory == "received"? Colors.lightGreen:Colors.red.shade700,
+                                              borderRadius: BorderRadius.circular(4)
+                                          ),
+                                          child: Icon(
+                                            items[index].trnCategory == "received"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    subtitle: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString())),
                                     trailing: Text(Env.amountFormat(items[index].amount.toString()),style: const TextStyle(fontSize: 18),),
                                     dense: true,
                                   ),

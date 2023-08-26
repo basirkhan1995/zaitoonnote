@@ -1,16 +1,13 @@
 import 'dart:io';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import '../../Datebase Helper/sqlite.dart';
+import '../../Methods/colors.dart';
 import '../../Methods/env.dart';
 import '../../Provider/provider.dart';
-import '../Activities/create_transaction.dart';
-import '../Json Models/category_model.dart';
 import '../Json Models/trn_model.dart';
 
 
@@ -28,117 +25,70 @@ class _PersonActivitiesState extends State<PersonActivities> {
 
   int selectedCategoryId = 0;
   String selectedCategoryName = "";
-  DateTime? startDate;
-  DateTime? endDate;
 
+  DateTime firstSelectedDate = DateTime.now();
+  DateTime endSelectedDate = DateTime.now();
   late DatabaseHelper handler;
   late Future<List<TransactionModel>> transactions;
   final db = DatabaseHelper();
   var formatter = NumberFormat('#,##,000');
-  String now = DateTime.now().toString();
   @override
   void initState() {
     super.initState();
     handler = DatabaseHelper();
-    transactions = handler.getByTransactionPerson(widget.data?.pId.toString()??"");
+    transactions = handler.getByTransactionPerson(widget.data?.pId.toString()??"",firstSelectedDate.toString(),endSelectedDate.toString());
     handler.initDB().whenComplete(() async {
       setState(() {
-        transactions = getTrn();
+        transactions = getAllTransactionByPersonId();
       });
     });
     _onRefresh();
   }
 
-
   //Method to get data from database
-  Future<List<TransactionModel>> getTrn() async {
-    return await handler.getByTransactionPerson(widget.data?.pId.toString()??"");
+  Future<List<TransactionModel>> getAllTransactionByPersonId() async {
+    return await handler.getByTransactionPerson(widget.data?.pId.toString()??"",firstSelectedDate.toString(),endSelectedDate.toString());
   }
 
   //Method to refresh data on pulling the list
   Future<void> _onRefresh() async {
     setState(() {
-      transactions = getTrn();
+      transactions = getAllTransactionByPersonId();
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MyProvider>(context, listen: false);
     return Scaffold(
-
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>const CreateTransaction()));
-        },
-      ),
       body:  SafeArea(
         child: Column(
           children: [
 
             //filter
             ListTile(
-              dense: true,
-              visualDensity: const VisualDensity(vertical: -4),
-              title: SizedBox(
-                width: 40,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  child: DropdownSearch<CategoryModel>(
-                    popupProps: PopupPropsMultiSelection.modalBottomSheet(
-                      fit: FlexFit.loose,
-                      title: Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.zero,
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 8),
-                            height: 5,
-                            width: 60,
-                            decoration: BoxDecoration(
-                                color: Colors.grey,
-                                borderRadius:
-                                BorderRadius
-                                    .circular(15)),
-                          ),
-                        ],
-                      ),
+              title:Row(
+                children: [
+                  Container(
+                      padding:const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
+                      decoration: BoxDecoration(color: zPrimaryColor,borderRadius: BorderRadius.circular(4)),
+                      child: Text(Env.persianDateTimeFormat(DateTime.parse(firstSelectedDate.toString())),style: const TextStyle(color: Colors.white),)),
+                  const SizedBox(width: 10),
+                  Container(
+                      padding:const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
+                      decoration: BoxDecoration(color: zPrimaryColor,borderRadius: BorderRadius.circular(4)),
+                      child: Text(Env.persianDateTimeFormat(DateTime.parse(endSelectedDate.toString())),style: const TextStyle(color: Colors.white),)),
 
-                    ),
-
-                    asyncItems: (value) => db.getCategories("activity"),
-                    itemAsString: (CategoryModel u) =>
-                        Locales.string(context, u.cName??""),
-                    onChanged: (CategoryModel? data) {
-                      setState(() {
-                        selectedCategoryId = data!.cId!.toInt();
-                        selectedCategoryName = data.cName.toString();
-                        transactions = db.filterTransactions(selectedCategoryName);
-                      });
-                    },
-                    dropdownButtonProps: const DropdownButtonProps(
-                      icon: Icon(Icons.filter_alt_rounded, size: 22),
-                    ),
-                    dropdownDecoratorProps: DropDownDecoratorProps(
-                      dropdownSearchDecoration: InputDecoration(
-                          hintStyle: const TextStyle(fontSize: 13),
-                          hintText: Locales.string(
-                              context, "select_category"),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 15, vertical: 20),
-                          border: InputBorder.none),
-                    ),
-                  ),
-                ),
+                ],
               ),
               trailing: IconButton(
                 onPressed: (){
                   setState(() {
-                    datePicker();
+                   showPicker();
                   });
                 },
-                icon: Icon(Icons.date_range),
+                icon: const Icon(Icons.date_range),
               ),
             ),
 
@@ -204,7 +154,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                             ),
                                           ],
                                         ),
-                                        subtitle: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt??"")):Env.gregorianDateTimeForm(DateTime.parse(items[index].createdAt??"")),style: const TextStyle(),),
+                                        subtitle: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString()),style: const TextStyle(),),
                                         trailing: Column(
                                           children: [
 
@@ -238,21 +188,21 @@ class _PersonActivitiesState extends State<PersonActivities> {
     );
   }
 
-  datePicker()async{
-    final picked = await showDateRangePicker(
-      context: context,
-      lastDate: DateTime(2030),
-      firstDate: DateTime(2010),
+   showPicker()async{
+    final DateTimeRange? dateTimeRange = await showDateRangePicker(
+        context: context,
+        firstDate: DateTime(2000),
+        lastDate: DateTime(3000),
+        initialDateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now().add(const Duration(days: 1)))
     );
-    if (picked != null) {
-      print(picked);
+    if(dateTimeRange != null){
       setState(() {
-        startDate = picked.start;
-        endDate = picked.end;
-        print("startDate: $startDate");
-        print("endDate: $endDate");
+        firstSelectedDate = dateTimeRange.start;
+        endSelectedDate = dateTimeRange.end;
+        _onRefresh();
       });
     }
+    return dateTimeRange;
   }
 
 }

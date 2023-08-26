@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Methods/z_button.dart';
 import 'package:zaitoonnote/Methods/z_field.dart';
@@ -33,6 +32,30 @@ class _AddPersonState extends State<AddPerson> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6.0),
+            child: ZButton(
+              radius: 4,
+              width: .4,
+              onTap: () {
+                if (formKey.currentState!.validate()) {
+                  db.createPerson(PersonModel(
+                      pName: fullName.text,
+                      pPhone: phone.text,
+                      cardNumber: cardNumber.text,
+                      accountName: cardName.text,
+                      jobTitle: jobTitle.text,
+                      pImage: _pImage?.path ?? ""))
+                      .whenComplete(() => Env.goto(
+                      const AccountSettings(), context));
+                }
+              },
+              label: "create",
+              backgroundColor: zPrimaryColor,
+            ),
+          ),
+        ],
         title: const LocaleText("new_account"),
       ),
       body: SingleChildScrollView(
@@ -92,42 +115,7 @@ class _AddPersonState extends State<AddPerson> {
                       icon: Icons.person,
                       controller: cardName,
                       keyboardInputType: TextInputType.text),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: ZButton(
-                            onTap: () {
-                              if (formKey.currentState!.validate()) {
-                                db.createPerson(PersonModel(
-                                        pName: fullName.text,
-                                        pPhone: phone.text,
-                                        cardNumber: cardNumber.text,
-                                        accountName: cardName.text,
-                                        jobTitle: jobTitle.text,
-                                        pImage: _pImage?.path ?? ""))
-                                    .whenComplete(() => Env.goto(
-                                        const AccountSettings(), context));
-                              }
-                            },
-                            label: "create",
-                            backgroundColor: zPrimaryColor,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          flex: 2,
-                          child: ZButton(
-                            onTap: () => Navigator.pop(context),
-                            label: "cancel",
-                            backgroundColor: zPrimaryColor,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
+
                 ],
               ),
             ),

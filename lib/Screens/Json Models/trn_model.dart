@@ -1,7 +1,4 @@
 
-
-import 'package:intl/intl.dart';
-
 class TransactionModel{
   final int? trnId;
   final String trnCategory;
@@ -11,7 +8,7 @@ class TransactionModel{
   final String? pImage;
   final String? trnImage;
   final String? createdAt;
-  TransactionModel({this.trnId, required this.trnCategory, this.pImage, this.trnImage, required this.trnDescription, required this.amount,required this.person,required this.createdAt});
+  TransactionModel({this.trnId, required this.trnCategory, this.pImage, this.trnImage, required this.trnDescription, required this.amount,required this.person,this.createdAt});
 
   factory TransactionModel.fromMap(Map<String, dynamic> json) => TransactionModel(
     trnId: json['trnId'],
@@ -21,7 +18,7 @@ class TransactionModel{
     trnDescription: json['trnDescription'],
     amount: json['amount'],
     person: json['pName'],
-    createdAt: json['trnDate']??"",
+    createdAt: json['trnDate'],
   );
 
   Map<String, dynamic> toMap(){

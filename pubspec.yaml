@@ -52,6 +52,7 @@ dependencies:
   permission_handler: ^10.4.3
   file_picker: ^5.3.3
   unicons: ^2.1.1
+  flutter_date_range_picker: ^0.0.14
 
 dev_dependencies:
   flutter_test:

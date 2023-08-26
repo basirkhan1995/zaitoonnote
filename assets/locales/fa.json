@@ -115,5 +115,7 @@
   "operation_failed": "عملیات نا موفقانه",
   "operation_success": "عملیات موفقانه",
   "new_password": "کلمه عبور جدید",
-  "change_password_hint": "تغییر کلمه عبور"
+  "change_password_hint": "تغییر کلمه عبور",
+  "attachment": "تصویر",
+  "today": "امروز"
 }

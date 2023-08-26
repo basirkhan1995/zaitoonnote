@@ -305,7 +305,7 @@ class DatabaseHelper{
   //Show transactions
   Future <List<TransactionModel>> getTransactions () async{
     final Database db = await initDB();
-    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where date(trnDate) = ?",[DateFormat('yyyy-MM-dd').format(DateTime.parse(DateTime.now().toIso8601String()))]);
+    final List<Map<String, Object?>>  queryResult = await db.rawQuery("select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId");
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
   //Show transactions
@@ -433,7 +433,7 @@ class DatabaseHelper{
 
   Future <int?> totalAmountToday(int trnType) async {
     final Database db = await initDB();
-    final count = Sqflite.firstIntValue(await db.rawQuery("select sum(amount) from transactions where trnType = ? AND date(trnDate) = ? ",[trnType,'2023-08-26']));
+    final count = Sqflite.firstIntValue(await db.rawQuery("select sum(amount) from transactions where trnType = ? AND date(trnDate) = ? ",[trnType,DateTime.now().toIso8601String()]));
     return count;
   }
 
@@ -444,11 +444,6 @@ class DatabaseHelper{
     return count;
   }
 
-  Future <int?> categoryCounts() async {
-    final Database db = await initDB();
-    final count = Sqflite.firstIntValue(await db.rawQuery("select cName, count (cId) from transactions group by cName ORDER BY COUNT(cId) DESC"));
-    return count;
-  }
 
 
 }

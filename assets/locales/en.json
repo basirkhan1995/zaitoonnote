@@ -115,5 +115,7 @@
   "operation_failed": "Operation failed",
   "operation_success": "Operation succeed",
   "new_password": "New password",
-  "change_password_hint": "Change your password "
+  "change_password_hint": "Change your password ",
+  "attachment": "Attachment",
+  "today": "Today"
 }

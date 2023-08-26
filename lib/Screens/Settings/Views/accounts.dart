@@ -60,7 +60,7 @@ class _AccountSettingsState extends State<AccountSettings> {
       appBar: AppBar(
         title: const LocaleText("accounts"),
         leading: IconButton(
-          onPressed: ()=> Env.goto(BottomNavBar(), context), icon: Icon(Icons.arrow_back_ios),
+          onPressed: ()=> Env.goto(const BottomNavBar(), context), icon: const Icon(Icons.arrow_back_ios),
         ),
         actions: [
 

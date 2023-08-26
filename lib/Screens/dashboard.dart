@@ -18,6 +18,7 @@ class _DashboardState extends State<Dashboard> {
   int totalReceived = 0;
   int totalUser = 0;
 
+
   final db = DatabaseHelper();
 
   DateTime firstSelectedDate = DateTime.now();
@@ -39,8 +40,9 @@ class _DashboardState extends State<Dashboard> {
   Future<int> users()async{
     int? count = await handler.totalUsers();
     setState(() => totalUser = count??0);
-    return totalReceived;
+    return totalUser;
   }
+
   //Total Received count
   Future<int> received()async{
     int? count = await handler.totalAmountToday(3);
@@ -67,38 +69,44 @@ class _DashboardState extends State<Dashboard> {
     return Scaffold(
 
       body: SafeArea(
-        child: Column(
-          children: [
-            const ListTile(
-              title: LocaleText("today"),
-            ),
-            Row(
-              children: [
-                box("accounts", Env.amountFormat(totalPaid.toString())),
-                box("total_paid", Env.amountFormat(totalReceived.toString())),
-              ],
-            ),
-            Row(
-              children: [
-                box("total_received", Env.amountFormat(totalPaid.toString())),
-                box("total_paid", Env.amountFormat(totalReceived.toString())),
-              ],
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const ListTile(
+                title: LocaleText("today",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 22),),
+              ),
+              Row(
+                children: [
+                  box("accounts", totalUser.toString(),2,Colors.blueGrey.withOpacity(.3)),
+                  box("total_paid", Env.amountFormat(totalReceived.toString()),3,zColor2),
+                ],
+              ),
+              Row(
+                children: [
+                  box("total_received", Env.amountFormat(totalPaid.toString()),1,zBlue.withOpacity(.2)),
+
+                ],
+              ),
+
+            ],
+          ),
         ),
       ),
     );
   }
 
-  box(title,stats){
+  box(title,stats,flex, Color backgroundColor){
     return Expanded(
+      flex: flex,
       child: Container(
         margin: const EdgeInsets.all(8),
         padding: const EdgeInsets.symmetric(vertical: 10),
-        height: 100,
+        height: 80,
         //width: MediaQuery.of(context).size.width *.4,
         decoration: BoxDecoration(
-          color: zPrimaryColor.withOpacity(.3),
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Center(

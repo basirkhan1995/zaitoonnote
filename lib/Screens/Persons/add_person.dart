@@ -34,9 +34,9 @@ class _AddPersonState extends State<AddPerson> {
       appBar: AppBar(
         actions: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6.0),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             child: ZButton(
-              radius: 4,
+              radius: 6,
               width: .4,
               onTap: () {
                 if (formKey.currentState!.validate()) {
@@ -67,7 +67,7 @@ class _AddPersonState extends State<AddPerson> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 20),
                   InkWell(
                     splashColor: Colors.transparent,
                     onTap: () {
@@ -115,7 +115,6 @@ class _AddPersonState extends State<AddPerson> {
                       icon: Icons.person,
                       controller: cardName,
                       keyboardInputType: TextInputType.text),
-
                 ],
               ),
             ),

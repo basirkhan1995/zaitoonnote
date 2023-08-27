@@ -80,7 +80,8 @@ class _CreateTransactionState extends State<CreateTransaction> {
               width: .35,
                 onTap: () {
                   if (formKey.currentState!.validate()) {
-                    db.createTransaction2(trnDescription.text, selectedCategoryId, selectedPerson, int.parse(trnAmount.text), _trnImage?.path??"").whenComplete(() => Navigator.pop(context));
+                    db.createTransaction2(trnDescription.text, selectedCategoryId, selectedPerson, int.parse(trnAmount.text), _trnImage?.path??"",DateTime.now().toIso8601String()).whenComplete(() => Navigator.pop(context));
+
                   }
                 },
                 label: "create"),
@@ -180,8 +181,11 @@ class _CreateTransactionState extends State<CreateTransaction> {
                           margin: const EdgeInsets.symmetric(horizontal: 2,vertical: 10),
                           height: 60,
                           decoration: BoxDecoration(
-                              color: Colors.deepPurple.withOpacity(.1),
-                              borderRadius: BorderRadius.circular(10)),
+                              border: Border.all(
+                                color: zPrimaryColor,
+                                width: 1.5
+                              ),
+                              borderRadius: BorderRadius.circular(8)),
                           child: DropdownSearch<CategoryModel>(
 
                             validator: (value){
@@ -202,8 +206,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                                     decoration: BoxDecoration(
                                         color: Colors.deepPurple,
                                         borderRadius:
-                                        BorderRadius
-                                            .circular(15)),
+                                        BorderRadius.circular(15)),
                                   ),
                                   Padding(
                                       padding: const EdgeInsets.only(top: 0, left: 10),
@@ -227,7 +230,6 @@ class _CreateTransactionState extends State<CreateTransaction> {
                               ),
 
                             ),
-
                             asyncItems: (value) => db.getCategoryByType("activity"),
                             itemAsString: (CategoryModel u) =>
                                 Locales.string(context, u.cName??""),
@@ -239,11 +241,10 @@ class _CreateTransactionState extends State<CreateTransaction> {
 
                             dropdownDecoratorProps: DropDownDecoratorProps(
                               dropdownSearchDecoration: InputDecoration(
-                                  hintStyle: const TextStyle(fontSize: 13),
-                                  hintText: Locales.string(
-                                      context, "select_category"),
+                                  hintStyle: const TextStyle(fontSize: 15,fontFamily: "Dubai"),
+                                  hintText: Locales.string(context, "select_category"),
                                   contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 20),
+                                      horizontal: 14, vertical: 20),
                                   border: InputBorder.none),
                             ),
                           ),
@@ -290,7 +291,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                         decoration: BoxDecoration(
                           image: DecorationImage(
                             fit: BoxFit.cover,
-                            image: _trnImage!=null? Image.file(_trnImage!,fit: BoxFit.cover).image:const AssetImage("assets/Photos/gallery2.png"),
+                            image: _trnImage!=null? Image.file(_trnImage!,fit: BoxFit.cover).image:const AssetImage("assets/Photos/gallery.png"),
                           )
                         ),
                       ),

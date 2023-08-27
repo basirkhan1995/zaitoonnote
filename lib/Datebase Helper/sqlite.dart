@@ -279,11 +279,11 @@ class DatabaseHelper {
 
   //Create a new transaction
   Future<int> createTransaction2(
-      String description, int type, int person, int amount, trnImage) async {
+      String description, int type, int person, int amount, trnImage,date) async {
     final Database db = await initDB();
     return db.rawInsert(
-        "insert into transactions (trnDescription, trnType, trnPerson, amount, trnImage) values (?,?,?,?,?)",
-        [description, type, person, amount, trnImage]);
+        "insert into transactions (trnDescription, trnType, trnPerson, amount, trnImage,trnDate) values (?,?,?,?,?,?)",
+        [description, type, person, amount, trnImage,date]);
   }
 
 
@@ -299,7 +299,7 @@ class DatabaseHelper {
   Future<List<TransactionModel>> getTodayRecentTransactions() async {
     final Database db = await initDB();
     final List<Map<String, Object?>> queryResult = await db.rawQuery(
-        "select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId AND DATE(trnDate) = DATE(?) LIMIT 5",[DateTime.now().toIso8601String()]);
+        "select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId AND DATE(trnDate) = DATE(?) ORDER BY trnDate DESC LIMIT 5",[DateTime.now().toIso8601String()]);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 

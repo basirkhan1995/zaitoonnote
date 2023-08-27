@@ -48,17 +48,10 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           titleSpacing: 20,
-          actions:  [
+          actions: const [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: InkWell(
-                onTap: (){
-
-                },
-                child: const CircleAvatar(
-                  backgroundImage: AssetImage("assets/Photos/no_user.jpg"),
-                ),
-              ),
+              padding:EdgeInsets.symmetric(horizontal: 30.0),
+              child: Icon(Icons.settings)
             )
           ],
           title: const LocaleText("settings"),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Methods/z_button.dart';
@@ -136,7 +137,7 @@ class _DashboardState extends State<Dashboard> {
                      ),
                    ):null,
                    title: LocaleText("welcome",style: TextStyle(fontFamily: currentLocale.toString() == "en"?"Ubuntu":"Dubai",fontSize: 16),),
-                  trailing: Text(DateFormat('MMMMEEEEd').format(DateTime.now()),style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,fontFamily: "Ubuntu"),),
+                  trailing: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 18),),
                 ),
                 Row(
                   children: [

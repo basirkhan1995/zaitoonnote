@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
@@ -20,40 +22,58 @@ class PersonActivities extends StatefulWidget {
 }
 
 class _PersonActivitiesState extends State<PersonActivities> {
-  final searchCtrl = TextEditingController();
-  String keyword = "";
+
+  late Future<List<TransactionModel>> transactions;
+  late Future<List<TransactionModel>> transactionsByDate;
+  late DatabaseHelper handler;
+
+  DateTime firstSelectedDate = DateTime.now();
+  DateTime endSelectedDate = DateTime.now();
+
+  var firstSelectedDate1 = DateTime.now();
+  var endSelectedDate2 = DateTime.now();
+
 
   int selectedCategoryId = 0;
   String selectedCategoryName = "";
 
-  DateTime firstSelectedDate = DateTime.now();
-  DateTime endSelectedDate = DateTime.now();
-  late DatabaseHelper handler;
-  late Future<List<TransactionModel>> transactions;
   final db = DatabaseHelper();
   var formatter = NumberFormat('#,##,000');
+
+  final searchCtrl = TextEditingController();
+  String keyword = "";
+
   @override
   void initState() {
     super.initState();
     handler = DatabaseHelper();
-    transactions = handler.getByTransactionPerson(widget.data?.pId.toString()??"",firstSelectedDate.toString(),endSelectedDate.toString());
+    transactions = handler.getTransactionByPersonId(widget.data?.pId.toString()??"");
+    transactionsByDate = handler.getTransactionByDateRange(widget.data?.pId.toString()??"",firstSelectedDate.toString(),endSelectedDate.toString());
+
     handler.initDB().whenComplete(() async {
       setState(() {
-        transactions = getAllTransactionByPersonId();
+        transactionsByDate = getAllTransactionByDate();
+        transactions = getAllTransaction();
       });
     });
     _onRefresh();
   }
 
-  //Method to get data from database
-  Future<List<TransactionModel>> getAllTransactionByPersonId() async {
-    return await handler.getByTransactionPerson(widget.data?.pId.toString()??"",firstSelectedDate.toString(),endSelectedDate.toString());
+  //All Person Transaction By Date Range
+  Future<List<TransactionModel>> getAllTransactionByDate() async {
+    return await handler.getTransactionByDateRange(widget.data?.pId.toString()??"",firstSelectedDate.toString(),endSelectedDate.toString());
   }
 
-  //Method to refresh data on pulling the list
+  //All Transactions By Person
+  Future<List<TransactionModel>> getAllTransaction() async {
+    return await handler.getTransactionByPersonId(widget.data?.pId.toString()??"");
+  }
+
+  //Refresh Data
   Future<void> _onRefresh() async {
     setState(() {
-      transactions = getAllTransactionByPersonId();
+      transactions = getAllTransaction();
+      transactions = getAllTransactionByDate();
     });
   }
 
@@ -70,22 +90,40 @@ class _PersonActivitiesState extends State<PersonActivities> {
             ListTile(
               title:Row(
                 children: [
-                  Container(
-                      padding:const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
-                      decoration: BoxDecoration(color: zPrimaryColor,borderRadius: BorderRadius.circular(4)),
-                      child: Text(Env.persianDateTimeFormat(DateTime.parse(firstSelectedDate.toString())),style: const TextStyle(color: Colors.white),)),
+                  Row(
+                    children: [
+                      Container(
+                          padding:const EdgeInsets.symmetric(horizontal: 6,vertical: 2),
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(color: Colors.red.shade900,borderRadius: BorderRadius.circular(4)),
+                          child: const LocaleText("from",style: TextStyle(color: Colors.white),)),
+                      Container(
+                          padding:const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
+                          decoration: BoxDecoration(color: zPrimaryColor,borderRadius: BorderRadius.circular(4)),
+                          child: Text(Env.persianDateTimeFormat(DateTime.parse(firstSelectedDate.toString())),style: const TextStyle(color: Colors.white),)),
+                    ],
+                  ),
                   const SizedBox(width: 10),
-                  Container(
-                      padding:const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
-                      decoration: BoxDecoration(color: zPrimaryColor,borderRadius: BorderRadius.circular(4)),
-                      child: Text(Env.persianDateTimeFormat(DateTime.parse(endSelectedDate.toString())),style: const TextStyle(color: Colors.white),)),
+                  Row(
+                    children: [
+                      Container(
+                          padding:const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          decoration: BoxDecoration(color: Colors.red.shade900,borderRadius: BorderRadius.circular(4)),
+                          child: const LocaleText("until",style: TextStyle(color: Colors.white),)),
+                      Container(
+                          padding:const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
+                          decoration: BoxDecoration(color: zPrimaryColor,borderRadius: BorderRadius.circular(4)),
+                          child: Text(Env.persianDateTimeFormat(DateTime.parse(endSelectedDate.toString())),style: const TextStyle(color: Colors.white),)),
+                    ],
+                  ),
 
                 ],
               ),
               trailing: IconButton(
                 onPressed: (){
                   setState(() {
-                   showPicker();
+                  provider.showHidePersianDate? showPersianPicker() : showPicker();
                   });
                 },
                 icon: const Icon(Icons.date_range),
@@ -199,10 +237,33 @@ class _PersonActivitiesState extends State<PersonActivities> {
       setState(() {
         firstSelectedDate = dateTimeRange.start;
         endSelectedDate = dateTimeRange.end;
+        transactions = transactionsByDate;
         _onRefresh();
       });
     }
     return dateTimeRange;
+  }
+
+  showPersianPicker()async{
+    var picked = await showPersianDateRangePicker(
+      context: context,
+      initialEntryMode: PDatePickerEntryMode.calendar,
+      initialDateRange: JalaliRange(
+        start: Jalali.now(),
+        end: Jalali.now(),
+      ),
+      firstDate: Jalali(1350, 8),
+      lastDate: Jalali(1500, 9),
+    );
+    if(picked != null){
+      setState(() {
+        firstSelectedDate = picked.start.toDateTime();
+        endSelectedDate = picked.end.toDateTime();
+        transactions = transactionsByDate;
+        _onRefresh();
+      });
+    }
+    return picked;
   }
 
 }

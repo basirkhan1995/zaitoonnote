@@ -24,7 +24,7 @@
   "category": "Category",
   "work": "Work",
   "payment": "Payments",
-  "create_note": "Add a new note",
+  "create_note": "Add new note",
   "meeting": "Meeting",
   "received": "Received",
   "all": "All",
@@ -117,5 +117,16 @@
   "new_password": "New password",
   "change_password_hint": "Change your password ",
   "attachment": "Attachment",
-  "today": "Today"
+  "today": "Today",
+  "failed_backup_msg": "Backup operation failed, try again later",
+  "from": "From",
+  "until": "Unti",
+  "actions": "Actions",
+  "add_account": "Add new account",
+  "recent_activities": "Today's recent activities",
+  "welcome": "Welcome",
+  "logout_title": "Are you sure?",
+  "logout_msg": "Do you wanna logout",
+  "yes": "Yes",
+  "no": "No"
 }

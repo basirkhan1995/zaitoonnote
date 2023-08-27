@@ -42,7 +42,6 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
        ), actions: const [SizedBox.shrink()],
      );
 
-
      ScaffoldMessenger.of(context)
        ..hideCurrentMaterialBanner()
        ..showMaterialBanner(materialBanner);
@@ -68,9 +67,15 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
    }
 
 
+   static String persianFormatWithWeekDay(Date date){
+       final format = date.formatter;
+       return '${format.wN} ${format.d} ${format.mN}';
+   }
+
+
    static gregorianDateTimeForm(String date){
      final format = DateTime.parse(date);
-     final gregorian = DateFormat('yyyy-MM-dd').format(format);
+     final gregorian = DateFormat('yyyy-MM-dd – kk:mm a').format(format);
      return gregorian;
    }
 

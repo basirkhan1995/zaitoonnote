@@ -9,7 +9,6 @@ import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
 import 'dart:io';
-
 import '../../Methods/env.dart';
 import '../../Provider/provider.dart';
 

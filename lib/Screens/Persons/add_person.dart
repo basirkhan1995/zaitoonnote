@@ -131,7 +131,6 @@ class _AddPersonState extends State<AddPerson> {
     if (pickedFile == null) return;
     setState(() {
       _pImage = File(pickedFile.path);
-      print(_pImage);
     });
   }
 }

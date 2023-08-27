@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
+import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Screens/Activities/transaction_details.dart';
@@ -24,6 +25,11 @@ class _AllActivitiesState extends State<AllActivities> {
   final searchCtrl = TextEditingController();
   String keyword = "";
   String noteTypeCategory = "activity";
+  var today = DateTime.now().toIso8601String();
+  var yesterday = DateTime.now().add(const Duration(days: -1));
+  var lastWeek = DateTime.now().add(const Duration(days: -7));
+
+
   late DatabaseHelper handler;
   late Future<List<TransactionModel>> transactions;
   late Future<List<CategoryModel>> category;
@@ -35,7 +41,7 @@ class _AllActivitiesState extends State<AllActivities> {
   void initState() {
     super.initState();
     handler = DatabaseHelper();
-    transactions = handler.getTransactions();
+    transactions = handler.getTodayTransactions(today);
     handler.initDB().whenComplete(() async {
       setState(() {
         transactions = getTrn();
@@ -49,7 +55,7 @@ class _AllActivitiesState extends State<AllActivities> {
 
   //Method to get data from database
   Future<List<TransactionModel>> getTrn() async {
-    return await handler.getTransactions();
+    return await handler.getTodayTransactions(today);
   }
 
   //Method to refresh data on pulling the list
@@ -67,11 +73,13 @@ class _AllActivitiesState extends State<AllActivities> {
 
   int currentFilterIndex = 0;
 
+  bool isSearchOn = false;
 
 
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MyProvider>(context, listen: false);
+    String currentLocale = Locales.currentLocale(context).toString();
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
@@ -84,7 +92,28 @@ class _AllActivitiesState extends State<AllActivities> {
           children: [
 
             //Filter buttons
-            SizedBox(
+            isSearchOn ? Container(
+              margin: const EdgeInsets.symmetric(horizontal: 14,vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 3),
+              decoration: BoxDecoration(
+                  color: Colors.deepPurple.withOpacity(.1),
+                  borderRadius: BorderRadius.circular(8)
+              ),
+              child: TextFormField(
+                controller: searchCtrl,
+                onChanged: (value){
+                  setState(() {
+                    keyword = searchCtrl.text;
+                    transactions = db.transactionSearch(keyword);
+                  });
+                },
+                decoration: InputDecoration(
+                    hintText: Locales.string(context,"search"),
+                    icon: const Icon(Icons.search),
+                    border: InputBorder.none
+                ),
+              ),
+            ): SizedBox(
               height: 50,
               child: FutureBuilder<List<CategoryModel>>(
                   future: category,
@@ -140,29 +169,19 @@ class _AllActivitiesState extends State<AllActivities> {
             ),
 
             //Search TextField
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10,vertical: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 3),
-              decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(.1),
-                  borderRadius: BorderRadius.circular(8)
-              ),
-              child: TextFormField(
-                controller: searchCtrl,
-                onChanged: (value){
-                  setState(() {
-                    keyword = searchCtrl.text;
-                    transactions = db.transactionSearch(keyword);
-                  });
-                },
-                decoration: InputDecoration(
-                    hintText: Locales.string(context,"search"),
-                    icon: const Icon(Icons.search),
-                    border: InputBorder.none
-                ),
-              ),
-            ),
-
+            ListTile(
+              horizontalTitleGap: 6,
+             leading: const Icon(Icons.access_time),
+             contentPadding: const EdgeInsets.symmetric(horizontal: 10),
+             title: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 18),),
+             trailing: IconButton(
+               onPressed: ()=>setState(() {
+                 isSearchOn = !isSearchOn;
+               }),
+               icon: const Icon(UniconsLine.search),
+             ),
+           ),
+       //All Transactions
             Expanded(
               child: FutureBuilder<List<TransactionModel>>(
                 future: transactions,
@@ -210,11 +229,11 @@ class _AllActivitiesState extends State<AllActivities> {
                                   child: ListTile(
                                     onTap: ()=> Env.goto(TransactionDetails(data: items[index]), context),
                                     leading: SizedBox(
-                                        height: 60,width: 60,
+                                        height: 50,width: 50,
                                         child: CircleAvatar(
                                           radius: 50,
                                             backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 15),
+                                    contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 12),
 
                                     title: Row(
                                       children: [

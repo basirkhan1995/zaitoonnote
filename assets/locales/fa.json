@@ -86,8 +86,8 @@
   "false": "غیرفعال",
   "properties": "تنظیمات سیستم",
   "show_or_hide_properties": "فعال و غیر فعال سازی تنظیمات",
-  "backup": "تهیه پشتیبانی",
-  "backup_data": "ذخیره اطلاعات",
+  "backup": "پشتیبانی",
+  "backup_data": "تهیه پشتیبانی از اطلاعات",
   "show_login": "فعال سازی صفحه ورود",
   "backup_success": "تهیه پشتیبانی با موفقیت انجام شد",
   "backup_restored": "اطلاعات پشتیبانی موفقانه کپی شد",
@@ -117,5 +117,16 @@
   "new_password": "کلمه عبور جدید",
   "change_password_hint": "تغییر کلمه عبور",
   "attachment": "تصویر",
-  "today": "امروز"
+  "today": "امروز",
+  "failed_backup_msg": "تهیه پشتیبانی انجام نشد، دوباره تلاش نمایید",
+  "from": "از",
+  "until": "الی",
+  "actions": "عملیات",
+  "add_account": "حساب جدید",
+  "recent_activities": "فعالیت های اخیر امروز",
+  "welcome": "خوش آمدید",
+  "logout_title": "مطمئین هستید؟",
+  "logout_msg": "آیا میخواهید از حساب خود خارج شوید؟",
+  "yes": "بلی",
+  "no": "نه"
 }

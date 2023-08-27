@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
                     ThemeData(
                       buttonTheme: const ButtonThemeData(
                       ),
-                      fontFamily: "Dubai",
+
                       appBarTheme: const AppBarTheme(
                         titleSpacing: 0,
                         titleTextStyle: TextStyle(fontSize: 18,color: Colors.black,fontFamily: "Dubai",),

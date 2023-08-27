@@ -9,7 +9,6 @@ import 'package:zaitoonnote/Screens/Settings/Views/themes.dart';
 import 'package:zaitoonnote/Screens/Settings/backup/db_backup.dart';
 import '../../Methods/env.dart';
 import '../About App/about_app.dart';
-import 'Views/individuals_records.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -20,7 +19,6 @@ class SettingsPage extends StatelessWidget {
     List items = [
       "accounts",
       "themes",
-      "reports",
       "properties",
       "backup",
       "about"
@@ -28,7 +26,6 @@ class SettingsPage extends StatelessWidget {
     List subItems = [
       "accdetails",
       "themesdetails",
-      "report_details",
       "show or hide properties",
       "backup_data",
       "about"
@@ -37,7 +34,6 @@ class SettingsPage extends StatelessWidget {
     List icons = [
       Icons.person_rounded,
       Icons.color_lens,
-      Icons.insert_chart,
       Icons.settings_rounded,
       Icons.backup,
       Icons.info
@@ -45,7 +41,6 @@ class SettingsPage extends StatelessWidget {
     List pages = <Widget>[
       const AccountSettings(),
       const ChangeThemes(),
-      const IndividualsRecords(),
       const AppProperties(),
       const DatabaseBackup(),
       const AboutApp(),

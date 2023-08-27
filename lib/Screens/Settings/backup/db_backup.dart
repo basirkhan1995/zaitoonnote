@@ -63,7 +63,7 @@ class _DatabaseBackupState extends State<DatabaseBackup> {
                 width: .9,
                 label: "backup",
                 onTap: (){
-                  db.backUpDB(ContentType.success,context);
+                  db.backUpDB(ContentType.success,ContentType.failure,context);
                 },
               ),
               // ZButton(

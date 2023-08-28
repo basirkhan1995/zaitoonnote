@@ -38,7 +38,7 @@ class _IndividualsRecordsState extends State<IndividualsRecords> {
               children: [
                 PersonProfile(profileDetails: widget.data),
                 PersonActivities(data: widget.data),
-                PersonReports(person: widget.data),
+                PersonReports(data: widget.data),
               ],
             ),
           ),

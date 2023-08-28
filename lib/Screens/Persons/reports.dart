@@ -1,13 +1,19 @@
+import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
-import 'package:zaitoonnote/Methods/colors.dart';
+import 'package:provider/provider.dart';
+import 'package:unicons/unicons.dart';
+import 'dart:io';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import '../../Datebase Helper/sqlite.dart';
 import '../../Methods/env.dart';
+import '../../Provider/provider.dart';
+import '../Json Models/trn_model.dart';
+
 
 class PersonReports extends StatefulWidget {
-  final PersonModel? person;
-  const PersonReports({super.key, this.person});
+  final PersonModel? data;
+  const PersonReports({super.key, this.data});
 
   @override
   State<PersonReports> createState() => _PersonReportsState();
@@ -15,122 +21,191 @@ class PersonReports extends StatefulWidget {
 
 class _PersonReportsState extends State<PersonReports> {
 
+  late Future<List<TransactionModel>> transactions;
   late DatabaseHelper handler;
-  int totalPaid = 0 ;
-  int totalReceived = 0;
+
+  DateTime? selectedTimeLine;
+
+  int paid = 0;
+  int received = 0;
+
+  int selectedCategoryId = 0;
+  String selectedCategoryName = "";
+
   final db = DatabaseHelper();
 
-  DateTime firstSelectedDate = DateTime.now();
-  DateTime? endSelectedDate = DateTime.now();
+  final searchCtrl = TextEditingController();
+  String keyword = "";
 
   @override
   void initState() {
     super.initState();
     handler = DatabaseHelper();
+    transactions = handler.getTransactionsBySingleDate(selectedTimeLine.toString());
+
     handler.initDB().whenComplete(() async {
       setState(() {
-
+        transactions = getTransactionByPersonId();
       });
     });
     _onRefresh();
+
   }
 
+  //All Person Transaction By Date Range
+  Future<List<TransactionModel>> getTransactionByPersonId() async {
+    return await handler.getTransactionsBySingleDate(selectedTimeLine.toString());
+  }
 
-  //Total Paid
-  Future<int> sumPaid()async{
-    int? count = await handler.totalSumByCategoryAndPersonByDateRange(2, widget.person?.pId??0,firstSelectedDate.toString(),endSelectedDate.toString());
-    setState(() => totalPaid = count??0);
-    return totalPaid;
-  }
-  //Total Received count
-  Future<int> sumReceived()async{
-    int? count = await handler.totalSumByCategoryAndPersonByDateRange(3,widget.person?.pId??0,firstSelectedDate.toString(),endSelectedDate.toString());
-    setState(() => totalReceived = count??0);
-    return totalReceived;
-  }
 
   //Method to refresh data on pulling the list
+  //Refresh Data
   Future<void> _onRefresh() async {
     setState(() {
-      sumPaid();
-      sumReceived();
+      transactions = getTransactionByPersonId();
     });
   }
 
 
   @override
   Widget build(BuildContext context) {
-    double credit = double.parse(totalReceived.toString());
-    double debit = double.parse(totalPaid.toString());
+    final provider = Provider.of<MyProvider>(context, listen: false);
     String currentLocale = Locales.currentLocale(context).toString();
-    double balance = debit - credit;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ListTile(
-            leading: Icon(Icons.sort_rounded),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              EasyDateTimeLine(
+                initialDate: DateTime.now(),
+                onDateChange: (selectedDate) {
+                  setState(() {
+                    selectedTimeLine = selectedDate;
+                  });
+                },
+                activeColor: const Color(0xff85A389),
+                dayProps: const EasyDayProps(
+                  todayHighlightStyle: TodayHighlightStyle.withBackground,
+                  todayHighlightColor: Color(0xffE1ECC8),
+                ),
+              ),
+            ],
           ),
 
-       //Reports header
-       Container(
-         padding: const EdgeInsets.symmetric(vertical: 0),
-         height: MediaQuery.of(context).size.height *.18,
-         margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
-         decoration: BoxDecoration(
-           borderRadius: BorderRadius.circular(8),
-           color: Colors.white,
-           boxShadow: [
-             BoxShadow(
-               color: Colors.grey.withOpacity(0.5),
-               spreadRadius: 1,
-               blurRadius: 1,
-               offset: const Offset(0, 0), // changes position of shadow
-             ),
-           ],
-         ),
 
-         child: Center(
-           child: SingleChildScrollView(
-             child: Column(
-               mainAxisAlignment: MainAxisAlignment.center,
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 0),
+              height: MediaQuery.of(context).size.height *.18,
+              margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 1,
+                    offset: const Offset(0, 0), // changes position of shadow
+                  ),
+                ],
+              ),
+              child: FutureBuilder<List<TransactionModel>>(
+                future: transactions,
+                builder: (BuildContext context, AsyncSnapshot<List<TransactionModel>> snapshot) {
+                  //in case whether data is pending
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      //To show a circular progress indicator
+                      child: CircularProgressIndicator(),
+                    );
+                    //If snapshot has error
+                  } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+                    return Center(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset("assets/Photos/empty.png",width: 250),
+                            ]
+                        ));
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    //a final variable (item) to hold the snapshot data
+                    final items = snapshot.data ?? <TransactionModel>[];
+                    return Scrollbar(
+                      //The refresh indicator
+                      child: RefreshIndicator(
+                        onRefresh: _onRefresh,
+                        child: SizedBox(
+                          child: ListView.builder(
+                              itemCount: items.length,
+                              itemBuilder: (context,index){
+                                return Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
+                                      child: ListTile(
+                                        dense: true,
 
-               children: [
-                 ListTile(visualDensity: VisualDensity(vertical: -4),title:   LocaleText("credit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.amountFormat(totalPaid.toString()),style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,color: Colors.grey),),),
-                 ListTile(visualDensity: VisualDensity(vertical: -4),title:   LocaleText("debit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.amountFormat(totalReceived.toString()),style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,color: Colors.grey),),),
-                 ListTile(visualDensity: VisualDensity(vertical: -4),title:   LocaleText("balance",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true, trailing: Text(Env.amountFormat(balance.toString()),style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold)),),
-               ],
-             ),
-           ),
-         ),
-       ),
+                                        leading: SizedBox(
+                                            height: 60,width: 60,
+                                            child: CircleAvatar(
+                                                radius: 50,
+                                                backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover).image:const AssetImage("assets/Photos/no_user.jpg"))),
+                                        contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 15),
+                                        title: Row(
+                                          children: [
+                                            Text(items[index].person,style:const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                                            const SizedBox(width: 8),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
+                                              decoration: BoxDecoration(
+                                                  color: items[index].trnCategory == "received"? Colors.lightGreen:Colors.red.shade700,
+                                                  borderRadius: BorderRadius.circular(4)
+                                              ),
+                                              child: Icon(
+                                                items[index].trnCategory == "received"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        subtitle: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString()),style: const TextStyle(),),
+                                        trailing: Column(
+                                          children: [
 
-       const Column(
-        children: [
-     ],
-      )
+                                            const SizedBox(height: 6),
+                                            Expanded(child: Text(Env.currencyFormat(items[index].amount, "en_US"),style: const TextStyle(fontSize: 16),)),
+                                          ],
+                                        ),
+
+                                      ),
+                                    ),
+                                    Container(
+                                      decoration: BoxDecoration(color: Colors.grey.withOpacity(.3)),
+                                      width: MediaQuery.of(context).size.width *.9,
+                                      height: 1,
+                                      margin: EdgeInsets.zero,
+                                    )
+                                  ],
+                                );
+                              }),
+
+                        ),
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+          ),
         ],
       ),
     );
-  }
-
-  showPicker()async{
-    final DateTimeRange? dateTimeRange = await showDateRangePicker(
-        context: context,
-        firstDate: DateTime(2000),
-        lastDate: DateTime(3000),
-        initialDateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now().add(const Duration(days: 1)))
-    );
-    if(dateTimeRange != null){
-      setState(() {
-        firstSelectedDate = dateTimeRange.start;
-        endSelectedDate = dateTimeRange.end;
-        _onRefresh();
-      });
-    }
-    return dateTimeRange;
   }
 
 }

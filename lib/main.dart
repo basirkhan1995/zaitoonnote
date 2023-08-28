@@ -43,10 +43,12 @@ class MyApp extends StatelessWidget {
                     debugShowCheckedModeBanner: false,
                     theme:
                     ThemeData(
+                      scaffoldBackgroundColor: Colors.white,
                       buttonTheme: const ButtonThemeData(
                       ),
 
                       appBarTheme: const AppBarTheme(
+                        backgroundColor: Colors.white,
                         titleSpacing: 0,
                         titleTextStyle: TextStyle(fontSize: 18,color: Colors.black,fontFamily: "Dubai",),
                         iconTheme: IconThemeData(

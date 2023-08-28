@@ -128,5 +128,8 @@
   "logout_title": "Are you sure?",
   "logout_msg": "Do you wanna logout",
   "yes": "Yes",
-  "no": "No"
+  "no": "No",
+  "credit": "Credit",
+  "debit": "Debit",
+  "balance": "Balance"
 }

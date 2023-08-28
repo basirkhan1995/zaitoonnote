@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
+import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Provider/provider.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/change_password.dart';
+import 'package:zaitoonnote/Screens/Settings/Views/general_reports.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/properties.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/themes.dart';
-import 'package:zaitoonnote/Screens/Settings/backup/db_backup.dart';
+import 'package:zaitoonnote/Screens/Settings/Views/db_backup.dart';
 import '../../Methods/env.dart';
 import '../About App/about_app.dart';
 
@@ -16,11 +18,13 @@ class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<MyProvider>(context, listen: false);
+    String currentLocale = Locales.currentLocale(context).toString();
     List items = [
       "accounts",
       "themes",
       "properties",
       "backup",
+      "reports",
       "about"
     ];
     List subItems = [
@@ -28,6 +32,7 @@ class SettingsPage extends StatelessWidget {
       "themesdetails",
       "show or hide properties",
       "backup_data",
+      "reports",
       "about"
     ];
 
@@ -36,6 +41,7 @@ class SettingsPage extends StatelessWidget {
       Icons.color_lens,
       Icons.settings_rounded,
       Icons.backup,
+      Icons.query_stats,
       Icons.info
     ];
     List pages = <Widget>[
@@ -43,6 +49,7 @@ class SettingsPage extends StatelessWidget {
       const ChangeThemes(),
       const AppProperties(),
       const DatabaseBackup(),
+      const GeneralTransactionReports(),
       const AboutApp(),
     ];
     return Scaffold(
@@ -92,7 +99,7 @@ class SettingsPage extends StatelessWidget {
                         ),
                         title: LocaleText(
                           items[index],
-                          style: const TextStyle(fontSize: 14),
+                          style: TextStyle(fontSize: 14,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                         ),
                         trailing: Container(
                             height: 25,

@@ -50,14 +50,16 @@ class _PersonProfileState extends State<PersonProfile> {
     super.initState();
     // Check for phone call support.
     canLaunchUrl(Uri(scheme: 'tel', path: '123')).then((bool result) {
-      setState(() {});
+      setState(() {
+
+      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MyProvider>(context, listen: false);
-
+    String currentLocale = Locales.currentLocale(context).toString();
     return Scaffold(
       body: SingleChildScrollView(
         child: SafeArea(
@@ -106,8 +108,7 @@ class _PersonProfileState extends State<PersonProfile> {
                                           if (_pImage == null) return;
                                           db.updateProfileImage(
                                               _pImage?.path ??
-                                                  widget
-                                                      .profileDetails?.pImage ??
+                                                  widget.profileDetails?.pImage ??
                                                   "",
                                               widget.profileDetails?.pId ?? 0);
                                         });
@@ -163,7 +164,7 @@ class _PersonProfileState extends State<PersonProfile> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         //Text(DateTime.fromMillisecondsSinceEpoch(widget.profileDetails!.updatedAt).toString())
-                        Text(provider.showHidePersianDate
+                        Text(currentLocale == "en"
                             ? Env.persianDateTimeFormat(DateTime.parse(
                                 widget.profileDetails!.updatedAt.toString()))
                             : Env.gregorianDateTimeForm(
@@ -410,7 +411,7 @@ class _PersonProfileState extends State<PersonProfile> {
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 35, vertical: 15),
                 visualDensity: const VisualDensity(vertical: -4),
-                title: Text(provider.showHidePersianDate
+                title: Text(currentLocale == "en"
                     ? Env.persianDateTimeFormat(DateTime.parse(
                         widget.profileDetails!.createdAt.toString()))
                     : Env.gregorianDateTimeForm(
@@ -444,6 +445,7 @@ class _PersonProfileState extends State<PersonProfile> {
                                     isUpdate = !isUpdate;
                                     update();
                                   });
+
                                 },
                                 child: const LocaleText(
                                   "update",

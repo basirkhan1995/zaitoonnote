@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
-import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Screens/Activities/all_activities.dart';
 import 'package:zaitoonnote/Screens/Notes/all_notes.dart';
 import 'package:zaitoonnote/Screens/Settings/settings.dart';

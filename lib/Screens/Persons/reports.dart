@@ -38,13 +38,13 @@ class _PersonReportsState extends State<PersonReports> {
 
   //Total Paid
   Future<int> sumPaid()async{
-    int? count = await handler.totalSumByCategoryAndPerson(2, widget.person?.pId??0,firstSelectedDate.toString(),endSelectedDate.toString());
+    int? count = await handler.totalSumByCategoryAndPersonByDateRange(2, widget.person?.pId??0,firstSelectedDate.toString(),endSelectedDate.toString());
     setState(() => totalPaid = count??0);
     return totalPaid;
   }
   //Total Received count
   Future<int> sumReceived()async{
-    int? count = await handler.totalSumByCategoryAndPerson(3,widget.person?.pId??0,firstSelectedDate.toString(),endSelectedDate.toString());
+    int? count = await handler.totalSumByCategoryAndPersonByDateRange(3,widget.person?.pId??0,firstSelectedDate.toString(),endSelectedDate.toString());
     setState(() => totalReceived = count??0);
     return totalReceived;
   }
@@ -60,74 +60,58 @@ class _PersonReportsState extends State<PersonReports> {
 
   @override
   Widget build(BuildContext context) {
+    double credit = double.parse(totalReceived.toString());
+    double debit = double.parse(totalPaid.toString());
+    String currentLocale = Locales.currentLocale(context).toString();
+    double balance = debit - credit;
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ListTile(
-            title:Row(
-              children: [
-                Container(
-                    padding:const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
-                    decoration: BoxDecoration(color: zPrimaryColor,borderRadius: BorderRadius.circular(4)),
-                    child: Text(Env.persianDateTimeFormat(DateTime.parse(firstSelectedDate.toString())),style: const TextStyle(color: Colors.white),)),
-                const SizedBox(width: 10),
-                Container(
-                    padding:const EdgeInsets.symmetric(horizontal: 4,vertical: 2),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4),
-                      color: zPrimaryColor
-                    ),
-                    child: Text(Env.persianDateTimeFormat(DateTime.parse(endSelectedDate.toString())),style: const TextStyle(color: Colors.white),)),
-
-              ],
-            ),
-            trailing: IconButton(
-              onPressed: (){
-                setState(() {
-                  showPicker();
-                });
-              },
-              icon: const Icon(Icons.date_range),
-            ),
+            leading: Icon(Icons.sort_rounded),
           ),
 
+       //Reports header
+       Container(
+         padding: const EdgeInsets.symmetric(vertical: 0),
+         height: MediaQuery.of(context).size.height *.18,
+         margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
+         decoration: BoxDecoration(
+           borderRadius: BorderRadius.circular(8),
+           color: Colors.white,
+           boxShadow: [
+             BoxShadow(
+               color: Colors.grey.withOpacity(0.5),
+               spreadRadius: 1,
+               blurRadius: 1,
+               offset: const Offset(0, 0), // changes position of shadow
+             ),
+           ],
+         ),
 
-      Row(
+         child: Center(
+           child: SingleChildScrollView(
+             child: Column(
+               mainAxisAlignment: MainAxisAlignment.center,
+
+               children: [
+                 ListTile(visualDensity: VisualDensity(vertical: -4),title:   LocaleText("credit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.amountFormat(totalPaid.toString()),style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,color: Colors.grey),),),
+                 ListTile(visualDensity: VisualDensity(vertical: -4),title:   LocaleText("debit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.amountFormat(totalReceived.toString()),style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,color: Colors.grey),),),
+                 ListTile(visualDensity: VisualDensity(vertical: -4),title:   LocaleText("balance",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true, trailing: Text(Env.amountFormat(balance.toString()),style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold)),),
+               ],
+             ),
+           ),
+         ),
+       ),
+
+       const Column(
         children: [
-          box("total_paid", Env.amountFormat(totalPaid.toString()), Icons.currency_rupee),
-          box("total_received", Env.amountFormat(totalReceived.toString()), Icons.currency_rupee),
-        ],
+     ],
       )
         ],
-      ),
-    );
-  }
-
-  box(title,stats,IconData icon){
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.all(8),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        height: 100,
-        //width: MediaQuery.of(context).size.width *.4,
-        decoration: BoxDecoration(
-          color: zPrimaryColor.withOpacity(.3),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(icon),
-                  Text(stats,style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                  LocaleText(title)
-                ],
-              ),
-            )),
       ),
     );
   }

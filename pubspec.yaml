@@ -53,6 +53,7 @@ dependencies:
   file_picker: ^5.3.3
   unicons: ^2.1.1
   flutter_date_range_picker: ^0.0.14
+  percent_indicator: ^4.2.3
 
 dev_dependencies:
   flutter_test:

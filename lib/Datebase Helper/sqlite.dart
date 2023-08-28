@@ -248,8 +248,7 @@ class DatabaseHelper {
   }
 
   //Update person Details
-  Future<int> updateProfileDetails(
-      pName, jobTitle, cardNumber, accountName, pPhone, pId) async {
+  Future<int> updateProfileDetails(pName, jobTitle, cardNumber, accountName, pPhone, pId) async {
     final Database db = await initDB();
     var result = await db.rawUpdate(
         "update persons set pName = ?, jobTitle =?, cardNumber = ?, accountName =?, pPhone = ?, updatedAt = ? where pId  = ? ",
@@ -279,7 +278,7 @@ class DatabaseHelper {
 
   //Create a new transaction
   Future<int> createTransaction2(
-      String description, int type, int person, int amount, trnImage,date) async {
+      String description, int type, int person, double amount, trnImage,date) async {
     final Database db = await initDB();
     return db.rawInsert(
         "insert into transactions (trnDescription, trnType, trnPerson, amount, trnImage,trnDate) values (?,?,?,?,?,?)",
@@ -331,12 +330,20 @@ class DatabaseHelper {
   }
 
   //Transaction by Date Range and Person Id
-  Future<List<TransactionModel>> getTransactionByDateRange(
-      String id, first, end) async {
+  Future<List<TransactionModel>> getTransactionByDateRange(String id, first, end) async {
     final Database db = await initDB();
     final List<Map<String, Object?>> queryResult = await db.rawQuery(
         "select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where b.pId = ? AND date(trnDate) BETWEEN ? AND ? ",
         [id, first, end]);
+    return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
+  }
+
+  //Transaction by Date Range and Person Id
+  Future<List<TransactionModel>> getTransactionDateRange(first, end) async {
+    final Database db = await initDB();
+    final List<Map<String, Object?>> queryResult = await db.rawQuery(
+        "select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where date(trnDate) BETWEEN ? AND ? ",
+        [first, end]);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 
@@ -463,12 +470,32 @@ class DatabaseHelper {
     return count;
   }
 
-  Future<int?> totalSumByCategoryAndPerson(
+  Future<int?> totalSumByCategoryAndPersonByDateRange(
       int trnType, int person, start, end) async {
     final Database db = await initDB();
     final count = Sqflite.firstIntValue(await db.rawQuery(
-        "select sum(amount) from transactions where trnType = ? AND trnPerson = ? AND date(trnDate) BETWEEN ? AND ?",
+        "select sum(amount) from transactions where trnType = ? AND trnPerson = ? AND DATE(trnDate) BETWEEN ? AND ?",
         [trnType, person, start, end]));
+    return count;
+  }
+
+  Future<int?> totalSumByCategoryByDateRange(
+      int trnType, start, end) async {
+    final Database db = await initDB();
+    final count = Sqflite.firstIntValue(await db.rawQuery(
+        "select sum(amount) from transactions where trnType = ? AND DATE(trnDate) BETWEEN ? AND ?",
+        [trnType, start, end]));
+    return count;
+  }
+
+ //------------------------------------------------------------ all stats
+
+
+  Future<int?> totalSumByPersonTransactionAllTimes(int trnType, int person) async {
+    final Database db = await initDB();
+    final count = Sqflite.firstIntValue(await db.rawQuery(
+        "select sum(amount) from transactions where trnType = ? AND trnPerson = ?",
+        [trnType, person]));
     return count;
   }
 }

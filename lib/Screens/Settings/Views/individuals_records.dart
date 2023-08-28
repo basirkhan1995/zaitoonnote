@@ -17,12 +17,15 @@ class _IndividualsRecordsState extends State<IndividualsRecords> {
 
   @override
   Widget build(BuildContext context) {
+    String currentLocale = Locales.currentLocale(context).toString();
     return Scaffold(
         body: DefaultTabController(
           length: 3,
           child: Scaffold(
             appBar: AppBar(
               bottom: TabBar(
+                unselectedLabelStyle: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",color: Colors.grey),
+                labelStyle: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontWeight: FontWeight.bold),
                 tabs: [
                   Tab(text: Locales.string(context,"profile"),),
                   Tab(text: Locales.string(context,"activity"),),

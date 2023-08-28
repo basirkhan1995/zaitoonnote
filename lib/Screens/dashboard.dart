@@ -1,19 +1,23 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
-import 'package:zaitoonnote/Methods/z_button.dart';
-import 'package:zaitoonnote/Screens/Notes/create_note.dart';
-import 'package:zaitoonnote/Screens/Persons/add_person.dart';
-import 'dart:io';
+
 import '../Datebase Helper/sqlite.dart';
 import '../Methods/colors.dart';
 import '../Methods/env.dart';
+import '../Methods/z_button.dart';
 import '../Provider/provider.dart';
 import 'Activities/create_transaction.dart';
 import 'Json Models/trn_model.dart';
+import 'package:percent_indicator/percent_indicator.dart';
+
+import 'Notes/create_note.dart';
+import 'Persons/add_person.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -23,14 +27,14 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+
+  final db = DatabaseHelper();
   late DatabaseHelper handler;
+  late Future<List<TransactionModel>> transactions;
+
   int totalPaid = 0 ;
   int totalReceived = 0;
   int totalUser = 0;
-
-
-  final db = DatabaseHelper();
-  late Future<List<TransactionModel>> transactions;
 
   @override
   void initState() {
@@ -52,20 +56,21 @@ class _DashboardState extends State<Dashboard> {
 
 
 //Total Received count
-  Future<int> users()async{
+  Future<int> totalUsers()async{
     int? count = await handler.totalUsers();
     setState(() => totalUser = count??0);
     return totalUser;
   }
 
   //Total Received count
-  Future<int> received()async{
+  Future<int> totalCredit()async{
     int? count = await handler.totalAmountToday(3);
     setState(() => totalReceived = count??0);
     return totalReceived;
   }
+
   //Total Received count
-  Future<int> paid()async{
+  Future<int> totalDebit()async{
     int? count = await handler.totalAmountToday(2);
     setState(() => totalPaid = count??0);
     return totalPaid;
@@ -75,163 +80,307 @@ class _DashboardState extends State<Dashboard> {
   Future<void> _onRefresh() async {
     setState(() {
       transactions = getTransactions();
-      users();
-      received();
-      paid();
+
+      totalUsers();
+      totalCredit();
+      totalDebit();
     });
   }
   @override
   Widget build(BuildContext context) {
+
     final provider = Provider.of<MyProvider>(context, listen: false);
     var currentLocale = Locales.currentLocale(context).toString();
+
     return Scaffold(
-
       body: SafeArea(
+
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                 ListTile(
-                   dense: true,
-                   horizontalTitleGap: 6,
-                   leading: provider.enableDisableLogin?Padding(
-                     padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                     child: InkWell(
-                       onTap: (){
-                        showDialog(context: context, builder: (context){
-                         return AlertDialog(
-                            title: const LocaleText("logout_title"),
-                            content: const LocaleText("logout_msg"),
-                            actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                            actions: [
-                             Row(
-                               children: [
-                                 Expanded(
-                                   child: ZButton(
-                                     label: "yes",
-                                     onTap: (){
-                                       provider.logout(context);
-                                     },
-                                   ),
-                                 ),
-                                 const SizedBox(width: 6),
-                                 Expanded(
-                                   child: ZButton(
-                                     label: "no",
-                                     onTap: (){
-                                       Navigator.pop(context);
-                                     },
-                                   ),
-                                 ),
-                               ],
-                             )
-                            ],
-                          );
-                        });
-                       },
-                       child: const CircleAvatar(
-                         backgroundImage: AssetImage("assets/Photos/no_user.jpg"),
-                       ),
-                     ),
-                   ):null,
-                   title: LocaleText("welcome",style: TextStyle(fontFamily: currentLocale.toString() == "en"?"Ubuntu":"Dubai",fontSize: 16),),
-                  trailing: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 18),),
+          child: Column(
+            children: [
+              ListTile(
+                dense: true,
+                horizontalTitleGap: 6,
+                leading: provider.enableDisableLogin?Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                  child: InkWell(
+                    onTap: (){
+                      showDialog(context: context, builder: (context){
+                        return AlertDialog(
+                          title: const LocaleText("logout_title"),
+                          content: const LocaleText("logout_msg"),
+                          actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                          actions: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ZButton(
+                                    label: "yes",
+                                    onTap: (){
+                                      provider.logout(context);
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: ZButton(
+                                    label: "no",
+                                    onTap: (){
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ),
+                              ],
+                            )
+                          ],
+                        );
+                      });
+                    },
+                    child: const CircleAvatar(
+                      backgroundImage: AssetImage("assets/Photos/no_user.jpg"),
+                    ),
+                  ),
+                ):null,
+                title: LocaleText("welcome",style: TextStyle(fontFamily: currentLocale.toString() == "en"?"Ubuntu":"Dubai",fontSize: 16),),
+                trailing: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 18),),
+              ),
+
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 0),
+                height: 150,
+                margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
+                decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1,
+                  blurRadius: 1,
+                  offset: const Offset(0, 0), // changes position of shadow
                 ),
-                Row(
-                  children: [
-                    box("accounts", totalUser.toString(),2,Colors.blueGrey.withOpacity(.3)),
-                    box("total_paid", Env.amountFormat(totalReceived.toString()),3,zColor2),
-                  ],
-                ),
-                Row(
-                  children: [
-                    box("total_received", Env.amountFormat(totalPaid.toString()),1,zBlue.withOpacity(.2)),
-                  ],
+              ],
                 ),
 
-                 ListTile(
-                   horizontalTitleGap: 6,
-                   leading: const Icon(Icons.add_circle_outline_sharp),
-                   contentPadding: const EdgeInsets.symmetric(horizontal: 15,vertical: 0),
-                  title: LocaleText("actions",style: TextStyle(fontWeight: FontWeight.bold,color: Colors.grey,fontFamily: currentLocale.toString() == "en"?"Ubuntu":"Dubai"),),
-                ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 0),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Expanded(
-                      child: ZButton(
-                        backgroundColor: Colors.blueGrey.withOpacity(.3),
-                        width: .92,
-                        label: "create_note",
-                        labelColor: Colors.black87,
-                        onTap: ()=>Env.goto(const CreateNote(), context),
-                      ),
-                    ),
-                    const SizedBox(width: 5),
-                    Expanded(
-                      child: ZButton(
-                        labelColor: Colors.black87,
-                        backgroundColor: Colors.blueGrey.withOpacity(.3),
-                        width: .92,
-                        label: "add_activity",
-                        onTap: ()=>Env.goto(const CreateTransaction(), context),
-                      ),
-                    ),
 
+                    //Total Users
+                   Column(
+                     mainAxisAlignment: MainAxisAlignment.center,
+                     children: [
+                       Column(
+                         children: [
+                           CircularPercentIndicator(
+                                radius: 40.0,
+                                lineWidth: 5.0,
+                                animation: true,
+                                percent: totalUser/100,
+                                center:  Container(
+                                  height: 45,
+                                  width: 45,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: zPrimaryColor.withOpacity(.15)
+                                  ),
+                                  child: const Icon(
+                                    Icons.person,
+                                    size: 30.0,
+                                    color: Colors.purple,
+                                  ),
+                                ),
+                                backgroundColor: zPrimaryColor.withOpacity(.3),
+                                progressColor: Colors.purple,
+                              ),
+                           const SizedBox(height: 8),
+                           Text(totalUser.toString(),style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                           const LocaleText("accounts",style: TextStyle(fontSize: 14),),
+                         ],
+                       ),
+                     ],
+                   ),
+                    //Total Debit
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularPercentIndicator(
+                          radius: 40.0,
+                          lineWidth: 5.0,
+                          animation: true,
+                          percent: totalPaid/100/totalPaid,
+                          center:  Container(
+                            height: 45,
+                            width: 45,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: Colors.red.withOpacity(.1)
+                            ),
+                            child: const Icon(
+                              UniconsLine.arrow_up_right,
+                              size: 30.0,
+                              color: Colors.red,
+                            ),
+                          ),
+                          backgroundColor: Colors.red.withOpacity(.3),
+                          progressColor: Colors.red.shade900,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(Env.currencyFormat(totalPaid, "en_US"),style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                        const LocaleText("debit",style: TextStyle(fontSize: 14),),
+                      ],
+                    ),
+                    //Total Credit
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularPercentIndicator(
+                          radius: 40.0,
+                          lineWidth: 5.0,
+                          animation: true,
+                          percent: .5,
+                          center:  Container(
+                            height: 45,
+                            width: 45,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(50),
+                                color: Colors.green.withOpacity(.1)
+                            ),
+                            child: const Icon(
+                              UniconsLine.arrow_down_left,
+                              size: 30.0,
+                              color: Colors.green,
+                            ),
+                          ),
+                          backgroundColor: Colors.green.withOpacity(.3),
+                          progressColor: Colors.green,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(Env.currencyFormat(totalReceived, "en_US"),style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                        const LocaleText("credit",style: TextStyle(fontSize: 14),),
+                      ],
+                    ),
                   ],
                 ),
               ),
-                ZButton(
-                  labelColor: Colors.black87,
-                  backgroundColor: Colors.blueGrey.withOpacity(.3),
-                  width: .92,
-                  label: "add_account",
-                  onTap: ()=>Env.goto(const AddPerson(), context),
+              Column(
+
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 0),
+                    height: 150,
+                    margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 1,
+                          offset: const Offset(0, 0), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                      Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 0),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: ZButton(
+                                    backgroundColor: Colors.deepPurpleAccent.withOpacity(.2),
+                                    width: .92,
+                                    label: "create_note",
+                                    labelColor: Colors.black87,
+                                    onTap: ()=>Env.goto(const CreateNote(), context),
+                                  ),
+                                ),
+                                const SizedBox(width: 5),
+                                Expanded(
+                                  child: ZButton(
+                                    labelColor: Colors.white,
+                                    backgroundColor: zPrimaryColor.withOpacity(.9),
+                                    width: .92,
+                                    label: "add_activity",
+                                    onTap: ()=>Env.goto(const CreateTransaction(), context),
+                                  ),
+                                ),
+
+                              ],
+                            ),
+                          ),
+                          ZButton(
+                            labelColor: Colors.black87,
+                            backgroundColor: Colors.deepPurple.withOpacity(.2),
+                            width: .92,
+                            label: "add_account",
+                            onTap: ()=>Env.goto(const AddPerson(), context),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              //Recent Transaction
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 0),
+                height: MediaQuery.of(context).size.height*.4,
+                margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 1,
+                      offset: const Offset(0, 0), // changes position of shadow
+                    ),
+                  ],
                 ),
 
-                ListTile(
-                  horizontalTitleGap: 6,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 15),
-                  trailing: Icon(UniconsLine.transaction),
-                  leading: Icon(Icons.access_time),
-                  title: LocaleText("recent_activities",style: TextStyle( color: Colors.grey,fontWeight: FontWeight.bold,fontFamily: currentLocale.toString() == "en"?"Ubuntu":"Dubai"),),
-                ),
-                Column(
+                child: Column(
                   children: [
-                    SizedBox(
-                      height: 300,
-                      child: FutureBuilder<List<TransactionModel>>(
-                        future: transactions,
-                        builder: (BuildContext context, AsyncSnapshot<List<TransactionModel>> snapshot) {
-                          //in case whether data is pending
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(
-                              //To show a circular progress indicator
-                              child: CircularProgressIndicator(),
-                            );
-                            //If snapshot has error
-                          } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-                            return Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.asset("assets/Photos/empty.png",width: 250),
-                                  ],
-                                ));
-                          } else if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          } else {
-                            //a final variable (item) to hold the snapshot data
-                            final items = snapshot.data ?? <TransactionModel>[];
-                            return Scrollbar(
-                              //The refresh indicator
-                              child: RefreshIndicator(
-                                onRefresh: _onRefresh,
-                                child: SizedBox(
+                    ListTile(
+                      horizontalTitleGap: 6,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+                      trailing: const Icon(UniconsLine.transaction),
+                      leading: const Icon(Icons.access_time),
+                      title: LocaleText("recent_activities",style: TextStyle( color: Colors.grey,fontWeight: FontWeight.bold,fontFamily: currentLocale.toString() == "en"?"Ubuntu":"Dubai"),),
+                    ),
+                    Expanded(
+                      child: SizedBox(
+                        height: 350,
+                        child: FutureBuilder<List<TransactionModel>>(
+                            future: transactions,
+                            builder: (BuildContext context, AsyncSnapshot<List<TransactionModel>> snapshot) {
+                              //in case whether data is pending
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(
+                                  //To show a circular progress indicator
+                                  child: CircularProgressIndicator(),
+                                );
+                                //If snapshot has error
+                              } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+                                return Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Image.asset("assets/Photos/empty.png",width: 250),
+                                      ],
+                                    ));
+                              } else if (snapshot.hasError) {
+                                return Text('Error: ${snapshot.error}');
+                              } else {
+                                //a final variable (item) to hold the snapshot data
+                                final items = snapshot.data ?? <TransactionModel>[];
+                                return SizedBox(
                                   child: ListView.builder(
                                       itemCount: items.length,
                                       itemBuilder: (context,index){
@@ -249,7 +398,7 @@ class _DashboardState extends State<Dashboard> {
 
                                                 title: Row(
                                                   children: [
-                                                    Text(items[index].person,style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
+                                                    Text(items[index].person,style: TextStyle(fontSize: 14,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                                                     const SizedBox(width: 8),
                                                     Container(
                                                       padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
@@ -264,7 +413,7 @@ class _DashboardState extends State<Dashboard> {
                                                   ],
                                                 ),
                                                 subtitle: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString())),
-                                                trailing: Text(Env.amountFormat(items[index].amount.toString()),style: const TextStyle(fontSize: 18),),
+                                                trailing: Text(Env.currencyFormat(items[index].amount, "en_IN"),style: const TextStyle(fontSize: 15),),
                                                 dense: true,
                                               ),
                                             ),
@@ -277,49 +426,20 @@ class _DashboardState extends State<Dashboard> {
                                           ],
                                         );
                                       }),
-                                ),
-                              ),
-                            );
-                          }
-                        },
+                                );
+                              }
+                            },
+                          ),
                       ),
                     ),
+
                   ],
-                )
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
-
-  box(title,stats,flex, Color backgroundColor){
-    return Expanded(
-      flex: flex,
-      child: Container(
-        margin: const EdgeInsets.all(8),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        height: 80,
-        //width: MediaQuery.of(context).size.width *.4,
-        decoration: BoxDecoration(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-
-                  Text(stats,style: const TextStyle(fontSize: 20,fontWeight: FontWeight.bold),),
-                  LocaleText(title)
-                ],
-              ),
-            )),
-      ),
-    );
-  }
-
 }

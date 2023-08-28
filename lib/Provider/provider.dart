@@ -65,6 +65,8 @@ class MyProvider extends ChangeNotifier{
    }
 
 
+
+
   //Method to change
    changeTheme()async{
     _darkLight = !_darkLight;

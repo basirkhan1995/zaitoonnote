@@ -6,22 +6,24 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
-import '../../Datebase Helper/sqlite.dart';
-import '../../Methods/colors.dart';
-import '../../Methods/env.dart';
-import '../../Provider/provider.dart';
-import '../Json Models/trn_model.dart';
+
+import '../../../Datebase Helper/sqlite.dart';
+import '../../../Methods/colors.dart';
+import '../../../Methods/env.dart';
+import '../../../Provider/provider.dart';
+import '../../Json Models/trn_model.dart';
 
 
-class PersonActivities extends StatefulWidget {
+
+class GeneralTransactionReports extends StatefulWidget {
   final PersonModel? data;
-  const PersonActivities({super.key,this.data});
+  const GeneralTransactionReports({super.key,this.data});
 
   @override
-  State<PersonActivities> createState() => _PersonActivitiesState();
+  State<GeneralTransactionReports> createState() => _GeneralTransactionReportsState();
 }
 
-class _PersonActivitiesState extends State<PersonActivities> {
+class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
 
   late Future<List<TransactionModel>> transactions;
   late Future<List<TransactionModel>> transactionsByDate;
@@ -61,17 +63,17 @@ class _PersonActivitiesState extends State<PersonActivities> {
 
   //All Person Transaction By Date Range
   Future<List<TransactionModel>> getAllTransactionByDate() async {
-    return await handler.getTransactionByDateRange(widget.data?.pId.toString()??"",firstSelectedDate.toString(),endSelectedDate.toString());
+    return await handler.getTransactionDateRange(firstSelectedDate.toString(),endSelectedDate.toString());
   }
 
   //All Transactions By Person
   Future<List<TransactionModel>> getAllTransaction() async {
-    return await handler.getTransactionByPersonId(widget.data?.pId.toString()??"");
+    return await handler.getTransactions();
   }
 
   //Total Paid
   Future<int> sumPaid()async{
-    int? count = await handler.totalSumByCategoryAndPersonByDateRange(2, widget.data?.pId??0,firstSelectedDate.toString(),endSelectedDate.toString());
+    int? count = await handler.totalSumByCategoryByDateRange(2,firstSelectedDate.toString(),endSelectedDate.toString());
     setState((){
       paid = count??0;
     });
@@ -80,7 +82,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
 
   //Total Received count
   Future<int> sumReceived()async{
-    int? count = await handler.totalSumByCategoryAndPersonByDateRange(3,widget.data?.pId??0,firstSelectedDate.toString(),endSelectedDate.toString());
+    int? count = await handler.totalSumByCategoryByDateRange(3,firstSelectedDate.toString(),endSelectedDate.toString());
     setState((){
       received = count??0;
     });
@@ -101,18 +103,19 @@ class _PersonActivitiesState extends State<PersonActivities> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MyProvider>(context, listen: false);
+    String currentLocale = Locales.currentLocale(context).toString();
 
     double credit = double.parse(received.toString());
     double debit = double.parse(paid.toString());
     double balance = debit - credit;
 
-    String currentLocale = Locales.currentLocale(context).toString();
 
     return Scaffold(
       body:  SafeArea(
         child: Column(
           children: [
             ListTile(
+              contentPadding: EdgeInsets.only(right: 18,left: 10),
               leading: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 4),
                   decoration: BoxDecoration(
@@ -124,7 +127,20 @@ class _PersonActivitiesState extends State<PersonActivities> {
               onTap: (){
                 currentLocale == "en"?showPicker():showPersianPicker();
               },
-              trailing: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 18),),
+              title: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 18),),
+              trailing: Container(
+                height: 35,
+                width: 35,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50),
+                  color: Colors.deepPurple.withOpacity(.2)
+                ),
+                child: IconButton(
+                  onPressed: ()=>Navigator.pop(context),
+
+                  icon: Icon(Icons.arrow_back_ios_new_rounded,size:17),
+                ),
+              )
             ),
             //Reports header
             Container(
@@ -190,10 +206,10 @@ class _PersonActivitiesState extends State<PersonActivities> {
                     } else if (snapshot.hasData && snapshot.data!.isEmpty) {
                       return Center(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset("assets/Photos/empty.png",width: 250),
-                            ]
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset("assets/Photos/empty.png",width: 250),
+                              ]
                           ));
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
@@ -272,7 +288,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
     );
   }
 
-   showPicker()async{
+  showPicker()async{
     final DateTimeRange? dateTimeRange = await showDateRangePicker(
         context: context,
         firstDate: DateTime(2000),

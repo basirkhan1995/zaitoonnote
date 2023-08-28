@@ -66,6 +66,16 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
      return priceInText.trim();
    }
 
+   static NumberFormat decimalFormat(double value){
+     NumberFormat value = NumberFormat("#,##0.00", "en_US");
+   return value;
+   }
+
+   static String currencyFormat(int amount,String localeCurrency){
+     String output = NumberFormat.simpleCurrency(decimalDigits: 0, locale: localeCurrency,name: "").format(amount);
+     return output;
+   }
+
 
    static String persianFormatWithWeekDay(Date date){
        final format = date.formatter;
@@ -82,7 +92,7 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
    static persianDateTimeFormat(DateTime date) {
      Jalali persian = date.toJalali();
      final f = persian.formatter;
-     return '${f.yyyy}/${f.mm}/${f.dd}';
+     return '${f.yyyy}-${f.mm}-${f.dd} ${f.wN}';
    }
 
    static persianDatePicker(var pickedDate,context)async{

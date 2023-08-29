@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 
 class AboutApp extends StatelessWidget {
@@ -21,14 +22,15 @@ class AboutApp extends StatelessWidget {
         body: Column(
               children: [
                 Container(
-                  decoration: const BoxDecoration(
-                    color: zPrimaryColor,
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    color: zPrimaryColor.withOpacity(.3),
+                    borderRadius: const BorderRadius.only(
                       bottomLeft: Radius.circular(50)
                     )
                   ),
                   width: double.infinity,
                   height: MediaQuery.of(context).size.height *.35,
+                 child: Image.asset("assets/Photos/zaitoon.png"),
                 ),
                 const Padding(
                   padding: EdgeInsets.all(8.0),
@@ -39,32 +41,32 @@ class AboutApp extends StatelessWidget {
                   child: RichText(
                       softWrap:true,
                       textAlign:TextAlign.justify,
-                      text: const TextSpan(
-                          style: TextStyle(color: Colors.black87),
+                      text: TextSpan(
+                          style: const TextStyle(color: Colors.black87),
                           children:[
-                            TextSpan(text: "about_app"),
+                            TextSpan(text:Locales.string(context, "about_app")),
 
                           ])),
                 ),
 
+
+
                 const Expanded(
                   child: Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            "Developed by",style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                              "Basir Hashimi"
-                          ),
-                          Text(
-                              "©2023"
-                          ),
-                        ],
-                      ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Text(
+                          "Developed by",style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                            "Basir Hashimi"
+                        ),
+                        Text(
+                            "©2023"
+                        ),
+                      ],
                     ),
                   ),
                 )

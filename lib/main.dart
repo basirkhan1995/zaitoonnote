@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
                   MaterialApp(
                     themeMode: controller.darkLight? ThemeMode.dark: ThemeMode.light,
                     darkTheme: controller.darkLight? ThemeData.dark() : ThemeData.light(),
-                    title: 'Zaitoon Note',
+                    title: 'Zaitoon',
                     localizationsDelegates: Locales.delegates,
                     supportedLocales: Locales.supportedLocales,
                     locale: locale,

@@ -135,5 +135,6 @@
   "trn_person": "Transaction person",
   "trn_image": "Attachment",
   "trn_id": "Transaction ID",
-  "update_transaction": "Transaction update"
+  "update_transaction": "Transaction update",
+  "about_app": "Zaitoon app is developed with Flutter, dart language and sqlite as backend to store daily transactions and notes for individuals."
 }

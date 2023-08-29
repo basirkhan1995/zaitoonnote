@@ -91,10 +91,8 @@ class _DashboardState extends State<Dashboard> {
 
     final provider = Provider.of<MyProvider>(context, listen: false);
     var currentLocale = Locales.currentLocale(context).toString();
-
     return Scaffold(
       body: SafeArea(
-
         child: SingleChildScrollView(
           child: Column(
             children: [

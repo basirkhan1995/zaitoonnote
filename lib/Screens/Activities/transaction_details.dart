@@ -31,7 +31,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
   int selectedIndex = 0;
   int selectedCategory = 0;
 
-  var selectedValue = 0;
+  int selectedValue = 0;
 
   List category = [
     "paid",
@@ -48,6 +48,10 @@ class _TransactionDetailsState extends State<TransactionDetails> {
     5,
     6,
   ];
+   
+  void transactionUpdate(){
+   
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,9 +63,30 @@ class _TransactionDetailsState extends State<TransactionDetails> {
         titleSpacing: 0,
         title: Text(widget.data!.person),
         actions: [
-          const SizedBox(width: 5),
           Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+              child: Container(
+                height: 45,
+                width: 45,
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: zPrimaryColor.withOpacity(.1)),
+                child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                     db.deleteTransaction(widget.data?.trnId??0).whenComplete((){
+                       Navigator.pop(context);
+                     });
+                    });
+
+                  },
+                  icon: const Icon(Icons.delete,color: Colors.red),
+                ),
+              )),
+
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: Container(
                 height: 45,
                 width: 45,
@@ -73,15 +98,16 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                   onPressed: () {
                     setState(() {
                       isUpdate = !isUpdate;
-                      
                       amountCtrl.text = widget.data!.amount.toString();
                       contentCtrl.text = widget.data!.trnDescription.toString();
+                      updateTransaction();
                     });
-                    updateTransaction();
+
                   },
                   icon: const Icon(Icons.edit),
                 ),
               )),
+
         ],
       ),
       body: Padding(
@@ -238,135 +264,140 @@ class _TransactionDetailsState extends State<TransactionDetails> {
         isScrollControlled: true,
         context: context,
         builder: (context) {
-          return Wrap(
-            children: <Widget>[
-              SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      height: 5,
-                      width: 60,
-                      decoration: BoxDecoration(
-                          color: Colors.deepPurple,
-                          borderRadius: BorderRadius.circular(15)),
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.only(top: 0, left: 10),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 15),
-                          title: LocaleText(
-                            "update_transaction",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
-                                color: Colors.grey),
-                          ),
-                          leading: const Icon(UniconsLine.transaction),
-                          trailing: Container(
-                            height: 35,
-                            width: 35,
-                            decoration: BoxDecoration(
-                                color: Colors.deepPurple.withOpacity(.4),
-                                borderRadius: BorderRadius.circular(50)),
-                            child: IconButton(
-                                onPressed: (){
-                                  ///TODO
-                                },
-                                icon: const Icon(Icons.check,color: Colors.black87,size: 18)),
-                          ),
-                        )),
-
-                    ZField(title: "amount",isRequire: true,controller: amountCtrl,icon: Icons.currency_rupee_rounded,),
-                    ZField(title: "description",controller: contentCtrl,icon: Icons.info),
-                    const ListTile(title: Text("Category"),visualDensity: VisualDensity(vertical: -4)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 8),
-                      child: Row(
-                        children: [
-
-                          Expanded(
-                            flex: 2,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 15),
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: zPrimaryColor
-                                  ),
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: CustomDropDown(
-                                items: const [
-                                  CustomDropdownMenuItem(
-                                      value: 2,
-                                      child: LocaleText("paid")
-                                  ),
-                                  CustomDropdownMenuItem(
-                                    value: 3,
-                                    child: LocaleText("received"),
-                                  ),
-                                  CustomDropdownMenuItem(
-                                    value: 4,
-                                    child: LocaleText("check"),
-                                  ),
-
-                                ],
-                                hintText: Locales.string(context, "select_category"),
-                                borderRadius: 5,
-                                onChanged: (val) {
-                                  setState(() {
-                                    selectedValue = val;
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-
-                          Expanded(
-                            child: Container(
-                              margin: const EdgeInsets.symmetric(horizontal: 6),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: zPrimaryColor.withOpacity(.2)
-                              ),
-                              child: IconButton(onPressed: (){
-                                getImage(ImageSource.gallery);
-                              }, icon: const Icon(Icons.camera_alt)),
-                            ),
-                          )
-                        ],
+          return Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Wrap(
+              children: <Widget>[
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        height: 5,
+                        width: 60,
+                        decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(15)),
                       ),
-                    ),
+                      Padding(
+                          padding: const EdgeInsets.only(top: 0, left: 10),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+                            title: LocaleText(
+                              "update_transaction",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                                  color: Colors.grey),
+                            ),
+                            leading: const Icon(UniconsLine.transaction),
+                            trailing: Container(
+                              height: 35,
+                              width: 35,
+                              decoration: BoxDecoration(
+                                  color: Colors.deepPurple.withOpacity(.4),
+                                  borderRadius: BorderRadius.circular(50)),
+                              child: IconButton(
+                                  onPressed: (){
+                                    db.updateTransaction(contentCtrl.text, int.parse(amountCtrl.text), widget.data!.trnId).whenComplete(() => Navigator.pop(context));
+                                     print(selectedValue.toString());
+                                  },
+                                  icon: const Icon(Icons.check,color: Colors.black87,size: 18)),
+                            ),
+                          )),
 
-                    widget.data!.trnImage!.isEmpty
-                        ?  Container(
-                        width: MediaQuery.of(context).size.width * .95,
-          height: 250,
-          decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          image: DecorationImage(
-          fit: BoxFit.cover,
-          image: Image.file(
-          File(_trnImage?.toString()??"assets/Photos/gallery2.jpg"),
-          fit: BoxFit.cover)
-              .image)),
-          )
-              : Container(
-                      width: MediaQuery.of(context).size.width * .95,
-                      height: 250,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: Image.file(
-                                  File(widget.data!.trnImage.toString()),
-                                  fit: BoxFit.cover)
-                                  .image)),
-                    )
-                  ],
+                      ZField(title: "amount",isRequire: true,controller: amountCtrl,icon: Icons.currency_rupee_rounded,),
+                      ZField(title: "description",controller: contentCtrl,icon: Icons.info),
+                  //
+                  //     const ListTile(title: Text("Category"),visualDensity: VisualDensity(vertical: -4)),
+                  //     Padding(
+                  //       padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 8),
+                  //       child: Row(
+                  //         children: [
+                  //
+                  //           Expanded(
+                  //             flex: 2,
+                  //             child: Container(
+                  //               padding: const EdgeInsets.symmetric(horizontal: 15),
+                  //               height: 50,
+                  //               decoration: BoxDecoration(
+                  //                   border: Border.all(
+                  //                       color: zPrimaryColor
+                  //                   ),
+                  //                   borderRadius: BorderRadius.circular(8)),
+                  //               child: CustomDropDown(
+                  //                 items: const [
+                  //                   CustomDropdownMenuItem(
+                  //                       value: 2,
+                  //                       child: LocaleText("paid")
+                  //                   ),
+                  //                   CustomDropdownMenuItem(
+                  //                     value: 3,
+                  //                     child: LocaleText("received"),
+                  //                   ),
+                  //                   CustomDropdownMenuItem(
+                  //                     value: 4,
+                  //                     child: LocaleText("check"),
+                  //                   ),
+                  //
+                  //                 ],
+                  //                 hintText: Locales.string(context, "select_category"),
+                  //                 borderRadius: 5,
+                  //                 onChanged: (val) {
+                  //                   setState(() {
+                  //                     selectedValue = val;
+                  //                   });
+                  //                 },
+                  //               ),
+                  //             ),
+                  //           ),
+                  //
+                  //           Expanded(
+                  //             child: Container(
+                  //               margin: const EdgeInsets.symmetric(horizontal: 6),
+                  //               decoration: BoxDecoration(
+                  //                   borderRadius: BorderRadius.circular(8),
+                  //                   color: zPrimaryColor.withOpacity(.2)
+                  //               ),
+                  //               child: IconButton(onPressed: (){
+                  //                 getImage(ImageSource.gallery);
+                  //               }, icon: const Icon(Icons.camera_alt)),
+                  //             ),
+                  //           )
+                  //         ],
+                  //       ),
+                  //     ),
+                  //
+                  //     widget.data!.trnImage!.isNotEmpty
+                  //         ? Container(
+                  //       width: MediaQuery.of(context).size.width * .95,
+                  //       height: 250,
+                  //       decoration: BoxDecoration(
+                  //           borderRadius: BorderRadius.circular(10),
+                  //           image: DecorationImage(
+                  //               fit: BoxFit.cover,
+                  //               image: Image.file(
+                  //                   File(widget.data!.trnImage.toString()),
+                  //                   fit: BoxFit.cover)
+                  //                   .image)),
+                  //     ): _trnImage != null ? Container(
+                  //   width: MediaQuery.of(context).size.width * .95,
+                  //   height: 250,
+                  //   decoration: BoxDecoration(
+                  //       borderRadius: BorderRadius.circular(10),
+                  //       image: DecorationImage(
+                  //           fit: BoxFit.cover,
+                  //           image: Image.file(
+                  //               File(_trnImage.toString()),
+                  //               fit: BoxFit.cover)
+                  //               .image)),
+                  // ):const SizedBox()
+                      SizedBox(height: 20)
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           );
         });
   }

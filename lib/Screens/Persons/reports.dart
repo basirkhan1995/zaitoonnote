@@ -10,7 +10,6 @@ import '../../Methods/env.dart';
 import '../../Provider/provider.dart';
 import '../Json Models/trn_model.dart';
 
-
 class PersonReports extends StatefulWidget {
   final PersonModel? data;
   const PersonReports({super.key, this.data});

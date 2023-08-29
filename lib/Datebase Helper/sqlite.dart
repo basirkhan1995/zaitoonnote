@@ -252,7 +252,7 @@ class DatabaseHelper {
     final Database db = await initDB();
     var result = await db.rawUpdate(
         "update persons set pName = ?, jobTitle =?, cardNumber = ?, accountName =?, pPhone = ?, updatedAt = ? where pId  = ? ",
-        [pName, jobTitle, cardNumber, accountName, pPhone, pId]);
+        [pName, jobTitle, cardNumber, accountName, pPhone,DateTime.now().toIso8601String(), pId]);
     return result;
   }
 
@@ -361,6 +361,25 @@ class DatabaseHelper {
         "select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where b.pId = ? ",
         [id]);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
+  }
+
+  //Update note
+  Future<int> updateTransaction(details, int amount, id) async {
+    final Database db = await initDB();
+    var result = await db.rawUpdate('update transactions set trnDescription = ? ,amount = ? where trnId = ?',[details, amount,id]);
+    return result;
+  }
+
+  // Delete
+  Future<void> deleteTransaction(int id) async {
+    final db = await initDB();
+    try {
+      await db.delete("transactions", where: "trnId = ?", whereArgs: [id]);
+    } catch (err) {
+      if (kDebugMode) {
+        print("deleting failed: $err");
+      }
+    }
   }
 
   //Notes ----------------------------------------------------------------------

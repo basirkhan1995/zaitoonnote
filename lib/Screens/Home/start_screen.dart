@@ -42,7 +42,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-
       bottomNavigationBar: Container(
         margin: const EdgeInsets.symmetric(horizontal: 12,vertical: 8),
         decoration: BoxDecoration(

@@ -10,7 +10,7 @@ import 'package:zaitoonnote/Screens/Settings/Views/properties.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/themes.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/db_backup.dart';
 import '../../Methods/env.dart';
-import '../About App/about_app.dart';
+import 'Views/about_app.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({Key? key}) : super(key: key);

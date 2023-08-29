@@ -115,30 +115,28 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
         child: Column(
           children: [
             ListTile(
-              contentPadding: EdgeInsets.only(right: 18,left: 10),
+              contentPadding: const EdgeInsets.only(right: 18,left: 10),
               leading: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 4),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
                     color: zPrimaryColor,
-
                   ),
                   child: const Icon(Icons.sort_rounded,color: Colors.white,)),
               onTap: (){
-                currentLocale == "en"?showPicker():showPersianPicker();
+                currentLocale == "en"?showGregorianPicker():showPersianPicker();
               },
-              title: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 18),),
+              title: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: mediumSize),),
               trailing: Container(
-                height: 35,
-                width: 35,
+                height: 30,
+                width: 30,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50),
                   color: Colors.deepPurple.withOpacity(.2)
                 ),
                 child: IconButton(
                   onPressed: ()=>Navigator.pop(context),
-
-                  icon: Icon(Icons.arrow_back_ios_new_rounded,size:17),
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded,size:14),
                 ),
               )
             ),
@@ -166,9 +164,9 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                     mainAxisAlignment: MainAxisAlignment.center,
 
                     children: [
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("credit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(debit.toInt(), "en_US"),style: const TextStyle(fontSize: 17,fontWeight: FontWeight.bold,color: Colors.grey),),),
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("debit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(credit.toInt(), "en_US"),style: const TextStyle(fontSize: 17,fontWeight: FontWeight.bold,color: Colors.grey),),),
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("balance",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true, trailing: Text(Env.currencyFormat(balance.toInt(), "en_US"),style: const TextStyle(fontSize: 17,fontWeight: FontWeight.bold)),),
+                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("credit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(debit.toInt(), "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey),),),
+                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("debit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(credit.toInt(), "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey),),),
+                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("balance",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true, trailing: Text(Env.currencyFormat(balance.toInt(), "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold)),),
                     ],
                   ),
                 ),
@@ -230,16 +228,15 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                                         padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
                                         child: ListTile(
                                           dense: true,
-
                                           leading: SizedBox(
-                                              height: 60,width: 60,
+                                              height: 40,width: 40,
                                               child: CircleAvatar(
                                                   radius: 50,
                                                   backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover).image:const AssetImage("assets/Photos/no_user.jpg"))),
-                                          contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 15),
+                                          contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 10),
                                           title: Row(
                                             children: [
-                                              Text(items[index].person,style:const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                                              Text(items[index].person,style:const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold),),
                                               const SizedBox(width: 8),
                                               Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
@@ -253,12 +250,12 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                                               ),
                                             ],
                                           ),
-                                          subtitle: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString()),style: const TextStyle(),),
+                                          subtitle: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString()),style: const TextStyle(fontSize: smallSize,color: Colors.grey),),
                                           trailing: Column(
                                             children: [
 
                                               const SizedBox(height: 6),
-                                              Expanded(child: Text(Env.currencyFormat(items[index].amount, "en_US"),style: const TextStyle(fontSize: 16),)),
+                                              Expanded(child: Text(Env.currencyFormat(items[index].amount, "en_US"),style: const TextStyle(fontSize: normalSize),)),
                                             ],
                                           ),
 
@@ -288,7 +285,7 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
     );
   }
 
-  showPicker()async{
+  showGregorianPicker()async{
     final DateTimeRange? dateTimeRange = await showDateRangePicker(
         context: context,
         firstDate: DateTime(2000),

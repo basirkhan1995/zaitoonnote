@@ -13,17 +13,15 @@ import '../../Methods/env.dart';
 import '../../Provider/provider.dart';
 import '../Json Models/trn_model.dart';
 
-
 class PersonActivities extends StatefulWidget {
   final PersonModel? data;
-  const PersonActivities({super.key,this.data});
+  const PersonActivities({super.key, this.data});
 
   @override
   State<PersonActivities> createState() => _PersonActivitiesState();
 }
 
 class _PersonActivitiesState extends State<PersonActivities> {
-
   late Future<List<TransactionModel>> transactions;
   late Future<List<TransactionModel>> transactionsByDate;
   late DatabaseHelper handler;
@@ -47,8 +45,12 @@ class _PersonActivitiesState extends State<PersonActivities> {
     super.initState();
     handler = DatabaseHelper();
 
-    transactions = handler.getTransactionByPersonId(widget.data?.pId.toString()??"");
-    transactionsByDate = handler.getTransactionByDateRange(widget.data?.pId.toString()??"",firstSelectedDate.toString(),endSelectedDate.toString());
+    transactions =
+        handler.getTransactionByPersonId(widget.data?.pId.toString() ?? "");
+    transactionsByDate = handler.getTransactionByDateRange(
+        widget.data?.pId.toString() ?? "",
+        firstSelectedDate.toString(),
+        endSelectedDate.toString());
 
     handler.initDB().whenComplete(() async {
       setState(() {
@@ -57,33 +59,44 @@ class _PersonActivitiesState extends State<PersonActivities> {
       });
     });
     _onRefresh();
-
   }
 
   //All Person Transaction By Date Range
   Future<List<TransactionModel>> getAllTransactionByDate() async {
-    return await handler.getTransactionByDateRange(widget.data?.pId.toString()??"",firstSelectedDate.toString(),endSelectedDate.toString());
+    return await handler.getTransactionByDateRange(
+        widget.data?.pId.toString() ?? "",
+        firstSelectedDate.toString(),
+        endSelectedDate.toString());
   }
 
   //All Transactions By Person
   Future<List<TransactionModel>> getAllTransaction() async {
-    return await handler.getTransactionByPersonId(widget.data?.pId.toString()??"");
+    return await handler
+        .getTransactionByPersonId(widget.data?.pId.toString() ?? "");
   }
 
   //Total Paid
-  Future<int> sumPaid()async{
-    int? count = await handler.totalSumByCategoryAndPersonByDateRange(2, widget.data?.pId??0,firstSelectedDate.toString(),endSelectedDate.toString());
-    setState((){
-      paid = count??0;
+  Future<int> sumPaid() async {
+    int? count = await handler.totalSumByCategoryAndPersonByDateRange(
+        2,
+        widget.data?.pId ?? 0,
+        firstSelectedDate.toString(),
+        endSelectedDate.toString());
+    setState(() {
+      paid = count ?? 0;
     });
     return paid;
   }
 
   //Total Received count
-  Future<int> sumReceived()async{
-    int? count = await handler.totalSumByCategoryAndPersonByDateRange(3,widget.data?.pId??0,firstSelectedDate.toString(),endSelectedDate.toString());
-    setState((){
-      received = count??0;
+  Future<int> sumReceived() async {
+    int? count = await handler.totalSumByCategoryAndPersonByDateRange(
+        3,
+        widget.data?.pId ?? 0,
+        firstSelectedDate.toString(),
+        endSelectedDate.toString());
+    setState(() {
+      received = count ?? 0;
     });
     return received;
   }
@@ -98,7 +111,6 @@ class _PersonActivitiesState extends State<PersonActivities> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MyProvider>(context, listen: false);
@@ -106,32 +118,42 @@ class _PersonActivitiesState extends State<PersonActivities> {
     double credit = double.parse(received.toString());
     double debit = double.parse(paid.toString());
     double balance = debit - credit;
-
     String currentLocale = Locales.currentLocale(context).toString();
 
     return Scaffold(
-      body:  SafeArea(
+      body: SafeArea(
         child: Column(
           children: [
             ListTile(
               leading: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6),
                     color: zPrimaryColor,
-
                   ),
-                  child: const Icon(Icons.sort_rounded,color: Colors.white,)),
-              onTap: (){
-                currentLocale == "en"?showPicker():showPersianPicker();
+                  child: const Icon(
+                    Icons.sort_rounded,
+                    color: Colors.white,
+                  )),
+              onTap: () {
+                currentLocale == "en" ? showPicker() : showPersianPicker();
               },
-              trailing: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 18),),
+              trailing: Text(
+                currentLocale == "en"
+                    ? DateFormat('MMMMEEEEd').format(DateTime.now())
+                    : Env.persianFormatWithWeekDay(Jalali.now()),
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                    fontSize: mediumSize),
+              ),
             ),
             //Reports header
             Container(
               padding: const EdgeInsets.symmetric(vertical: 0),
-              height: MediaQuery.of(context).size.height *.18,
-              margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
+              height: MediaQuery.of(context).size.height * .18,
+              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 color: Colors.white,
@@ -144,28 +166,73 @@ class _PersonActivitiesState extends State<PersonActivities> {
                   ),
                 ],
               ),
-
               child: Center(
                 child: SingleChildScrollView(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-
                     children: [
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("credit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(debit.toInt(), "en_US"),style: const TextStyle(fontSize: 17,fontWeight: FontWeight.bold,color: Colors.grey),),),
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("debit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(credit.toInt(), "en_US"),style: const TextStyle(fontSize: 17,fontWeight: FontWeight.bold,color: Colors.grey),),),
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("balance",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true, trailing: Text(Env.currencyFormat(balance.toInt(), "en_US"),style: const TextStyle(fontSize: 17,fontWeight: FontWeight.bold)),),
+                      ListTile(
+                        visualDensity: const VisualDensity(vertical: -4),
+                        title: LocaleText("credit",
+                            style: TextStyle(
+                                fontFamily:
+                                    currentLocale == "en" ? "Ubuntu" : "Dubai",
+                                fontSize: normalSize,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey)),
+                        dense: true,
+                        trailing: Text(
+                          Env.currencyFormat(debit.toInt(), "en_US"),
+                          style: const TextStyle(
+                              fontSize: normalSize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey),
+                        ),
+                      ),
+                      ListTile(
+                        visualDensity: const VisualDensity(vertical: -4),
+                        title: LocaleText("debit",
+                            style: TextStyle(
+                                fontFamily:
+                                    currentLocale == "en" ? "Ubuntu" : "Dubai",
+                                fontSize: normalSize,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey)),
+                        dense: true,
+                        trailing: Text(
+                          Env.currencyFormat(credit.toInt(), "en_US"),
+                          style: const TextStyle(
+                              fontSize: normalSize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey),
+                        ),
+                      ),
+                      ListTile(
+                        visualDensity: const VisualDensity(vertical: -4),
+                        title: LocaleText("balance",
+                            style: TextStyle(
+                                fontFamily:
+                                    currentLocale == "en" ? "Ubuntu" : "Dubai",
+                                fontSize: normalSize,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey)),
+                        dense: true,
+                        trailing: Text(
+                            Env.currencyFormat(balance.toInt(), "en_US"),
+                            style: const TextStyle(
+                                fontSize: normalSize, fontWeight: FontWeight.bold)),
+                      ),
                     ],
                   ),
                 ),
               ),
             ),
 
-
             Expanded(
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 0),
-                height: MediaQuery.of(context).size.height *.18,
-                margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
+                height: MediaQuery.of(context).size.height * .18,
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.white,
@@ -180,7 +247,8 @@ class _PersonActivitiesState extends State<PersonActivities> {
                 ),
                 child: FutureBuilder<List<TransactionModel>>(
                   future: transactions,
-                  builder: (BuildContext context, AsyncSnapshot<List<TransactionModel>> snapshot) {
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<TransactionModel>> snapshot) {
                     //in case whether data is pending
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -191,11 +259,10 @@ class _PersonActivitiesState extends State<PersonActivities> {
                     } else if (snapshot.hasData && snapshot.data!.isEmpty) {
                       return Center(
                           child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.asset("assets/Photos/empty.png",width: 250),
-                            ]
-                          ));
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                            Image.asset("assets/Photos/empty.png", width: 250),
+                          ]));
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else {
@@ -208,58 +275,116 @@ class _PersonActivitiesState extends State<PersonActivities> {
                           child: SizedBox(
                             child: ListView.builder(
                                 itemCount: items.length,
-                                itemBuilder: (context,index){
+                                itemBuilder: (context, index) {
                                   return Column(
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4.0, vertical: 4),
                                         child: ListTile(
+                                          horizontalTitleGap: 3,
                                           dense: true,
                                           leading: SizedBox(
-                                              height: 60,width: 60,
+                                              height: 60,
+                                              width: 60,
                                               child: CircleAvatar(
                                                   radius: 50,
-                                                  backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover).image:const AssetImage("assets/Photos/no_user.jpg"))),
-                                          contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 15),
+                                                  backgroundImage: items[index]
+                                                          .pImage!
+                                                          .isNotEmpty
+                                                      ? Image.file(
+                                                              File(items[index]
+                                                                  .pImage!),
+                                                              fit: BoxFit.cover)
+                                                          .image
+                                                      : const AssetImage(
+                                                          "assets/Photos/no_user.jpg"))),
+                                          contentPadding:
+                                              const EdgeInsets.symmetric(
+                                                  vertical: 0, horizontal: 6),
                                           title: Row(
                                             children: [
-                                              Text(items[index].person,style:const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-                                              const SizedBox(width: 8),
+                                              Text(
+                                                items[index].person,
+                                                style: const TextStyle(
+                                                    fontSize: 13,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              const SizedBox(width: 4),
                                               Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 3,
+                                                        vertical: 3),
                                                 decoration: BoxDecoration(
-                                                    color: items[index].trnCategory == "received"? Colors.lightGreen:Colors.red.shade700,
-                                                    borderRadius: BorderRadius.circular(4)
-                                                ),
+                                                    color: items[index]
+                                                                .trnCategory ==
+                                                            "received"
+                                                        ? Colors.lightGreen
+                                                        : Colors.red.shade700,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            4)),
                                                 child: Icon(
-                                                  items[index].trnCategory == "received"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
+                                                  items[index].trnCategory ==
+                                                          "received"
+                                                      ? UniconsLine
+                                                          .arrow_down_left
+                                                      : UniconsLine
+                                                          .arrow_up_right,
+                                                  color: Colors.white,
+                                                  size: 14,
                                                 ),
                                               ),
                                             ],
                                           ),
-                                          subtitle: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString()),style: const TextStyle(),),
+                                          subtitle: Text(
+                                            provider.showHidePersianDate
+                                                ? Env.persianDateTimeFormat(
+                                                    DateTime.parse(items[index]
+                                                        .createdAt
+                                                        .toString()))
+                                                : Env.gregorianDateTimeForm(
+                                                    items[index]
+                                                        .createdAt
+                                                        .toString()),
+                                            style:
+                                                const TextStyle(fontSize: 12),
+                                          ),
                                           trailing: Column(
                                             children: [
-
                                               const SizedBox(height: 6),
-                                              Expanded(child: Text(Env.currencyFormat(items[index].amount, "en_US"),style: const TextStyle(fontSize: 16),)),
+                                              Expanded(
+                                                  child: Text(
+                                                Env.currencyFormat(
+                                                    items[index].amount,
+                                                    "en_US"),
+                                                style: const TextStyle(
+                                                    fontSize: 13),
+                                              )),
                                             ],
                                           ),
-                                       onTap: (){
-                                            Env.goto(TransactionDetails(data: items[index]), context);
-                                       },
+                                          onTap: () {
+                                            Env.goto(
+                                                TransactionDetails(
+                                                    data: items[index]),
+                                                context);
+                                          },
                                         ),
                                       ),
                                       Container(
-                                        decoration: BoxDecoration(color: Colors.grey.withOpacity(.3)),
-                                        width: MediaQuery.of(context).size.width *.9,
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey.withOpacity(.3)),
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                .9,
                                         height: 1,
                                         margin: EdgeInsets.zero,
                                       )
                                     ],
                                   );
                                 }),
-
                           ),
                         ),
                       );
@@ -274,14 +399,15 @@ class _PersonActivitiesState extends State<PersonActivities> {
     );
   }
 
-   showPicker()async{
+  showPicker() async {
     final DateTimeRange? dateTimeRange = await showDateRangePicker(
         context: context,
         firstDate: DateTime(2000),
         lastDate: DateTime(3000),
-        initialDateRange: DateTimeRange(start: DateTime.now(), end: DateTime.now().add(const Duration(days: 1)))
-    );
-    if(dateTimeRange != null){
+        initialDateRange: DateTimeRange(
+            start: DateTime.now(),
+            end: DateTime.now().add(const Duration(days: 1))));
+    if (dateTimeRange != null) {
       setState(() {
         firstSelectedDate = dateTimeRange.start;
         endSelectedDate = dateTimeRange.end;
@@ -292,7 +418,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
     return dateTimeRange;
   }
 
-  showPersianPicker()async{
+  showPersianPicker() async {
     var picked = await showPersianDateRangePicker(
       context: context,
       initialEntryMode: PDatePickerEntryMode.calendar,
@@ -303,7 +429,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
       firstDate: Jalali(1350, 8),
       lastDate: Jalali(1500, 9),
     );
-    if(picked != null){
+    if (picked != null) {
       setState(() {
         firstSelectedDate = picked.start.toDateTime();
         endSelectedDate = picked.end.toDateTime();
@@ -313,7 +439,4 @@ class _PersonActivitiesState extends State<PersonActivities> {
     }
     return picked;
   }
-
 }
-
-

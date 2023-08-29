@@ -4,6 +4,7 @@ import 'package:flutter_locales/flutter_locales.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import 'dart:io';
 import '../../Datebase Helper/sqlite.dart';
@@ -87,6 +88,7 @@ class _CreateNoteState extends State<CreateNote> {
                 children: [
                   Expanded(
                     child: ListTile(
+                      horizontalTitleGap: 5,
                       onTap: () {
                         setState(() {
                           final DateTime dateTime = showDatePicker(
@@ -101,7 +103,7 @@ class _CreateNoteState extends State<CreateNote> {
                       },
                       title: Text(
                         gregorianDate,
-                        style: const TextStyle(fontSize: 13),
+                        style: const TextStyle(fontSize: normalSize),
                       ),
                       subtitle: Text(shamsiDate()),
                     ),
@@ -115,8 +117,8 @@ class _CreateNoteState extends State<CreateNote> {
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 2),
                             margin: const EdgeInsets.symmetric(horizontal: 4),
-                            height: 40,
-                            width: 160,
+                            height: 50,
+                            width: 130,
                             decoration: BoxDecoration(
                                 color: Colors.deepPurple.withOpacity(.1),
                                 borderRadius: BorderRadius.circular(10)),
@@ -127,14 +129,13 @@ class _CreateNoteState extends State<CreateNote> {
                                   children: [
                                     Container(
                                       margin: const EdgeInsets.symmetric(
-                                          vertical: 8),
-                                      height: 5,
+                                          vertical: 10),
+                                      height: 10,
                                       width: 60,
                                       decoration: BoxDecoration(
                                           color: Colors.deepPurple,
                                           borderRadius:
-                                          BorderRadius
-                                              .circular(15)),
+                                          BorderRadius.circular(15)),
                                     ),
                                     Padding(
                                         padding: const EdgeInsets.only(top: 0, left: 10),

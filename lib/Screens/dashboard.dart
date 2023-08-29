@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
+import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
 
 import '../Datebase Helper/sqlite.dart';
 import '../Methods/colors.dart';
@@ -105,8 +106,8 @@ class _DashboardState extends State<Dashboard> {
                     onTap: (){
                       showDialog(context: context, builder: (context){
                         return AlertDialog(
-                          title: const LocaleText("logout_title"),
-                          content: const LocaleText("logout_msg"),
+                          title: LocaleText("logout_title",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
+                          content: LocaleText("logout_msg",style: TextStyle(fontSize: normalSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai")),
                           actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                           actions: [
                             Row(
@@ -140,7 +141,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ):null,
                 title: LocaleText("welcome",style: TextStyle(fontFamily: currentLocale.toString() == "en"?"Ubuntu":"Dubai",fontSize: 16),),
-                trailing: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 18),),
+                trailing: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: mediumSize),),
               ),
 
               Container(
@@ -171,30 +172,35 @@ class _DashboardState extends State<Dashboard> {
                      children: [
                        Column(
                          children: [
-                           CircularPercentIndicator(
-                                radius: 40.0,
-                                lineWidth: 5.0,
-                                animation: true,
-                                percent: totalUser/100,
-                                center:  Container(
-                                  height: 45,
-                                  width: 45,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: zPrimaryColor.withOpacity(.15)
+                           InkWell(
+                             child: CircularPercentIndicator(
+                                  radius: 40.0,
+                                  lineWidth: 5.0,
+                                  animation: true,
+                                  percent: 0.3,
+                                  center:  Container(
+                                    height: 45,
+                                    width: 45,
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(50),
+                                      color: zPrimaryColor.withOpacity(.15)
+                                    ),
+                                    child: const Icon(
+                                      Icons.person,
+                                      size: 30.0,
+                                      color: Colors.purple,
+                                    ),
                                   ),
-                                  child: const Icon(
-                                    Icons.person,
-                                    size: 30.0,
-                                    color: Colors.purple,
-                                  ),
+                                  backgroundColor: zPrimaryColor.withOpacity(.3),
+                                  progressColor: Colors.purple,
                                 ),
-                                backgroundColor: zPrimaryColor.withOpacity(.3),
-                                progressColor: Colors.purple,
-                              ),
+                             onTap: (){
+                               Env.goto(const AccountSettings(), context);
+                             },
+                           ),
                            const SizedBox(height: 8),
                            Text(totalUser.toString(),style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                           const LocaleText("accounts",style: TextStyle(fontSize: 14),),
+                            LocaleText("accounts",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en" ? "Ubuntu":"Dubai"),),
                          ],
                        ),
                      ],
@@ -207,7 +213,7 @@ class _DashboardState extends State<Dashboard> {
                           radius: 40.0,
                           lineWidth: 5.0,
                           animation: true,
-                          percent: totalPaid/100/totalPaid,
+                          percent: .2,
                           center:  Container(
                             height: 45,
                             width: 45,
@@ -225,8 +231,8 @@ class _DashboardState extends State<Dashboard> {
                           progressColor: Colors.red.shade900,
                         ),
                         const SizedBox(height: 8),
-                        Text(Env.currencyFormat(totalPaid, "en_US"),style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                        const LocaleText("debit",style: TextStyle(fontSize: 14),),
+                        Text(Env.currencyFormat(totalPaid, "en_US"),style: const TextStyle(fontSize: mediumSize,fontWeight: FontWeight.bold),),
+                         LocaleText("debit",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en" ? "Ubuntu":"Dubai"),),
                       ],
                     ),
                     //Total Credit
@@ -255,8 +261,8 @@ class _DashboardState extends State<Dashboard> {
                           progressColor: Colors.green,
                         ),
                         const SizedBox(height: 8),
-                        Text(Env.currencyFormat(totalReceived, "en_US"),style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
-                        const LocaleText("credit",style: TextStyle(fontSize: 14),),
+                        Text(Env.currencyFormat(totalReceived, "ar_AR"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold),),
+                         LocaleText("credit",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en" ? "Ubuntu":"Dubai"),),
                       ],
                     ),
                   ],
@@ -291,7 +297,7 @@ class _DashboardState extends State<Dashboard> {
                               children: [
                                 Expanded(
                                   child: ZButton(
-                                    backgroundColor: Colors.deepPurpleAccent.withOpacity(.2),
+                                    backgroundColor: zPrimaryColor.withOpacity(.2),
                                     width: .92,
                                     label: "create_note",
                                     labelColor: Colors.black87,
@@ -314,7 +320,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
                           ZButton(
                             labelColor: Colors.black87,
-                            backgroundColor: Colors.deepPurple.withOpacity(.2),
+                            backgroundColor: zPrimaryColor.withOpacity(.2),
                             width: .92,
                             label: "add_account",
                             onTap: ()=>Env.goto(const AddPerson(), context),
@@ -350,7 +356,7 @@ class _DashboardState extends State<Dashboard> {
                       contentPadding: const EdgeInsets.symmetric(horizontal: 15),
                       trailing: const Icon(UniconsLine.transaction),
                       leading: const Icon(Icons.access_time),
-                      title: LocaleText("recent_activities",style: TextStyle( color: Colors.grey,fontWeight: FontWeight.bold,fontFamily: currentLocale.toString() == "en"?"Ubuntu":"Dubai"),),
+                      title: LocaleText("recent_activities",style: TextStyle(fontSize: normalSize, color: Colors.grey,fontWeight: FontWeight.bold,fontFamily: currentLocale.toString() == "en"?"Ubuntu":"Dubai"),),
                     ),
                     Expanded(
                       child: SizedBox(
@@ -370,7 +376,7 @@ class _DashboardState extends State<Dashboard> {
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
-                                        Image.asset("assets/Photos/empty.png",width: 250),
+                                        Image.asset("assets/Photos/empty.png",width: 150),
                                       ],
                                     ));
                               } else if (snapshot.hasError) {

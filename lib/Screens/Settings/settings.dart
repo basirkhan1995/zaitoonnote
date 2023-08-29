@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
+import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Provider/provider.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/change_password.dart';
@@ -83,7 +84,7 @@ class SettingsPage extends StatelessWidget {
                               MaterialPageRoute(
                                   builder: (context) => pages[index]));
                         },
-                        subtitle: LocaleText(subItems[index]),
+                        subtitle: LocaleText(subItems[index],style: TextStyle(fontSize: smallSize,color: Colors.grey,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                         leading: Container(
                           margin: const EdgeInsets.all(0),
                           height: 50,
@@ -99,7 +100,7 @@ class SettingsPage extends StatelessWidget {
                         ),
                         title: LocaleText(
                           items[index],
-                          style: TextStyle(fontSize: 14,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
+                          style: TextStyle(fontSize: normalSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                         ),
                         trailing: Container(
                             height: 25,
@@ -108,7 +109,7 @@ class SettingsPage extends StatelessWidget {
                                 color: Colors.deepPurple.withOpacity(.09),
                                 borderRadius: BorderRadius.circular(50)),
                             child: const Icon(Icons.arrow_forward_ios_rounded,
-                                size: 12)),
+                                size: normalSize)),
                       );
                     }),
               ),
@@ -120,7 +121,7 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {
                     switchLanguage(context);
                   },
-                  subtitle: LocaleText(Locales.currentLocale(context).toString()),
+                  subtitle: LocaleText(Locales.currentLocale(context).toString(),style: const TextStyle(fontSize: smallSize),),
                   leading: Container(
                     margin: const EdgeInsets.all(0),
                     height: 50,
@@ -134,9 +135,9 @@ class SettingsPage extends StatelessWidget {
                       size: 24,
                     ),
                   ),
-                  title: const LocaleText(
+                  title: LocaleText(
                     "language",
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: normalSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                   ),
                   trailing: Container(
                       height: 25,
@@ -169,11 +170,11 @@ class SettingsPage extends StatelessWidget {
                             size: 24,
                           ),
                         ),
-                        title: const LocaleText(
+                        title: LocaleText(
                           "change_password",
-                          style: TextStyle(fontSize: 14),
+                          style: TextStyle(fontSize: normalSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                         ),
-                        subtitle: const LocaleText("change_password_hint"),
+                        subtitle: LocaleText("change_password_hint",style: TextStyle(fontSize: smallSize, fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                         trailing: Container(
                             height: 25,
                             width: 25,
@@ -206,9 +207,9 @@ class SettingsPage extends StatelessWidget {
                             size: 24,
                           ),
                         ),
-                        title: const LocaleText(
+                        title: LocaleText(
                           "logout",
-                          style: TextStyle(fontSize: 14),
+                          style: TextStyle(fontSize: normalSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                         ),
                         trailing: Container(
                             height: 25,

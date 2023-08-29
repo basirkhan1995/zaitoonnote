@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+const double smallSize = 12;
+const double normalSize = 13;
+const double mediumSize = 14;
+const double largeSize = 16;
+
+
 const zBlackHalf = Color(0xFF212121);
 const zBlack =  Color(0xFF000000);
 const zGrey = Color(0xff434343);

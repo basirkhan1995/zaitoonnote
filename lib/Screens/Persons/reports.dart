@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
+import 'package:zaitoonnote/Methods/colors.dart';
 import 'dart:io';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import '../../Datebase Helper/sqlite.dart';
@@ -156,17 +157,17 @@ class _PersonReportsState extends State<PersonReports> {
                                     Padding(
                                       padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
                                       child: ListTile(
+                                        horizontalTitleGap: 5,
                                         dense: true,
-
                                         leading: SizedBox(
-                                            height: 60,width: 60,
+                                            height: 40,width: 40,
                                             child: CircleAvatar(
                                                 radius: 50,
                                                 backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover).image:const AssetImage("assets/Photos/no_user.jpg"))),
-                                        contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 15),
+                                        contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 10),
                                         title: Row(
                                           children: [
-                                            Text(items[index].person,style:const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                                            Text(items[index].person,style:const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold),),
                                             const SizedBox(width: 8),
                                             Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
@@ -180,12 +181,12 @@ class _PersonReportsState extends State<PersonReports> {
                                             ),
                                           ],
                                         ),
-                                        subtitle: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString()),style: const TextStyle(),),
+                                        subtitle: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString()),style: const TextStyle(fontSize: smallSize,color: Colors.grey),),
                                         trailing: Column(
                                           children: [
 
                                             const SizedBox(height: 6),
-                                            Expanded(child: Text(Env.currencyFormat(items[index].amount, "en_US"),style: const TextStyle(fontSize: 16),)),
+                                            Expanded(child: Text(Env.currencyFormat(items[index].amount, "en_US"),style: const TextStyle(fontSize: normalSize),)),
                                           ],
                                         ),
 

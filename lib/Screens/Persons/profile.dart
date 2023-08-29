@@ -35,7 +35,6 @@ class _PersonProfileState extends State<PersonProfile> {
         cardNumber.text, cardName.text, phone.text, widget.profileDetails?.pId);
     if (res > 0) {
       if (kDebugMode) {
-        print("success");
         //Env.showSnackBar("Update","success",context);
       }
     } else {
@@ -76,10 +75,10 @@ class _PersonProfileState extends State<PersonProfile> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: CircleAvatar(
-                              radius: 62,
+                              radius: 58,
                               backgroundColor: zPrimaryColor,
                               child: CircleAvatar(
-                                  radius: 60,
+                                  radius: 56,
                                   backgroundImage:
                                       widget.profileDetails!.pImage!.isNotEmpty
                                           ? Image.file(
@@ -92,8 +91,8 @@ class _PersonProfileState extends State<PersonProfile> {
                             ),
                           ),
                           Positioned(
-                              top: 95,
-                              left: 90,
+                              top: 90,
+                              left: 85,
                               child: Container(
                                 height: 35,
                                 width: 35,
@@ -135,13 +134,13 @@ class _PersonProfileState extends State<PersonProfile> {
                         Text(
                           widget.profileDetails?.pName ?? "",
                           style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                              fontSize: mediumSize, fontWeight: FontWeight.bold),
                         ),
                         Row(
                           children: [
                             const LocaleText(
                               "account_no",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: smallSize),
                             ),
                             const SizedBox(width: 6),
                             Container(
@@ -153,7 +152,7 @@ class _PersonProfileState extends State<PersonProfile> {
                               child: Text(
                                 widget.profileDetails?.pId.toString() ?? "",
                                 style: const TextStyle(
-                                    fontSize: 16, color: Colors.white),
+                                    fontSize: smallSize, color: Colors.white),
                               ),
                             ),
                           ],
@@ -161,14 +160,13 @@ class _PersonProfileState extends State<PersonProfile> {
                         const SizedBox(height: 6),
                         const LocaleText(
                           "updated_at",
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(fontWeight: FontWeight.bold,fontSize: smallSize,color: Colors.grey),
                         ),
-                        //Text(DateTime.fromMillisecondsSinceEpoch(widget.profileDetails!.updatedAt).toString())
                         Text(currentLocale == "en"
                             ? Env.persianDateTimeFormat(DateTime.parse(
                                 widget.profileDetails!.updatedAt.toString()))
                             : Env.gregorianDateTimeForm(
-                                widget.profileDetails!.updatedAt.toString())),
+                                widget.profileDetails!.updatedAt.toString()),style: const TextStyle(fontSize: smallSize),),
                       ],
                     ),
                   ),
@@ -304,7 +302,7 @@ class _PersonProfileState extends State<PersonProfile> {
                   ),
                   title: const LocaleText(
                     "job",
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: normalSize),
                   ),
                   trailing: Container(
                       height: 25,
@@ -407,20 +405,6 @@ class _PersonProfileState extends State<PersonProfile> {
                 ),
               ),
 
-              ListTile(
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 35, vertical: 15),
-                visualDensity: const VisualDensity(vertical: -4),
-                title: Text(currentLocale == "en"
-                    ? Env.persianDateTimeFormat(DateTime.parse(
-                        widget.profileDetails!.createdAt.toString()))
-                    : Env.gregorianDateTimeForm(
-                        widget.profileDetails?.createdAt.toString() ?? "")),
-                trailing: const LocaleText(
-                  "created_at",
-                  style: TextStyle(fontSize: 15),
-                ),
-              ),
               const SizedBox(height: 5),
 
               //End

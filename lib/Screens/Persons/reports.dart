@@ -41,8 +41,7 @@ class _PersonReportsState extends State<PersonReports> {
   void initState() {
     super.initState();
     handler = DatabaseHelper();
-    transactions = handler.getTransactionsBySingleDate(selectedTimeLine.toString());
-
+    transactions = handler.getTransactionsBySingleDate(widget.data?.pId??0,selectedTimeLine.toString());
     handler.initDB().whenComplete(() async {
       setState(() {
         transactions = getTransactionByPersonId();
@@ -54,7 +53,7 @@ class _PersonReportsState extends State<PersonReports> {
 
   //All Person Transaction By Date Range
   Future<List<TransactionModel>> getTransactionByPersonId() async {
-    return await handler.getTransactionsBySingleDate(selectedTimeLine.toString());
+    return await handler.getTransactionsBySingleDate(widget.data?.pId??0,selectedTimeLine.toString());
   }
 
 
@@ -82,9 +81,17 @@ class _PersonReportsState extends State<PersonReports> {
             children: [
               EasyDateTimeLine(
                 initialDate: DateTime.now(),
+                locale: currentLocale == "en"? "en_US" : "fa_IR",
+                headerProps: const EasyHeaderProps(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  monthStyle: TextStyle(fontFamily: "Ubuntu",color: Colors.blueGrey,fontWeight: FontWeight.bold),
+                  monthPickerType: MonthPickerType.switcher,
+                ),
                 onDateChange: (selectedDate) {
                   setState(() {
                     selectedTimeLine = selectedDate;
+                    print("Time Line: ${selectedTimeLine.toString()}");
+                    _onRefresh();
                   });
                 },
                 activeColor: const Color(0xff85A389),

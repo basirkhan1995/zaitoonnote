@@ -1,12 +1,16 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
-import 'package:intl/intl.dart';
-import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'package:unicons/unicons.dart';
+import 'package:zaitoonnote/Methods/colors.dart';
+import 'package:zaitoonnote/Methods/z_field.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
 import '../../Datebase Helper/sqlite.dart';
-import '../Json Models/note_model.dart';
+import '../../Methods/custom_drop_down.dart';
+import '../../Methods/env.dart';
+import '../../Provider/provider.dart';
 
 class TransactionDetails extends StatefulWidget {
   final TransactionModel? data;
@@ -18,142 +22,362 @@ class TransactionDetails extends StatefulWidget {
 
 class _TransactionDetailsState extends State<TransactionDetails> {
   final db = DatabaseHelper();
+
+  File? _trnImage;
   bool isUpdate = false;
-  final titleCtrl = TextEditingController();
+
+  final amountCtrl = TextEditingController();
   final contentCtrl = TextEditingController();
-  var dropValue = 0;
+  int selectedIndex = 0;
+  int selectedCategory = 0;
 
-  late DatabaseHelper handler;
-  late Future<List<Notes>> notes;
+  var selectedValue = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    handler = DatabaseHelper();
-    notes = handler.getNotes();
-    handler.initDB().whenComplete(() async {
-      setState(() {
-        notes = getList();
-      });
-    });
-  }
+  List category = [
+    "paid",
+    "received",
+    "check",
+    "rent",
+    "power",
+  ];
 
-  //Method to get data from database
-  Future<List<Notes>> getList() async {
-    return await handler.getNotes();
-  }
-
-  //Method to refresh data on pulling the list
-  Future<void> _onRefresh() async {
-    setState(() {
-      notes = getList();
-    });
-  }
+  List categoryId = <int> [
+    2,
+    3,
+    4,
+    5,
+    6,
+  ];
 
   @override
   Widget build(BuildContext context) {
-    final dt = DateTime.parse(widget.data!.createdAt.toString());
-
-    //Gregorian Date format
-    final gregorianDate = DateFormat('yyyy/MM/dd - HH:mm a').format(dt);
-    Jalali persianDate = dt.toJalali();
-
-    //Persian Date format
-    String shamsiDate() {
-      final f = persianDate.formatter;
-      return '${f.yyyy}/${f.mm}/${f.dd}';
-    }
+    final provider = Provider.of<MyProvider>(context, listen: false);
+    String currentLocale = Locales.currentLocale(context).toString();
 
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
-
         title: Text(widget.data!.person),
+        actions: [
+          const SizedBox(width: 5),
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: Container(
+                height: 45,
+                width: 45,
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: zPrimaryColor.withOpacity(.1)),
+                child: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isUpdate = !isUpdate;
+                      
+                      amountCtrl.text = widget.data!.amount.toString();
+                      contentCtrl.text = widget.data!.trnDescription.toString();
+                    });
+                    updateTransaction();
+                  },
+                  icon: const Icon(Icons.edit),
+                ),
+              )),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
           children: [
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 2),
-              child: LocaleText(
-                "date",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ListTile(
+              subtitle: Text(
+                Env.currencyFormat(widget.data?.amount ?? 0, "en_US"),
+                style:
+                    const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+              title: Row(
+                children: [
+                  LocaleText(
+                    "amount",
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                        fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 10),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
+                    decoration: BoxDecoration(
+                        color: widget.data!.trnCategory == "received"
+                            ? Colors.lightGreen
+                            : Colors.red.shade700,
+                        borderRadius: BorderRadius.circular(4)),
+                    child: Icon(
+                      widget.data!.trnCategory == "received"
+                          ? UniconsLine.arrow_down_left
+                          : UniconsLine.arrow_up_right,
+                      color: Colors.white,
+                      size: 14,
+                    ),
+                  ),
+                ],
+              ),
+              trailing: LocaleText(widget.data?.trnCategory ?? "",
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                      color: Colors.grey)),
+            ),
+            ListTile(
+              subtitle: Text(
+                widget.data?.person ?? "",
+                style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai"),
+              ),
+              title: LocaleText(
+                "trn_person",
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                    fontWeight: FontWeight.bold),
               ),
             ),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-              dense: true,
-              title: Container(
-                  height: 40,
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: Colors.deepPurple.withOpacity(.3)),
-                  child: Text(
-                    gregorianDate,
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15),
-                  )),
-              subtitle: Text(
-                shamsiDate(),
-                style: const TextStyle(
-                    color: Colors.black38,
+              title: LocaleText(
+                "created_at",
+                style: TextStyle(
+                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                    color: Colors.grey,
                     fontWeight: FontWeight.bold,
-                    fontSize: 15),
+                    fontSize: 14),
+              ),
+              subtitle: Text(
+                currentLocale == "en"
+                    ? Env.gregorianDateTimeForm(
+                        widget.data!.createdAt.toString())
+                    : Env.persianDateTimeFormat(
+                        DateTime.parse(widget.data!.createdAt.toString())),
+                style: TextStyle(
+                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            ListTile(
+              subtitle: Text(
+                Env.currencyFormat(widget.data?.trnId ?? 0, "en_US"),
+                style:
+                    const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+              ),
+              title: LocaleText(
+                "trn_id",
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            ListTile(
+              subtitle: Text(
+                widget.data?.trnDescription ?? "",
+                style: TextStyle(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai"),
+              ),
+              title: LocaleText(
+                "description",
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            ListTile(
+              title: LocaleText(
+                "trn_image",
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                    fontWeight: FontWeight.bold),
               ),
             ),
 
             widget.data!.trnImage!.isNotEmpty
-                ? InkWell(
-              onTap: ()=> Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Scaffold( body: Center(
-                child: InteractiveViewer(
-                  boundaryMargin: const EdgeInsets.all(20.0),
-                  minScale: 0.1,
-                  maxScale: 1.6,
-                  child: Container(
-                    width: double.infinity,
-                    height: double.infinity,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: Image.file(
-                              File(widget.data!.trnImage.toString()),
-                              fit: BoxFit.cover).image,
-                        )
-                    ),
-                  ),
-                ),
-              ),))),
-                  child: Container(
-                      width: MediaQuery.of(context).size.width *.95,
-                      height: 250,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        image: DecorationImage(
+                ? Container(
+                  width: MediaQuery.of(context).size.width * .95,
+                  height: 250,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
                           fit: BoxFit.cover,
-                          image:Image.file(
-                            File(widget.data!.trnImage.toString()),
-                            fit: BoxFit.cover).image
-                        )
-                      ),
-                  ),
-                ):const SizedBox(),
-
+                          image: Image.file(
+                                  File(widget.data!.trnImage.toString()),
+                                  fit: BoxFit.cover)
+                              .image)),
+                )
+                : const SizedBox()
           ],
         ),
       ),
     );
   }
+
+   updateTransaction() {
+    String currentLocale = Locales.currentLocale(context).toString();
+
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (context) {
+          return Wrap(
+            children: <Widget>[
+              SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      height: 5,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          color: Colors.deepPurple,
+                          borderRadius: BorderRadius.circular(15)),
+                    ),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 0, left: 10),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+                          title: LocaleText(
+                            "update_transaction",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                                color: Colors.grey),
+                          ),
+                          leading: const Icon(UniconsLine.transaction),
+                          trailing: Container(
+                            height: 35,
+                            width: 35,
+                            decoration: BoxDecoration(
+                                color: Colors.deepPurple.withOpacity(.4),
+                                borderRadius: BorderRadius.circular(50)),
+                            child: IconButton(
+                                onPressed: (){
+                                  ///TODO
+                                },
+                                icon: const Icon(Icons.check,color: Colors.black87,size: 18)),
+                          ),
+                        )),
+
+                    ZField(title: "amount",isRequire: true,controller: amountCtrl,icon: Icons.currency_rupee_rounded,),
+                    ZField(title: "description",controller: contentCtrl,icon: Icons.info),
+                    const ListTile(title: Text("Category"),visualDensity: VisualDensity(vertical: -4)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 8),
+                      child: Row(
+                        children: [
+
+                          Expanded(
+                            flex: 2,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 15),
+                              height: 50,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: zPrimaryColor
+                                  ),
+                                  borderRadius: BorderRadius.circular(8)),
+                              child: CustomDropDown(
+                                items: const [
+                                  CustomDropdownMenuItem(
+                                      value: 2,
+                                      child: LocaleText("paid")
+                                  ),
+                                  CustomDropdownMenuItem(
+                                    value: 3,
+                                    child: LocaleText("received"),
+                                  ),
+                                  CustomDropdownMenuItem(
+                                    value: 4,
+                                    child: LocaleText("check"),
+                                  ),
+
+                                ],
+                                hintText: Locales.string(context, "select_category"),
+                                borderRadius: 5,
+                                onChanged: (val) {
+                                  setState(() {
+                                    selectedValue = val;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+
+                          Expanded(
+                            child: Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 6),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: zPrimaryColor.withOpacity(.2)
+                              ),
+                              child: IconButton(onPressed: (){
+                                getImage(ImageSource.gallery);
+                              }, icon: const Icon(Icons.camera_alt)),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+
+                    widget.data!.trnImage!.isEmpty
+                        ?  Container(
+                        width: MediaQuery.of(context).size.width * .95,
+          height: 250,
+          decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(10),
+          image: DecorationImage(
+          fit: BoxFit.cover,
+          image: Image.file(
+          File(_trnImage?.toString()??"assets/Photos/gallery2.jpg"),
+          fit: BoxFit.cover)
+              .image)),
+          )
+              : Container(
+                      width: MediaQuery.of(context).size.width * .95,
+                      height: 250,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: Image.file(
+                                  File(widget.data!.trnImage.toString()),
+                                  fit: BoxFit.cover)
+                                  .image)),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  Future <void> getImage(ImageSource imageSource)async{
+    final ImagePicker picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: imageSource);
+    if(pickedFile == null)return;
+    setState((){
+      _trnImage = File(pickedFile.path);
+      print(_trnImage);
+    });
+  }
 }
-
-
-
-
-
-
-
-

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
+import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Authentications/login.dart';
 import 'Provider/provider.dart';
 import 'Screens/Home/start_screen.dart';
@@ -56,8 +57,9 @@ class MyApp extends StatelessWidget {
                         ),
                         elevation: 0,
                       ),
-                      colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+                      colorScheme: ColorScheme.fromSeed(seedColor: zPrimaryColor,),
                       useMaterial3: true,
+
                     ),
                     home: controller.isLogin? const BottomNavBar(): controller.enableDisableLogin? const LoginPage() : const BottomNavBar(),
                   )

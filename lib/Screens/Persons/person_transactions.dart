@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
+import 'package:zaitoonnote/Screens/Activities/transaction_details.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import '../../Datebase Helper/sqlite.dart';
 import '../../Methods/colors.dart';
@@ -214,7 +215,6 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                         padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
                                         child: ListTile(
                                           dense: true,
-
                                           leading: SizedBox(
                                               height: 60,width: 60,
                                               child: CircleAvatar(
@@ -245,7 +245,9 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                               Expanded(child: Text(Env.currencyFormat(items[index].amount, "en_US"),style: const TextStyle(fontSize: 16),)),
                                             ],
                                           ),
-
+                                       onTap: (){
+                                            Env.goto(TransactionDetails(data: items[index]), context);
+                                       },
                                         ),
                                       ),
                                       Container(

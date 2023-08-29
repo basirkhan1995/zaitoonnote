@@ -338,10 +338,10 @@ class DatabaseHelper {
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 
-  Future<List<TransactionModel>> getTransactionsBySingleDate(date) async {
+  Future<List<TransactionModel>> getTransactionsBySingleDate(int pId , date) async {
     final Database db = await initDB();
     final List<Map<String, Object?>> queryResult = await db.rawQuery(
-        "select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId AND DATE(trnDate) = DATE(?)",[date]);
+        "select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId where b.pId = ? AND DATE(trnDate) = DATE(?)",[pId,date]);
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 

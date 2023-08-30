@@ -41,7 +41,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
   void initState() {
     super.initState();
     handler = DatabaseHelper();
-    persons = handler.getPersons();
+    persons = handler.getAllPersons();
     handler.initDB().whenComplete(() async {
       setState(() {
         persons = getList();
@@ -52,7 +52,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
 
   //Method to get data from database
   Future<List<PersonModel>> getList() async {
-    return await handler.getPersons();
+    return await handler.getAllPersons();
   }
  final cFormKey = GlobalKey<FormState>();
   final categoryCtrl = TextEditingController();
@@ -81,7 +81,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
               width: .35,
                 onTap: () {
                   if (formKey.currentState!.validate()) {
-                    db.createTransaction2(trnDescription.text, selectedCategoryId, selectedPerson, double.parse(trnAmount.text), _trnImage?.path??"",DateTime.now().toIso8601String()).whenComplete(() => Navigator.pop(context));
+                    db.createTransaction(trnDescription.text, selectedCategoryId, selectedPerson, double.parse(trnAmount.text), _trnImage?.path??"",DateTime.now().toIso8601String()).whenComplete(() => Navigator.pop(context));
 
                   }
                 },
@@ -131,7 +131,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                             }
                             return null;
                           },
-                          asyncItems: (value) => db.getPersonsByID(value),
+                          asyncItems: (value) => db.getPersonByName(value),
                           itemAsString: (PersonModel u) => u.pName.toString(),
                           onChanged: (PersonModel? data){
                             selectedPerson = data!.pId!.toInt();

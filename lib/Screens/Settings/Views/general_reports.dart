@@ -68,7 +68,7 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
 
   //All Transactions By Person
   Future<List<TransactionModel>> getAllTransaction() async {
-    return await handler.getTransactions();
+    return await handler.getAllTransactions();
   }
 
   //Total Paid
@@ -136,7 +136,7 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                 ),
                 child: IconButton(
                   onPressed: ()=>Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded,size:14),
+                  icon: const Icon(Icons.arrow_forward_ios,size:14),
                 ),
               )
             ),
@@ -164,8 +164,8 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                     mainAxisAlignment: MainAxisAlignment.center,
 
                     children: [
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("credit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(debit.toInt(), "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey),),),
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("debit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(credit.toInt(), "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey),),),
+                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("debit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(debit.toInt(), "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey),),),
+                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("credit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(credit.toInt(), "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey),),),
                       ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("balance",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true, trailing: Text(Env.currencyFormat(balance.toInt(), "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold)),),
                     ],
                   ),
@@ -241,11 +241,13 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                                               Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
                                                 decoration: BoxDecoration(
-                                                    color: items[index].trnCategory == "received"? Colors.lightGreen:Colors.red.shade700,
+                                                    color: items[index].trnCategory == "paid"? Colors.lightGreen:Colors.red.shade700,
                                                     borderRadius: BorderRadius.circular(4)
                                                 ),
                                                 child: Icon(
-                                                  items[index].trnCategory == "received"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
+                                                  //Paid is debit and received is Credit
+                                                  //Means Debit increases amount in person's account and credit decreases
+                                                  items[index].trnCategory == "paid"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
                                                 ),
                                               ),
                                             ],

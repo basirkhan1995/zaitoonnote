@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
+import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Home/start_screen.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
@@ -19,22 +20,22 @@ class AccountSettings extends StatefulWidget {
 }
 
 class _AccountSettingsState extends State<AccountSettings> {
-  final searchCtrl = TextEditingController();
-  String keyword = "";
+  final db = DatabaseHelper();
 
   late DatabaseHelper handler;
-  late Future<List<PersonModel>> persons;
-  final db = DatabaseHelper();
-  var formatter = NumberFormat('#,##,000');
+  late Future<List<PersonModel>> accounts;
+
+  final searchCtrl = TextEditingController();
+  String keyword = "";
 
   @override
   void initState() {
     super.initState();
     handler = DatabaseHelper();
-    persons = handler.getPersons();
+    accounts = handler.getAllPersons();
     handler.initDB().whenComplete(() async {
       setState(() {
-        persons = getAllPersons();
+        accounts = getAllPersons();
       });
     });
     _onRefresh();
@@ -43,13 +44,13 @@ class _AccountSettingsState extends State<AccountSettings> {
 
   //Method to get data from database
   Future<List<PersonModel>> getAllPersons() async {
-    return await handler.getPersons();
+    return await handler.getAllPersons();
   }
 
   //Method to refresh data on pulling the list
   Future<void> _onRefresh() async {
     setState(() {
-      persons = getAllPersons();
+      accounts = getAllPersons();
     });
   }
   bool isSearch = false;
@@ -99,7 +100,7 @@ class _AccountSettingsState extends State<AccountSettings> {
           children: [
 
             //Search TextField
-          isSearch?  Container(
+          isSearch? Container(
               margin: const EdgeInsets.symmetric(horizontal: 14,vertical: 8),
               padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 3),
               decoration: BoxDecoration(
@@ -111,7 +112,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                 onChanged: (value){
                   setState(() {
                     keyword = searchCtrl.text;
-                    persons = db.personSearch(keyword);
+                    accounts = db.getPersonByName(keyword);
                   });
                 },
                 decoration: InputDecoration(
@@ -124,7 +125,7 @@ class _AccountSettingsState extends State<AccountSettings> {
 
             Expanded(
               child: FutureBuilder<List<PersonModel>>(
-                future: persons,
+                future: accounts,
                 builder: (BuildContext context, AsyncSnapshot<List<PersonModel>> snapshot) {
                   //in case whether data is pending
                   if (snapshot.connectionState == ConnectionState.waiting) {
@@ -173,7 +174,7 @@ class _AccountSettingsState extends State<AccountSettings> {
                                             backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
                                     contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 18),
                                     dense: true,
-                                    title: Text(items[index].pName,style: const TextStyle(color: zPrimaryColor,fontSize: 16,fontWeight: FontWeight.bold),),
+                                    title: Text(items[index].pName??"",style: const TextStyle(color: zPrimaryColor,fontSize: 16,fontWeight: FontWeight.bold),),
                                     subtitle: Text(items[index].pPhone.toString(),style: const TextStyle(color: zGrey),),
                                     trailing: const Icon(Icons.arrow_forward_ios_outlined,size: 15,color: zPrimaryColor)
 

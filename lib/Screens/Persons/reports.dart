@@ -80,24 +80,30 @@ class _PersonReportsState extends State<PersonReports> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               EasyDateTimeLine(
+                timeLineProps: const EasyTimeLineProps(
+                  vPadding: 8,
+                ),
+                activeColor: const Color(0xFF6f4ea9),
                 initialDate: DateTime.now(),
                 locale: currentLocale == "en"? "en_US" : "fa_IR",
-                headerProps: const EasyHeaderProps(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  monthStyle: TextStyle(fontFamily: "Ubuntu",color: Colors.blueGrey,fontWeight: FontWeight.bold),
+                headerProps: EasyHeaderProps(
+                  padding: const EdgeInsets.only(right: 19,left: 8),
+                  monthStyle: TextStyle(fontFamily: currentLocale == "en"? "Ubuntu" : "Dubai",color: Colors.blueGrey,fontWeight: FontWeight.bold),
                   monthPickerType: MonthPickerType.switcher,
+                  selectedDateStyle: TextStyle(fontFamily: currentLocale == "en"? "Ubuntu" : "Dubai",fontSize: largeSize,fontWeight: FontWeight.bold)
+
                 ),
                 onDateChange: (selectedDate) {
                   setState(() {
                     selectedTimeLine = selectedDate;
-                    print("Time Line: ${selectedTimeLine.toString()}");
                     _onRefresh();
                   });
                 },
-                activeColor: const Color(0xff85A389),
-                dayProps: const EasyDayProps(
+
+                dayProps: EasyDayProps(
                   todayHighlightStyle: TodayHighlightStyle.withBackground,
-                  todayHighlightColor: Color(0xffE1ECC8),
+                  activeDayStrStyle: TextStyle(fontFamily: currentLocale == "en"? "Ubuntu" : "Dubai",color: Colors.white),
+                  todayHighlightColor: const Color(0xffE1ECC8),
                 ),
               ),
             ],
@@ -172,11 +178,11 @@ class _PersonReportsState extends State<PersonReports> {
                                             Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
                                               decoration: BoxDecoration(
-                                                  color: items[index].trnCategory == "received"? Colors.lightGreen:Colors.red.shade700,
+                                                  color: items[index].trnCategory == "paid"? Colors.lightGreen:Colors.red.shade700,
                                                   borderRadius: BorderRadius.circular(4)
                                               ),
                                               child: Icon(
-                                                items[index].trnCategory == "received"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
+                                                items[index].trnCategory == "paid"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
                                               ),
                                             ),
                                           ],

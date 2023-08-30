@@ -407,17 +407,17 @@ class _DashboardState extends State<Dashboard> {
                                                     Container(
                                                       padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
                                                       decoration: BoxDecoration(
-                                                          color: items[index].trnCategory == "received"? Colors.lightGreen:Colors.red.shade700,
+                                                          color: items[index].trnCategory == "paid"? Colors.lightGreen:Colors.red.shade700,
                                                           borderRadius: BorderRadius.circular(4)
                                                       ),
                                                       child: Icon(
-                                                        items[index].trnCategory == "received"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
+                                                        items[index].trnCategory == "paid"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                                subtitle: Text(provider.showHidePersianDate? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString())),
-                                                trailing: Text(Env.currencyFormat(items[index].amount, "en_IN"),style: const TextStyle(fontSize: 15),),
+                                                subtitle: Text(currentLocale == "en" ? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString())),
+                                                trailing: Text(Env.currencyFormat(items[index].amount, "en_US"),style: const TextStyle(fontSize: 15),),
                                                 dense: true,
                                               ),
                                             ),

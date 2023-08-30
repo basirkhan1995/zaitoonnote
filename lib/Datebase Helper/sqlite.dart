@@ -215,7 +215,7 @@ class DatabaseHelper {
   }
 
   //Show Persons
-  Future<List<PersonModel>> getPersonsByID(filter) async {
+  Future<List<PersonModel>> getPersonByName(filter) async {
     final Database db = await initDB();
     final List<Map<String, Object?>> queryResult = await db.query('persons',
         orderBy: 'pId', where: 'pName like ?', whereArgs: ["%$filter%"]);
@@ -223,21 +223,13 @@ class DatabaseHelper {
   }
 
   //Show Persons
-  Future<List<PersonModel>> getPersons() async {
+  Future<List<PersonModel>> getAllPersons() async {
     final Database db = await initDB();
     final List<Map<String, Object?>> queryResult =
         await db.query('persons', orderBy: 'pId');
     return queryResult.map((e) => PersonModel.fromMap(e)).toList();
   }
 
-  //Show transactions
-  Future<List<PersonModel>> personSearch(String keyword) async {
-    final Database db = await initDB();
-    final List<Map<String, Object?>> queryResult = await db.rawQuery(
-        "select pId, pName, pImage, pPhone, createdAt from persons where pName LIKE? ",
-        ["%$keyword%"]);
-    return queryResult.map((e) => PersonModel.fromMap(e)).toList();
-  }
 
   //Update note
   Future<int> updateProfileImage(String image, pId) async {
@@ -271,13 +263,7 @@ class DatabaseHelper {
   //Transactions -----------------------------------------------------------------
 
   //Create a new transaction
-  Future<int> createTransaction(TransactionModel transaction) async {
-    final Database db = await initDB();
-    return db.insert('transactions', transaction.toMap());
-  }
-
-  //Create a new transaction
-  Future<int> createTransaction2(
+  Future<int> createTransaction(
       String description, int type, int person, double amount, trnImage,date) async {
     final Database db = await initDB();
     return db.rawInsert(
@@ -287,7 +273,7 @@ class DatabaseHelper {
 
 
   //Show transactions
-  Future<List<TransactionModel>> getTransactions() async {
+  Future<List<TransactionModel>> getAllTransactions() async {
     final Database db = await initDB();
     final List<Map<String, Object?>> queryResult = await db.rawQuery(
         "select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId");
@@ -338,6 +324,8 @@ class DatabaseHelper {
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 
+
+  //Transaction By Single Date
   Future<List<TransactionModel>> getTransactionsBySingleDate(int pId , date) async {
     final Database db = await initDB();
     final List<Map<String, Object?>> queryResult = await db.rawQuery(

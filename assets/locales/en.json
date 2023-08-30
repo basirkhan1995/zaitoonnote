@@ -26,12 +26,12 @@
   "payment": "Payments",
   "create_note": "Add new note",
   "meeting": "Meeting",
-  "received": "Received",
+  "received": "Credit",
   "all": "All",
   "search": "Search",
   "trash": "Trash",
   "profile": "Profile",
-  "paid": "Paid",
+  "paid": "Debit",
   "transactions": "Transaction",
   "removed": "Removed",
   "task": "Tasks",
@@ -137,5 +137,6 @@
   "trn_id": "Transaction ID",
   "update_transaction": "Transaction update",
   "about_app": "Zaitoon app is developed with Flutter, dart language and sqlite as backend to store daily transactions and notes for individuals.",
-  "no_activities": "No activities for today"
+  "no_activities": "No activities for today",
+  "today_transaction": "Today's transactions"
 }

@@ -173,7 +173,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
                     children: [
                       ListTile(
                         visualDensity: const VisualDensity(vertical: -4),
-                        title: LocaleText("credit",
+                        title: LocaleText("debit",
                             style: TextStyle(
                                 fontFamily:
                                     currentLocale == "en" ? "Ubuntu" : "Dubai",
@@ -191,7 +191,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
                       ),
                       ListTile(
                         visualDensity: const VisualDensity(vertical: -4),
-                        title: LocaleText("debit",
+                        title: LocaleText("credit",
                             style: TextStyle(
                                 fontFamily:
                                     currentLocale == "en" ? "Ubuntu" : "Dubai",
@@ -320,7 +320,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                                 decoration: BoxDecoration(
                                                     color: items[index]
                                                                 .trnCategory ==
-                                                            "received"
+                                                            "paid"
                                                         ? Colors.lightGreen
                                                         : Colors.red.shade700,
                                                     borderRadius:
@@ -328,7 +328,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                                             4)),
                                                 child: Icon(
                                                   items[index].trnCategory ==
-                                                          "received"
+                                                          "paid"
                                                       ? UniconsLine
                                                           .arrow_down_left
                                                       : UniconsLine

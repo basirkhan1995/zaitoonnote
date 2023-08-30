@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
+import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Activities/transaction_details.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import '../../Datebase Helper/sqlite.dart';
 import '../../Methods/env.dart';
-import '../../Provider/provider.dart';
 import '../Json Models/trn_model.dart';
 import 'create_transaction.dart';
-
 
 class AllActivities extends StatefulWidget {
   const AllActivities({super.key});
@@ -23,19 +21,18 @@ class AllActivities extends StatefulWidget {
 
 class _AllActivitiesState extends State<AllActivities> {
   final searchCtrl = TextEditingController();
+
   String keyword = "";
   String noteTypeCategory = "activity";
-  var today = DateTime.now().toIso8601String();
-  var yesterday = DateTime.now().add(const Duration(days: -1));
-  var lastWeek = DateTime.now().add(const Duration(days: -7));
 
+  var today = DateTime.now().toIso8601String();
 
   late DatabaseHelper handler;
   late Future<List<TransactionModel>> transactions;
   late Future<List<CategoryModel>> category;
 
   final db = DatabaseHelper();
-  var formatter = NumberFormat('#,##,000');
+
   DateTime? date;
   @override
   void initState() {
@@ -78,7 +75,6 @@ class _AllActivitiesState extends State<AllActivities> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<MyProvider>(context, listen: false);
     String currentLocale = Locales.currentLocale(context).toString();
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -172,8 +168,9 @@ class _AllActivitiesState extends State<AllActivities> {
             ListTile(
               horizontalTitleGap: 6,
              leading: const Icon(Icons.access_time),
-             contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-             title: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 18),),
+             contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+             title: LocaleText("today_transaction",style: TextStyle(fontWeight: FontWeight.bold,fontSize: largeSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
+              //title: Text( currentLocale == "en" ? DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 18),),
              trailing: IconButton(
                onPressed: ()=>setState(() {
                  isSearchOn = !isSearchOn;
@@ -237,16 +234,16 @@ class _AllActivitiesState extends State<AllActivities> {
 
                                     title: Row(
                                       children: [
-                                        Text(items[index].person,style:const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
+                                        Text(items[index].person,style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                                         const SizedBox(width: 8),
                                         Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
                                           decoration: BoxDecoration(
-                                              color: items[index].trnCategory == "received"? Colors.lightGreen:Colors.red.shade700,
+                                              color: items[index].trnCategory == "paid"? Colors.lightGreen:Colors.red.shade700,
                                               borderRadius: BorderRadius.circular(4)
                                           ),
                                           child: Icon(
-                                            items[index].trnCategory == "received"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
+                                            items[index].trnCategory == "paid"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
                                           ),
                                         ),
                                       ],

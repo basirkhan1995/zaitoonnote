@@ -79,7 +79,7 @@
   "card_number": "Card number",
   "account_name": "Account name",
   "update": "Update",
-  "created_at": "Created date",
+  "created_at": "Opening date",
   "updated_at": "Last time updated",
   "show_persian_date": "Show persian date",
   "true": "Enabled",
@@ -141,5 +141,6 @@
   "today_transaction": "Today's transactions",
   "filter_date": "Filter by date",
   "filter_category": "Filter by category",
-  "filtered_transactions": "Filtered transactions"
+  "filtered_transactions": "Filtered transactions",
+  "profile_update": "Profile update"
 }

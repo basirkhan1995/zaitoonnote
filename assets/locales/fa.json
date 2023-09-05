@@ -79,7 +79,7 @@
   "card_number": "شماره کارت",
   "account_name": "نام حساب",
   "update": "بروز رسانی",
-  "created_at": "تاریخ ایجاد",
+  "created_at": "تاریخ حساب",
   "updated_at": "آخرین بروز رسانی",
   "show_persian_date": "فعال سازی تاریخ شمسی",
   "true": "فعال",
@@ -141,5 +141,6 @@
   "today_transaction": "فعالیت های امروز",
   "filter_date": "ترتیب بر تاریخ",
   "filter_category": "ترتیب بر کتگوری",
-  "filtered_transactions": "فعالیت های فلتر شده"
+  "filtered_transactions": "فعالیت های فلتر شده",
+  "profile_update": "بروزرسانی پروفایل"
 }

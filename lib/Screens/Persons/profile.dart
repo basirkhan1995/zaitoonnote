@@ -6,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:zaitoonnote/Datebase%20Helper/sqlite.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
+import 'package:zaitoonnote/Screens/Persons/profile_edit.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
 import 'dart:io';
 import '../../Methods/env.dart';
@@ -56,436 +57,356 @@ class _PersonProfileState extends State<PersonProfile> {
 
   @override
   Widget build(BuildContext context) {
-    String currentLocale = Locales.currentLocale(context).toString();
+    String locale = Locales.currentLocale(context).toString();
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SafeArea(
-            child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Column(
-                    children: [
-                      Stack(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: CircleAvatar(
-                              radius: 58,
-                              backgroundColor: zPrimaryColor,
-                              child: CircleAvatar(
-                                  radius: 56,
-                                  backgroundImage:
-                                      widget.profileDetails!.pImage!.isNotEmpty
-                                          ? Image.file(
-                                              File(widget.profileDetails!.pImage
-                                                  .toString()),
-                                              fit: BoxFit.cover,
-                                            ).image
-                                          : const AssetImage(
-                                              "assets/Photos/no_user.jpg")),
-                            ),
-                          ),
-                          Positioned(
-                              top: 90,
-                              left: 85,
-                              child: Container(
-                                height: 35,
-                                width: 35,
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: Colors.deepPurple),
-                                child: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        getImage(ImageSource.gallery)
-                                            .whenComplete(() {
-                                          if (_pImage == null) return;
-                                          db.updateProfileImage(
-                                              _pImage?.path ??
-                                                  widget.profileDetails?.pImage ??
-                                                  "",
-                                              widget.profileDetails?.pId ?? 0);
-                                        });
-                                      });
-                                    },
-                                    icon: const Icon(
-                                      Icons.camera_alt,
-                                      color: Colors.white,
-                                      size: 18,
-                                    )),
-                              )),
-                        ],
-                      ),
-                    ],
-                  ),
+      body: SafeArea(
+        child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
 
-                  //Header
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+           Column(
+             children: [
+               Row(
+                 children: [
+                   Column(
+                     children: [
+                       Stack(
+                         children: [
+                           Padding(
+                             padding: const EdgeInsets.all(8.0),
+                             child: CircleAvatar(
+                               radius: 58,
+                               backgroundColor: zPrimaryColor,
+                               child: CircleAvatar(
+                                   radius: 56,
+                                   backgroundImage:
+                                   widget.profileDetails!.pImage!.isNotEmpty
+                                       ? Image.file(
+                                     File(widget.profileDetails!.pImage
+                                         .toString()),
+                                     fit: BoxFit.cover,
+                                   ).image
+                                       : const AssetImage(
+                                       "assets/Photos/no_user.jpg")),
+                             ),
+                           ),
+                           Positioned(
+                               top: 90,
+                               left: 85,
+                               child: Container(
+                                 height: 35,
+                                 width: 35,
+                                 decoration: BoxDecoration(
+                                     borderRadius: BorderRadius.circular(50),
+                                     color: Colors.deepPurple),
+                                 child: IconButton(
+                                     onPressed: () {
+                                       setState(() {
+                                         getImage(ImageSource.gallery)
+                                             .whenComplete(() {
+                                           if (_pImage == null) return;
+                                           db.updateProfileImage(
+                                               _pImage?.path ??
+                                                   widget.profileDetails?.pImage ??
+                                                   "",
+                                               widget.profileDetails?.pId ?? 0);
+                                         });
+                                       });
+                                     },
+                                     icon: const Icon(
+                                       Icons.camera_alt,
+                                       color: Colors.white,
+                                       size: 18,
+                                     )),
+                               )),
+                         ],
+                       ),
+                     ],
+                   ),
+
+                   //Header
+                   Padding(
+                     padding: const EdgeInsets.all(8.0),
+                     child: Column(
+                       mainAxisAlignment: MainAxisAlignment.start,
+                       crossAxisAlignment: CrossAxisAlignment.start,
+                       children: [
+                         Text(
+                           widget.profileDetails?.pName ?? "",
+                           style: TextStyle(
+                               fontSize: largeSize, fontWeight: FontWeight.bold,fontFamily: locale == "en"?"Ubuntu":"Dubai"),
+                         ),
+                         Row(
+                           children: [
+                              LocaleText(
+                               "account_no",
+                               style: TextStyle(fontWeight: FontWeight.bold, fontSize: smallSize,fontFamily: locale == "en"?"Ubuntu":"Dubai"),
+                             ),
+                             const SizedBox(width: 6),
+                             Container(
+                               padding: const EdgeInsets.symmetric(
+                                   horizontal: 6, vertical: 0),
+                               decoration: BoxDecoration(
+                                   borderRadius: BorderRadius.circular(4),
+                                   color: zPrimaryColor),
+                               child: Text(
+                                 widget.profileDetails?.pId.toString() ?? "",
+                                 style: const TextStyle(
+                                     fontSize: smallSize, color: Colors.white),
+                               ),
+                             ),
+                           ],
+                         ),
+                         const SizedBox(height: 6),
+                          LocaleText(
+                           "updated_at",
+                           style: TextStyle(fontWeight: FontWeight.bold,fontSize: smallSize,color: Colors.grey,fontFamily: locale == "en"?"Ubuntu":"Dubai"),
+                         ),
+                         Text(locale != "en"
+                             ? Env.persianDateTimeFormat(DateTime.parse(
+                             widget.profileDetails!.updatedAt.toString()))
+                             : Env.gregorianDateTimeForm(
+                             widget.profileDetails!.updatedAt.toString()),style: TextStyle(fontSize: mediumSize,fontFamily: locale == "en"?"Ubuntu":"Dubai"),),
+                       ],
+                     ),
+                   ),
+                 ],
+               ),
+             ],
+           ),
+
+           Column(
+             children: [
+               Padding(
+                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                 child: ListTile(
+                   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                   horizontalTitleGap: 15,
+                   subtitle:Text(
+                     widget.profileDetails?.pName ?? "",
+                     style: TextStyle(fontWeight: FontWeight.bold,fontFamily: locale == "en"?"Ubuntu":"Dubai"),
+                   ),
+                   leading: Container(
+                     margin: const EdgeInsets.all(0),
+                     height: 50,
+                     width: 50,
+                     decoration: BoxDecoration(
+                         borderRadius: BorderRadius.circular(50),
+                         color: Colors.deepPurple.withOpacity(.09)),
+                     child: const Icon(
+                       Icons.person,
+                       color: Colors.deepPurple,
+                       size: 24,
+                     ),
+                   ),
+                   title: LocaleText(
+                     "name",
+                     style: TextStyle(fontSize: 14,fontFamily: locale == "en"?"Ubuntu":"Dubai"),
+                   ),
+                   trailing: Container(
+                       height: 25,
+                       width: 25,
+                       decoration: BoxDecoration(
+                           color: Colors.deepPurple.withOpacity(.09),
+                           borderRadius: BorderRadius.circular(50)),
+                       child: const Icon(Icons.arrow_forward_ios_rounded,
+                           size: 12)),
+                 ),
+               ),
+               Padding(
+                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                 child: ListTile(
+                   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                   horizontalTitleGap: 15,
+                   onTap: () {
+                     setState(() {
+                       _makePhoneCall(
+                           widget.profileDetails?.pPhone.toString() ?? "");
+                     });
+                   },
+                   subtitle: Text(
+                     widget.profileDetails?.pPhone ?? "",
+                     style: TextStyle(fontWeight: FontWeight.bold,fontFamily: locale == "en"?"Ubuntu":"Dubai"),
+                   ),
+                   leading: Container(
+                     margin: const EdgeInsets.all(0),
+                     height: 50,
+                     width: 50,
+                     decoration: BoxDecoration(
+                         borderRadius: BorderRadius.circular(50),
+                         color: Colors.deepPurple.withOpacity(.09)),
+                     child: const Icon(
+                       Icons.phone,
+                       color: Colors.deepPurple,
+                       size: 24,
+                     ),
+                   ),
+                   title: LocaleText(
+                     "phone",
+                     style: TextStyle(fontSize: 14,fontFamily: locale == "en"?"Ubuntu":"Dubai"),
+                   ),
+                   trailing: Container(
+                       height: 25,
+                       width: 25,
+                       decoration: BoxDecoration(
+                           color: Colors.deepPurple.withOpacity(.09),
+                           borderRadius: BorderRadius.circular(50)),
+                       child: const Icon(Icons.arrow_forward_ios_rounded,
+                           size: 12)),
+                 ),
+               ),
+               Padding(
+                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                 child: ListTile(
+                   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                   horizontalTitleGap: 15,
+                   onTap: () {},
+                   subtitle: Text(
+                     widget.profileDetails?.jobTitle ?? "",
+                     style: TextStyle(fontWeight: FontWeight.bold,fontFamily: locale == "en"?"Ubuntu":"Dubai"),
+                   ),
+                   leading: Container(
+                     margin: const EdgeInsets.all(0),
+                     height: 50,
+                     width: 50,
+                     decoration: BoxDecoration(
+                         borderRadius: BorderRadius.circular(50),
+                         color: Colors.deepPurple.withOpacity(.09)),
+                     child: const Icon(
+                       Icons.work,
+                       color: Colors.deepPurple,
+                       size: 24,
+                     ),
+                   ),
+                   title: LocaleText(
+                     "job",
+                     style: TextStyle(fontSize: normalSize,fontFamily: locale == "en"?"Ubuntu":"Dubai"),
+                   ),
+                   trailing: Container(
+                       height: 25,
+                       width: 25,
+                       decoration: BoxDecoration(
+                           color: Colors.deepPurple.withOpacity(.09),
+                           borderRadius: BorderRadius.circular(50)),
+                       child: const Icon(Icons.arrow_forward_ios_rounded,
+                           size: 12)),
+                 ),
+               ),
+               Padding(
+                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                 child: ListTile(
+                   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                   horizontalTitleGap: 15,
+                   onTap: () {},
+                   subtitle: SelectableText(
+                     widget.profileDetails?.cardNumber ?? "",
+                     style: TextStyle(fontWeight: FontWeight.bold, fontFamily: locale == "en"?"Ubuntu":"Dubai"),
+                   ),
+                   leading: Container(
+                     margin: const EdgeInsets.all(0),
+                     height: 50,
+                     width: 50,
+                     decoration: BoxDecoration(
+                         borderRadius: BorderRadius.circular(50),
+                         color: Colors.deepPurple.withOpacity(.09)),
+                     child: const Icon(
+                       Icons.credit_card,
+                       color: Colors.deepPurple,
+                       size: 24,
+                     ),
+                   ),
+                   title: LocaleText(
+                     "card_number",
+                     style: TextStyle(fontSize: 14,fontFamily: locale == "en"?"Ubuntu":"Dubai"),
+                   ),
+                   trailing: Container(
+                       height: 25,
+                       width: 25,
+                       decoration: BoxDecoration(
+                           color: Colors.deepPurple.withOpacity(.09),
+                           borderRadius: BorderRadius.circular(50)),
+                       child: const Icon(Icons.arrow_forward_ios_rounded,
+                           size: 12)),
+                 ),
+               ),
+               Padding(
+                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                 child: ListTile(
+                   contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                   horizontalTitleGap: 15,
+                   onTap: () {},
+                   subtitle: Text(
+                     widget.profileDetails?.accountName ?? "",
+                     style: const TextStyle(fontWeight: FontWeight.bold),
+                   ),
+                   leading: Container(
+                     margin: const EdgeInsets.all(0),
+                     height: 50,
+                     width: 50,
+                     decoration: BoxDecoration(
+                         borderRadius: BorderRadius.circular(50),
+                         color: Colors.deepPurple.withOpacity(.09)),
+                     child: const Icon(
+                       Icons.person,
+                       color: Colors.deepPurple,
+                       size: 24,
+                     ),
+                   ),
+                   title: LocaleText(
+                     "account_name",
+                     style: TextStyle(fontSize: 14,fontFamily: locale == "en"?"Ubuntu":"Dubai"),
+                   ),
+                   trailing: Container(
+                       height: 25,
+                       width: 25,
+                       decoration: BoxDecoration(
+                           color: Colors.deepPurple.withOpacity(.09),
+                           borderRadius: BorderRadius.circular(50)),
+                       child: const Icon(Icons.arrow_forward_ios_rounded,
+                           size: 12)),
+                 ),
+               ),
+             ],
+           ),
+
+           Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ListTile(
+                    title: LocaleText("created_at",style: TextStyle(fontFamily: locale == "en" ? "Ubuntu":"Dubai" ),),
+                    subtitle: Text(Env.gregorianDateTimeForm(widget.profileDetails!.createdAt.toString()),style: TextStyle(fontFamily: locale == "en" ? "Ubuntu":"Dubai" )),
+                    trailing: Wrap(
+                      spacing: 10,
                       children: [
-                        Text(
-                          widget.profileDetails?.pName ?? "",
-                          style: const TextStyle(
-                              fontSize: mediumSize, fontWeight: FontWeight.bold),
+                        Container(
+                          decoration: BoxDecoration(
+                          color: zPrimaryColor.withOpacity(.09),
+                          borderRadius: BorderRadius.circular(50)
                         ),
-                        Row(
-                          children: [
-                            const LocaleText(
-                              "account_no",
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: smallSize),
-                            ),
-                            const SizedBox(width: 6),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 0),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  color: zPrimaryColor),
-                              child: Text(
-                                widget.profileDetails?.pId.toString() ?? "",
-                                style: const TextStyle(
-                                    fontSize: smallSize, color: Colors.white),
-                              ),
-                            ),
-                          ],
+                          width: 40,
+                          height: 40,
+                            child: IconButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile(person: widget.profileDetails!))), icon: const Icon(Icons.edit)),
                         ),
-                        const SizedBox(height: 6),
-                        const LocaleText(
-                          "updated_at",
-                          style: TextStyle(fontWeight: FontWeight.bold,fontSize: smallSize,color: Colors.grey),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: zPrimaryColor.withOpacity(.09),
+                              borderRadius: BorderRadius.circular(50)
+                          ),
+                          width: 40,
+                          height: 40,
+                          child: IconButton(onPressed: ()=>db.deletePerson(widget.profileDetails!.pId.toString(),context), icon: const Icon(Icons.delete)),
                         ),
-                        Text(currentLocale != "en"
-                            ? Env.persianDateTimeFormat(DateTime.parse(
-                                widget.profileDetails!.updatedAt.toString()))
-                            : Env.gregorianDateTimeForm(
-                                widget.profileDetails!.updatedAt.toString()),style: const TextStyle(fontSize: smallSize),),
                       ],
                     ),
-                  ),
+                  )
                 ],
               ),
-
-              //Body
-              const SizedBox(height: 10),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                  horizontalTitleGap: 15,
-                  subtitle: isUpdate
-                      ? TextFormField(
-                          controller: fullName,
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 1),
-                            isDense: true,
-                          ),
-                        )
-                      : Text(
-                          widget.profileDetails?.pName ?? "",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                  leading: Container(
-                    margin: const EdgeInsets.all(0),
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.deepPurple.withOpacity(.09)),
-                    child: const Icon(
-                      Icons.person,
-                      color: Colors.deepPurple,
-                      size: 24,
-                    ),
-                  ),
-                  title: const LocaleText(
-                    "name",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  trailing: Container(
-                      height: 25,
-                      width: 25,
-                      decoration: BoxDecoration(
-                          color: Colors.deepPurple.withOpacity(.09),
-                          borderRadius: BorderRadius.circular(50)),
-                      child: const Icon(Icons.arrow_forward_ios_rounded,
-                          size: 12)),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                  horizontalTitleGap: 15,
-                  onTap: () {
-                    setState(() {
-                      _makePhoneCall(
-                          widget.profileDetails?.pPhone.toString() ?? "");
-                    });
-                  },
-                  subtitle: isUpdate
-                      ? TextFormField(
-                          keyboardType: TextInputType.phone,
-                          controller: phone,
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 1),
-                            isDense: true,
-                          ),
-                        )
-                      : Text(
-                          widget.profileDetails?.pPhone ?? "",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                  leading: Container(
-                    margin: const EdgeInsets.all(0),
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.deepPurple.withOpacity(.09)),
-                    child: const Icon(
-                      Icons.phone,
-                      color: Colors.deepPurple,
-                      size: 24,
-                    ),
-                  ),
-                  title: const LocaleText(
-                    "phone",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  trailing: Container(
-                      height: 25,
-                      width: 25,
-                      decoration: BoxDecoration(
-                          color: Colors.deepPurple.withOpacity(.09),
-                          borderRadius: BorderRadius.circular(50)),
-                      child: const Icon(Icons.arrow_forward_ios_rounded,
-                          size: 12)),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                  horizontalTitleGap: 15,
-                  onTap: () {},
-                  subtitle: isUpdate
-                      ? TextFormField(
-                    keyboardType: TextInputType.text,
-                          controller: jobTitle,
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 1),
-                            isDense: true,
-                          ),
-                        )
-                      : Text(
-                          widget.profileDetails?.jobTitle ?? "",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                  leading: Container(
-                    margin: const EdgeInsets.all(0),
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.deepPurple.withOpacity(.09)),
-                    child: const Icon(
-                      Icons.work,
-                      color: Colors.deepPurple,
-                      size: 24,
-                    ),
-                  ),
-                  title: const LocaleText(
-                    "job",
-                    style: TextStyle(fontSize: normalSize),
-                  ),
-                  trailing: Container(
-                      height: 25,
-                      width: 25,
-                      decoration: BoxDecoration(
-                          color: Colors.deepPurple.withOpacity(.09),
-                          borderRadius: BorderRadius.circular(50)),
-                      child: const Icon(Icons.arrow_forward_ios_rounded,
-                          size: 12)),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                  horizontalTitleGap: 15,
-                  onTap: () {},
-                  subtitle: isUpdate
-                      ? TextFormField(
-                          controller: cardNumber,
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 1),
-                            isDense: true,
-                          ),
-                        )
-                      : SelectableText(
-                          widget.profileDetails?.cardNumber ?? "",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                  leading: Container(
-                    margin: const EdgeInsets.all(0),
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.deepPurple.withOpacity(.09)),
-                    child: const Icon(
-                      Icons.credit_card,
-                      color: Colors.deepPurple,
-                      size: 24,
-                    ),
-                  ),
-                  title: const LocaleText(
-                    "card_number",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  trailing: Container(
-                      height: 25,
-                      width: 25,
-                      decoration: BoxDecoration(
-                          color: Colors.deepPurple.withOpacity(.09),
-                          borderRadius: BorderRadius.circular(50)),
-                      child: const Icon(Icons.arrow_forward_ios_rounded,
-                          size: 12)),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                  horizontalTitleGap: 15,
-                  onTap: () {},
-                  subtitle: isUpdate
-                      ? TextFormField(
-                          controller: cardName,
-                          decoration: const InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 1),
-                            isDense: true,
-                          ),
-                        )
-                      : Text(
-                          widget.profileDetails?.accountName ?? "",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                  leading: Container(
-                    margin: const EdgeInsets.all(0),
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
-                        color: Colors.deepPurple.withOpacity(.09)),
-                    child: const Icon(
-                      Icons.person,
-                      color: Colors.deepPurple,
-                      size: 24,
-                    ),
-                  ),
-                  title: const LocaleText(
-                    "account_name",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  trailing: Container(
-                      height: 25,
-                      width: 25,
-                      decoration: BoxDecoration(
-                          color: Colors.deepPurple.withOpacity(.09),
-                          borderRadius: BorderRadius.circular(50)),
-                      child: const Icon(Icons.arrow_forward_ios_rounded,
-                          size: 12)),
-                ),
-              ),
-
-              const SizedBox(height: 5),
-
-              //End
-              SizedBox(
-                width: MediaQuery.of(context).size.width * .85,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        margin: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: zPrimaryColor,
-                        ),
-                        child: isUpdate
-                            ? TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isUpdate = !isUpdate;
-                                    update();
-                                  });
-
-                                },
-                                child: const LocaleText(
-                                  "update",
-                                  style: TextStyle(color: Colors.white),
-                                ))
-                            : TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    isUpdate = !isUpdate;
-                                    fullName.text =
-                                        widget.profileDetails?.pName ?? "";
-                                    phone.text =
-                                        widget.profileDetails?.pPhone ?? "";
-                                    jobTitle.text =
-                                        widget.profileDetails?.jobTitle ?? "";
-                                    cardNumber.text =
-                                        widget.profileDetails?.cardNumber ?? "";
-                                    cardName.text =
-                                        widget.profileDetails?.accountName ??
-                                            "";
-                                  });
-                                },
-                                child: const LocaleText(
-                                  "settings",
-                                  style: TextStyle(color: Colors.white),
-                                )),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          color: Colors.red.shade900,
-                        ),
-                        child: TextButton(
-                            onPressed: () {
-                              setState(() {
-                                db.deletePerson(
-                                    widget.profileDetails!.pId.toString(),
-                                    context).whenComplete(() => Env.goto(const AccountSettings(), context));
-                              });
-                            },
-                            child: const LocaleText(
-                              "delete",
-                              style: TextStyle(color: Colors.white),
-                            )),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        )),
-      ),
+            )
+          ],
+        ),
+      )),
     );
   }
 

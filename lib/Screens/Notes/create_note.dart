@@ -1,6 +1,5 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
@@ -28,7 +27,7 @@ class _CreateNoteState extends State<CreateNote> {
   var dropValue = 0;
   var selectedDate = DateTime.now();
 
-  int selectedCategoryId = 0;
+  int selectedCategoryId = 9;
   String categoryType = "note";
 
   final titleCtrl = TextEditingController();
@@ -100,7 +99,7 @@ class _CreateNoteState extends State<CreateNote> {
                           width: 110,
 
                           child: DropdownSearch<CategoryModel>(
-                            popupProps: PopupPropsMultiSelection.menu(
+                            popupProps: const PopupPropsMultiSelection.menu(
                               fit: FlexFit.loose,
 
                             ),

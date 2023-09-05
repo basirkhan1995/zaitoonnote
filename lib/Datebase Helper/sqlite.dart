@@ -250,7 +250,7 @@ class DatabaseHelper {
   }
 
   // Delete
-  Future<void> deletePerson(String id, context) async {
+  Future<void> deletePerson(String id,context) async {
     final db = await initDB();
     try {
       await db.delete("persons", where: "pId = ?", whereArgs: [id]);

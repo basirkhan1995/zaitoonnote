@@ -1,5 +1,4 @@
 
-import 'package:intl/intl.dart';
 
 class Notes{
   final int? noteId;
@@ -7,9 +6,8 @@ class Notes{
   final String noteContent;
   final int? noteStatus;
   final String? category;
-  final String? noteImage;
   final String? createdAt;
-  Notes({this.noteId, required this.noteTitle, required this.noteContent, this.noteStatus = 1,this.category,this.noteImage, this.createdAt});
+  Notes({this.noteId, required this.noteTitle, required this.noteContent, this.noteStatus = 1,this.category,this.createdAt});
 
   factory Notes.fromMap(Map<String, dynamic> json) => Notes(
     noteId: json['noteId'],
@@ -17,7 +15,6 @@ class Notes{
     noteContent: json['noteContent'],
     noteStatus: json['noteStatus'],
     category: json['cName'],
-    noteImage: json['noteImage'],
     createdAt: json['noteCreatedAt'],
   );
 
@@ -28,7 +25,6 @@ class Notes{
       'noteContent':noteContent,
       'noteStatus':noteStatus,
       'cName':category,
-      'noteImage':noteImage,
       'noteCreatedAt': createdAt??DateTime.now().toIso8601String(),
     };
   }

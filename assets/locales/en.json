@@ -42,7 +42,7 @@
   "select_person": "Person",
   "power": "Power bill",
   "rent": "Rent",
-  "select_category": "Category",
+  "select_category": "Select note category",
   "person_name": "Person name",
   "category_name": "Category name",
   "activity": "Activity",

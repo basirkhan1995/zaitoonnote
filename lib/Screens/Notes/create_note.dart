@@ -1,13 +1,13 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
-import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import 'dart:io';
 import '../../Datebase Helper/sqlite.dart';
+import '../../Methods/env.dart';
 import '../../Methods/textfield.dart';
 import '../Json Models/note_model.dart';
 
@@ -26,7 +26,7 @@ class _CreateNoteState extends State<CreateNote> {
   late Future<List<Notes>> notes;
   File? _noteImage;
   var dropValue = 0;
-  var selectedDate = "";
+  var selectedDate = DateTime.now();
 
   int selectedCategoryId = 0;
   String categoryType = "note";
@@ -37,19 +37,7 @@ class _CreateNoteState extends State<CreateNote> {
 
   @override
   Widget build(BuildContext context) {
-    DateTime selectedDate = DateTime.now();
-
-    //Gregorian Date format
-    final gregorianDate =
-        DateFormat('yyyy-MM-dd (HH:mm a)').format(selectedDate);
-    Jalali persianDate = selectedDate.toJalali();
-
-    //Persian Date format
-    String shamsiDate() {
-      final f = persianDate.formatter;
-      return '${f.yyyy}/${f.mm}/${f.dd}';
-    }
-
+    String currentLocale = Locales.currentLocale(context).toString();
     return Scaffold(
       appBar: AppBar(
         title: const LocaleText("create_note"),
@@ -58,7 +46,7 @@ class _CreateNoteState extends State<CreateNote> {
             padding: const EdgeInsets.all(8.0),
             child: Container(
               height: 45,
-              width: 90,
+              width: 70,
               decoration: BoxDecoration(
                   color: Colors.deepPurple.withOpacity(.1),
                   borderRadius: BorderRadius.circular(8)),
@@ -66,14 +54,11 @@ class _CreateNoteState extends State<CreateNote> {
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       setState(() {
-                       db.createNote(titleCtrl.text, contentCtrl.text, selectedCategoryId, "imageval").whenComplete(() => Navigator.pop(context));
+                       db.createNote(titleCtrl.text, contentCtrl.text, selectedCategoryId).whenComplete(() => Navigator.pop(context));
                       });
                     }
                   },
-                  child: const LocaleText(
-                    "create",
-                    style: TextStyle(color: Colors.black, fontSize: 16),
-                  )),
+                  child: const Icon(Icons.check,size: 23)),
             ),
           ),
         ],
@@ -88,139 +73,106 @@ class _CreateNoteState extends State<CreateNote> {
                 children: [
                   Expanded(
                     child: ListTile(
-                      horizontalTitleGap: 5,
-                      onTap: () {
-                        setState(() {
-                          final DateTime dateTime = showDatePicker(
-                              context: context,
-                              initialDate: selectedDate,
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(3000)) as DateTime;
-                          setState(() {
-                            selectedDate = dateTime;
-                          });
-                        });
-                      },
-                      title: Text(
-                        gregorianDate,
-                        style: const TextStyle(fontSize: normalSize),
+                      title: InkWell(
+                        onTap: ()=>setState(() {
+                          showGregorianPicker();
+                        }),
+                        child: Text(
+                          Env.gregorianDateTimeForm(selectedDate.toString()),
+                          style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
+                        ),
                       ),
-                      subtitle: Text(shamsiDate()),
+                      subtitle: InkWell(
+                          onTap: ()=>
+                              setState(() {
+                                showPersianPicker(); }),
+                          child: Text(
+                            Env.persianDateTimeFormat(selectedDate),style: TextStyle(fontSize: 15,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),)),
                     ),
                   ),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 2),
-                            margin: const EdgeInsets.symmetric(horizontal: 4),
-                            height: 50,
-                            width: 130,
-                            decoration: BoxDecoration(
-                                color: Colors.deepPurple.withOpacity(.1),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: DropdownSearch<CategoryModel>(
-                              popupProps: PopupPropsMultiSelection.modalBottomSheet(
-                                fit: FlexFit.loose,
-                                title: Column(
-                                  children: [
-                                    Container(
-                                      margin: const EdgeInsets.symmetric(
-                                          vertical: 10),
-                                      height: 10,
-                                      width: 60,
-                                      decoration: BoxDecoration(
-                                          color: Colors.deepPurple,
-                                          borderRadius:
-                                          BorderRadius.circular(15)),
-                                    ),
-                                    Padding(
-                                        padding: const EdgeInsets.only(top: 0, left: 10),
-                                        child: ListTile(
-                                          title: const LocaleText("select_category",style: TextStyle(fontSize: 18),),
-                                          leading: const Icon(Icons.category),
-                                          trailing: Container(
-                                            height: 35,
-                                            width: 35,
-                                            decoration: BoxDecoration(
-                                                color: Colors.deepPurple,
-                                                borderRadius: BorderRadius.circular(50)
-                                            ),
-                                            child: IconButton(
-                                                onPressed: ()=> addCategory(),
-                                                icon: const Icon(Icons.add,color: Colors.white,size: 18)),
-                                          ),
-                                        )
-                                    ),
-                                  ],
-                                ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: SizedBox(
+                          height: 50,
+                          width: 110,
 
-                              ),
+                          child: DropdownSearch<CategoryModel>(
+                            popupProps: PopupPropsMultiSelection.menu(
+                              fit: FlexFit.loose,
 
-                              asyncItems: (value) => db.getCategoryByType("note"),
-                              itemAsString: (CategoryModel u) =>
-                                  Locales.string(context, u.cName.toString()),
-                              onChanged: (CategoryModel? data) {
-                                setState(() {
-                                  selectedCategoryId = data?.cId??2;
-                                });
-                              },
-                              dropdownButtonProps: DropdownButtonProps(
-                                  icon: const Icon(Icons.arrow_drop_down_circle_outlined, size: 22),
-                                  onPressed: () {
+                            ),
 
-                                  }),
-                              dropdownDecoratorProps: DropDownDecoratorProps(
-                                dropdownSearchDecoration: InputDecoration(
-                                    hintStyle: const TextStyle(fontSize: 13),
-                                    hintText: Locales.string(
-                                        context, "select_category"),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 6),
-                                    border: InputBorder.none),
-                              ),
+                            asyncItems: (value) => db.getCategoryByType("note"),
+                            itemAsString: (CategoryModel u) =>
+                                Locales.string(context, u.cName.toString()),
+                            onChanged: (CategoryModel? data) {
+                              setState(() {
+                                selectedCategoryId = data?.cId??2;
+                              });
+                            },
+
+                            dropdownDecoratorProps: DropDownDecoratorProps(
+                              dropdownSearchDecoration: InputDecoration(
+                                  hintStyle: TextStyle(fontSize: 14,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontWeight: FontWeight.bold),
+                                  hintText: Locales.string(
+                                      context, "category"),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 0, vertical: 0),
+                                  border: InputBorder.none),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              UnderlineInputField(
-                validator: (value) {
-                  if (value.isEmpty) {
-                    return Locales.string(context, "title_required");
-                  }else if(titleCtrl.text.length >10){
-                    return "title_minimum_char";
-                  }
-                  return null;
-                },
-                hint: "title",
-                controller: titleCtrl,
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 0),
+                child: TextFormField(
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return Locales.string(context, "title_required");
+                    }else if(titleCtrl.text.length >20){
+                      return Locales.string(context, "title_minimum_char");
+                    }
+                    return null;
+                  },
+                  controller: titleCtrl,
+                  style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 20,fontWeight: FontWeight.bold),
+                  decoration: InputDecoration(
+                    hintText: Locales.string(context, "title"),
+                    border: InputBorder.none,
+                    helperStyle: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 20,fontWeight: FontWeight.bold),
+                    labelStyle:TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 20,fontWeight: FontWeight.bold) ,
+                    hintStyle: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 20,fontWeight: FontWeight.bold),
+                  ),
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
+                ),
               ),
-              IntrinsicHeight(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minHeight: 250,
-                    maxHeight: 500,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 0),
+                child: TextFormField(
+                  validator: (value){
+                    if(value!.isEmpty){
+                      return Locales.string(context, "content_required");
+                    }
+                    return null;
+                  },
+                  style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 17,),
+                  controller: contentCtrl,
+                  decoration: InputDecoration(
+                    hintText: Locales.string(context, "content",),
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 17),
                   ),
-                  child: UnderlineInputField(
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return Locales.string(context, "content_required");
-                      }
-                      return null;
-                    },
-                    hint: "content",
-                    controller: contentCtrl,
-                    maxChar: 500,
-                    max: null,
-                    expand: true,
-                  ),
+                  keyboardType: TextInputType.multiline,
+                  maxLines: null,
                 ),
               ),
             ],
@@ -300,6 +252,37 @@ class _CreateNoteState extends State<CreateNote> {
       _noteImage = File(pickedFile.path);
       print(_noteImage);
     });
+  }
+
+  showGregorianPicker()async{
+
+    var picked = await showDatePicker(
+      context: context,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(3000), initialDate: DateTime.now(),
+    );
+
+    if(picked != null){
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+    return picked;
+  }
+
+  showPersianPicker()async{
+    var picked = await showPersianDatePicker(
+      context: context,
+      initialEntryMode: PDatePickerEntryMode.calendar,
+      firstDate: Jalali(1350, 8),
+      lastDate: Jalali(1500, 9), initialDate: DateTime.now().toJalali(),
+    );
+    if(picked != null){
+      setState(() {
+        selectedDate = picked.toDateTime();
+      });
+    }
+    return picked;
   }
 
 }

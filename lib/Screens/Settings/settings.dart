@@ -222,6 +222,7 @@ class SettingsPage extends StatelessWidget {
                     );
                   }
               ):const SizedBox(),
+
             ],
           ),
         ));
@@ -266,4 +267,5 @@ class SettingsPage extends StatelessWidget {
               ),
             ));
   }
+
 }

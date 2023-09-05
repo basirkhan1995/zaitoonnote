@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import '../../Datebase Helper/sqlite.dart';
 import '../../Provider/provider.dart';
@@ -65,8 +66,12 @@ class _AllNotesState extends State<AllNotes> {
 
   int currentFilterIndex = 0;
 
+  bool isFilterTrue = false;
+  bool isSearchTrue = false;
+
   @override
   Widget build(BuildContext context) {
+    String currentLocale = Locales.currentLocale(context).toString();
     final controller = Provider.of<MyProvider>(context, listen: false);
     return Scaffold(
       backgroundColor:
@@ -81,9 +86,49 @@ class _AllNotesState extends State<AllNotes> {
       body: SafeArea(
         child: Column(
           children: [
+            ListTile(
+              title: const LocaleText("notes",style: TextStyle(fontSize: 24,fontFamily: "Ubuntu",fontWeight: FontWeight.bold),),
+              trailing: Wrap(
+                spacing: 10,
+                children: <Widget>[
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 0),
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                        color: zPrimaryColor.withOpacity(.1),
+                        borderRadius: BorderRadius.circular(50)
+                    ),
+                    child: IconButton(
+                      onPressed: (){
+                      setState(() {
+                        isFilterTrue = !isFilterTrue;
+                      });
+                    },icon: const Icon(Icons.filter_alt,size: 18),),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 0),
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                        color: zPrimaryColor.withOpacity(.1),
+                        borderRadius: BorderRadius.circular(50)
+                    ),
+                    child: IconButton(onPressed: (){
+                      setState(() {
+                        isSearchTrue = !isSearchTrue;
+                      });
+                    },icon: const Icon(Icons.search,size: 18),),
+                  ), // icon-1
+
+                ],
+              ),
+            ),
+
             //Filter buttons
-            SizedBox(
+        isFilterTrue? SizedBox(
               height: 50,
+              width: MediaQuery.of(context).size.width *.95,
               child: FutureBuilder<List<CategoryModel>>(
                 future: category,
                 builder: (BuildContext context, AsyncSnapshot<List<CategoryModel>> snapshot) {
@@ -135,10 +180,11 @@ class _AllNotesState extends State<AllNotes> {
                   }
                 }
               ),
-            ),
+            ):const SizedBox(),
 
             //Search TextField
-            Container(
+           isSearchTrue? Container(
+             width: MediaQuery.of(context).size.width *.93,
               margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
@@ -159,109 +205,57 @@ class _AllNotesState extends State<AllNotes> {
                     icon: const Icon(Icons.search),
                     border: InputBorder.none),
               ),
-            ),
+            ):const SizedBox(),
 
             //All Notes
             Expanded(
               child: SafeArea(
-                child: FutureBuilder<List<Notes>>(
-                  future: notes,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<Notes>> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        //To show a circular progress indicator
-                        child: CircularProgressIndicator(),
-                      );
-                      //If snapshot has error
-                    } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-                      return Center(
-                          child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset("assets/Photos/empty.png", width: 250),
-                          // MaterialButton(
-                          //   shape: RoundedRectangleBorder(
-                          //       borderRadius: BorderRadius.circular(4)),
-                          //   minWidth: 100,
-                          //   color: Theme.of(context).colorScheme.inversePrimary,
-                          //   onPressed: () => _onRefresh(),
-                          //   child: const LocaleText("refresh"),
-                          // )
-                        ],
-                      ));
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      //a final variable (item) to hold the snapshot data
-                      final items = snapshot.data ?? <Notes>[];
-                      return Scrollbar(
-                        //The refresh indicator
-                        child: RefreshIndicator(
-                          onRefresh: _onRefresh,
-                          child: GridView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 0),
-                            shrinkWrap: true,
-                            itemCount: items.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              final dt = DateTime.parse(
-                                  items[index].createdAt.toString());
-                              final noteDate =
-                                  DateFormat('yyyy-MM-dd (HH:mm a)').format(dt);
-                              //Dismissible widget is to delete a data on pushing a record from left to right
-                              return Dismissible(
-                                direction: DismissDirection.startToEnd,
-                                background: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.red.shade900,
-                                  ),
-                                  alignment: Alignment.centerLeft,
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10.0),
-                                  child: const Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.delete,
-                                        color: Colors.white,
-                                        size: 30,
-                                      ),
-                                      LocaleText(
-                                        "delete",
-                                        style: TextStyle(color: Colors.white),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                key: ValueKey<int>(items[index].noteId!),
-                                onDismissed:
-                                    (DismissDirection direction) async {
-                                  await handler
-                                      .setNoteStatus(items[index].noteId)
-                                      .whenComplete(() => ScaffoldMessenger.of(
-                                              context)
-                                          .showSnackBar(SnackBar(
-                                              shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(8)),
-                                              backgroundColor: Theme.of(context)
-                                                  .colorScheme
-                                                  .inversePrimary,
-                                              behavior:
-                                                  SnackBarBehavior.floating,
-                                              duration: const Duration(
-                                                  milliseconds: 900),
-                                              content: const LocaleText(
-                                                "deletemsg",
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ))));
-                                  setState(() {
-                                    items.remove(items[index]);
-                                    _onRefresh();
-                                  });
-                                },
-                                child: InkWell(
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width *.97,
+                  child: FutureBuilder<List<Notes>>(
+                    future: notes,
+                    builder: (BuildContext context,
+                        AsyncSnapshot<List<Notes>> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          //To show a circular progress indicator
+                          child: CircularProgressIndicator(),
+                        );
+                        //If snapshot has error
+                      } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+                        return Center(
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.asset("assets/Photos/empty.png", width: 250),
+                            // MaterialButton(
+                            //   shape: RoundedRectangleBorder(
+                            //       borderRadius: BorderRadius.circular(4)),
+                            //   minWidth: 100,
+                            //   color: Theme.of(context).colorScheme.inversePrimary,
+                            //   onPressed: () => _onRefresh(),
+                            //   child: const LocaleText("refresh"),
+                            // )
+                          ],
+                        ));
+                      } else if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      } else {
+                        //a final variable (item) to hold the snapshot data
+                        final items = snapshot.data ?? <Notes>[];
+                        return Scrollbar(
+                          //The refresh indicator
+                          child: RefreshIndicator(
+                            onRefresh: _onRefresh,
+                            child: GridView.builder(
+                              padding: const EdgeInsets.symmetric(horizontal: 0),
+                              shrinkWrap: true,
+                              itemCount: items.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final dt = DateTime.parse(items[index].createdAt.toString());
+                                final noteDate = DateFormat('yyyy-MM-dd').format(dt);
+
+                                return InkWell(
                                   onTap: () {
                                     //To hold the data in text fields for update method
                                     Navigator.push(
@@ -272,104 +266,73 @@ class _AllNotesState extends State<AllNotes> {
                                                 )));
                                   },
                                   child: Container(
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 6),
-                                      padding: const EdgeInsets.all(8),
-                                      width:
-                                          MediaQuery.of(context).size.width / 2,
+                                      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                                      padding: const EdgeInsets.all(12),
+                                      width: MediaQuery.of(context).size.width / 2,
                                       decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
+                                          borderRadius: BorderRadius.circular(15),
                                           color: controller.darkLight
                                               ? Colors.black
                                               : Colors.deepPurple
-                                                  .withOpacity(.6),
+                                                  .withOpacity(.4),
                                           boxShadow: const [
                                             BoxShadow(
                                                 blurRadius: 1,
                                                 color: Colors.grey)
                                           ]),
                                       child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
                                               Text(
                                                 items[index].noteTitle,
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                     color: Colors.white,
-                                                    fontSize: 15,
-                                                    fontWeight:
-                                                        FontWeight.bold),
+                                                    fontSize: 17,
+                                                    fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",
+                                                    fontWeight: FontWeight.bold),
                                               ),
-                                              Expanded(
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(4),
-                                                          color: Colors.white),
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 4,
-                                                          vertical: 4),
-                                                      child: LocaleText(
-                                                        items[index].category!,
-                                                        style: const TextStyle(
-                                                            color: Colors
-                                                                .deepPurple,
-                                                            fontSize: 12),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
+
                                             ],
                                           ),
+
                                           Flexible(
-                                              child: Container(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          right: 13.0),
+                                              child: SizedBox(
+                                                height: double.infinity,
                                                   child: Text(
                                                     items[index].noteContent,
-                                                    style: const TextStyle(
+                                                    style: TextStyle(
+                                                        fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",
                                                         color: Colors.white),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
+                                                    overflow: TextOverflow.ellipsis,
                                                   ))),
+
                                           Expanded(
                                               child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
+                                            mainAxisAlignment: MainAxisAlignment.end,
                                             children: [
                                               Text(noteDate,
                                                   style: const TextStyle(
-                                                      color: Colors.white)),
+                                                      color: Colors.white,fontWeight: FontWeight.bold)),
                                             ],
                                           )),
                                         ],
                                       )),
-                                ),
-                              );
-                            },
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              childAspectRatio: (5 / 3),
+                                );
+                              },
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                childAspectRatio: (5 / 4),
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    }
-                  },
+                        );
+                      }
+                    },
+                  ),
                 ),
               ),
             ),

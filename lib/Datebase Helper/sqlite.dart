@@ -383,11 +383,11 @@ class DatabaseHelper {
   //Notes ----------------------------------------------------------------------
 
   //Create a new note
-  Future<int> createNote(title, content, int category, image) async {
+  Future<int> createNote(title, content, int category) async {
     final Database db = await initDB();
     return db.rawInsert(
-        "insert into notes (noteTitle, noteContent, noteStatus,noteCategory, noteImage) values (?,?,$noteStatus,?,?)",
-        [title, content, category, image]);
+        "insert into notes (noteTitle, noteContent, noteStatus,noteCategory) values (?,?,$noteStatus,?)",
+        [title, content, category]);
   }
 
   //Show incomplete notes with 1 status

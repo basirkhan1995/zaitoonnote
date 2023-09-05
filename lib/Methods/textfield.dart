@@ -14,6 +14,7 @@ class UnderlineInputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String currentLocale = Locales.currentLocale(context).toString();
     return Container(
       margin: const EdgeInsets.all(8),
       child: TextFormField(
@@ -27,6 +28,9 @@ class UnderlineInputField extends StatelessWidget {
           border: InputBorder.none,
           labelText: Locales.string(context,hint),
           hintText: Locales.string(context,hint),
+          hintStyle: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
+          helperStyle: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
+          labelStyle: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
           suffixIcon: end
         ),
       ),

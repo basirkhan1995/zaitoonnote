@@ -30,15 +30,6 @@ class _AppPropertiesState extends State<AppProperties> {
           builder: (context,provider,child) {
             return Column(
               children: [
-                ListTile(
-                   leading: Switch(
-                       value: provider.showHidePersianDate,
-                       onChanged: (value){
-                         provider.toggle();
-                       }),
-                   title: const LocaleText("show_persian_date"),
-                  trailing: LocaleText(provider.showHidePersianDate.toString(),style: const TextStyle(fontSize: 16),),
-                 ),
 
                 ListTile(
                   leading: Switch(

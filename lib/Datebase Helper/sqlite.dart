@@ -8,6 +8,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/note_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
+import 'package:zaitoonnote/Screens/Json%20Models/stats.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/users.dart';
 import '../Methods/env.dart';
@@ -298,6 +299,15 @@ class DatabaseHelper {
   }
 
   //Show transactions
+  Future<List<TransactionModel>> getTransactionByNameDate(date) async {
+    final Database db = await initDB();
+    final List<Map<String, Object?>> queryResult = await db.rawQuery(
+        "select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId WHERE DATE(trnDate) = DATE(?) ",[date]);
+    return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
+  }
+
+
+  //Show transactions
   Future<List<TransactionModel>> transactionSearch(String keyword) async {
     final Database db = await initDB();
     final List<Map<String, Object?>> queryResult = await db.rawQuery(
@@ -443,7 +453,7 @@ class DatabaseHelper {
   }
 
   //Search by title
-  Future<List<Notes>> searchMemo(String keyword) async {
+  Future<List<Notes>> searchNote(String keyword) async {
     final Database db = await initDB();
     List<Map<String, dynamic>> allRows = await db
         .query('notes', where: 'noteTitle LIKE ?', whereArgs: ['%$keyword%']);
@@ -452,7 +462,7 @@ class DatabaseHelper {
   }
 
   //Filter by category
-  Future<List<Notes>> filterMemo(String keyword) async {
+  Future<List<Notes>> filterNote(String keyword) async {
     final Database db = await initDB();
     List<Map<String, dynamic>> allRows = await db
         .query('notes', where: 'category LIKE ?', whereArgs: ['%$keyword%']);
@@ -512,4 +522,5 @@ class DatabaseHelper {
         [trnType, person]));
     return count;
   }
+
 }

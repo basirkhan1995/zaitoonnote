@@ -1,4 +1,3 @@
-import 'dart:math';
 
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/foundation.dart';
@@ -12,7 +11,6 @@ import 'package:zaitoonnote/Methods/z_field.dart';
 import 'package:zaitoonnote/Provider/provider.dart';
 import 'package:zaitoonnote/Screens/Home/start_screen.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/users.dart';
-
 import '../../Methods/custom_drop_down.dart';
 import '../../Methods/env.dart';
 
@@ -31,7 +29,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<MyProvider>(context, listen: false);
-    print("Hello ${controller.isLogin}");
     return Scaffold(
       body: Form(
         key: formKey,

@@ -135,12 +135,12 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
                     decoration: BoxDecoration(
-                        color: widget.data!.trnCategory == "paid"
+                        color: widget.data!.trnCategory == "received"
                             ? Colors.lightGreen
                             : Colors.red.shade700,
                         borderRadius: BorderRadius.circular(4)),
                     child: Icon(
-                      widget.data!.trnCategory == "paid"
+                      widget.data!.trnCategory == "received"
                           ? UniconsLine.arrow_down_left
                           : UniconsLine.arrow_up_right,
                       color: Colors.white,

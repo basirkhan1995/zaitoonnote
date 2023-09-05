@@ -102,12 +102,13 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     final provider = Provider.of<MyProvider>(context, listen: false);
     String currentLocale = Locales.currentLocale(context).toString();
 
-    double credit = double.parse(received.toString());
     double debit = double.parse(paid.toString());
-    double balance = debit - credit;
+    double credit = double.parse(received.toString());
+    double balance = credit - debit;
 
 
     return Scaffold(
@@ -164,9 +165,9 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                     mainAxisAlignment: MainAxisAlignment.center,
 
                     children: [
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("debit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(debit.toInt(), "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey),),),
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("credit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(credit.toInt(), "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey),),),
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("balance",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: normalSize,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true, trailing: Text(Env.currencyFormat(balance.toInt(), "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold)),),
+                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("credit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: width/26,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(credit.toInt(), "en_US"),style: TextStyle(fontSize: width/22,fontWeight: FontWeight.bold,color: Colors.grey),),),
+                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("debit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: width/26,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(debit.toInt(), "en_US"),style: TextStyle(fontSize: width/22,fontWeight: FontWeight.bold,color: Colors.grey),),),
+                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("balance",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: width/26,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true, trailing: Text(Env.currencyFormat(balance.toInt(), "en_US"),style: TextStyle(fontSize: width/22,fontWeight: FontWeight.bold,color: balance.toInt()<0?Colors.red.shade900:Colors.green)),),
                     ],
                   ),
                 ),
@@ -236,18 +237,18 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                                           contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 10),
                                           title: Row(
                                             children: [
-                                              Text(items[index].person,style:const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold),),
+                                              Text(items[index].person,style: TextStyle(fontSize: width/28,fontWeight: FontWeight.bold),),
                                               const SizedBox(width: 8),
                                               Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
                                                 decoration: BoxDecoration(
-                                                    color: items[index].trnCategory == "paid"? Colors.lightGreen:Colors.red.shade700,
+                                                    color: items[index].trnCategory == "received"? Colors.lightGreen:Colors.red.shade700,
                                                     borderRadius: BorderRadius.circular(4)
                                                 ),
                                                 child: Icon(
                                                   //Paid is debit and received is Credit
                                                   //Means Debit increases amount in person's account and credit decreases
-                                                  items[index].trnCategory == "paid"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
+                                                  items[index].trnCategory == "received"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
                                                 ),
                                               ),
                                             ],
@@ -257,7 +258,7 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                                             children: [
 
                                               const SizedBox(height: 6),
-                                              Expanded(child: Text(Env.currencyFormat(items[index].amount, "en_US"),style: const TextStyle(fontSize: normalSize),)),
+                                              Expanded(child: Text(Env.currencyFormat(items[index].amount, "en_US"),style: TextStyle(fontSize: width/26,color: items[index].trnCategory == "received"?Colors.green:Colors.red.shade900),)),
                                             ],
                                           ),
 

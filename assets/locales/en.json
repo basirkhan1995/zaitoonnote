@@ -88,7 +88,7 @@
   "show_or_hide_properties": "Show or hide properties",
   "backup": "Backup",
   "backup_data": "Data reservation ",
-  "show_login": "Enable login page",
+  "show_login": "Login",
   "backup_success": "Back up successfuly",
   "backup_restored": "Back up restored successfully",
   "restore_backup": "Restore backup",
@@ -138,5 +138,8 @@
   "update_transaction": "Transaction update",
   "about_app": "Zaitoon app is developed with Flutter, dart language and sqlite as backend to store daily transactions and notes for individuals.",
   "no_activities": "No activities for today",
-  "today_transaction": "Today's transactions"
+  "today_transaction": "Today's transactions",
+  "filter_date": "Filter by date",
+  "filter_category": "Filter by category",
+  "filtered_transactions": "Filtered transactions"
 }

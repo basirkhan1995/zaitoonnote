@@ -94,7 +94,7 @@ class _TrashState extends State<Trash> {
                           onPressed: (){
                             setState(() {
                               currentFilterIndex = index;
-                              notes = db.filterMemo(filterData[currentFilterIndex]);
+                              notes = db.filterNote(filterData[currentFilterIndex]);
                             });
                           },
                           child: LocaleText(filterTitle[index],style: TextStyle(color: controller.darkLight?Colors.white:Colors.deepPurple),)),
@@ -115,7 +115,7 @@ class _TrashState extends State<Trash> {
                 onChanged: (value){
                   setState(() {
                     keyword = searchCtrl.text;
-                    notes = db.searchMemo(keyword);
+                    notes = db.searchNote(keyword);
                   });
                 },
                 decoration: InputDecoration(

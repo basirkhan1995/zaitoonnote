@@ -35,7 +35,7 @@ class MyProvider extends ChangeNotifier{
    logout(context){
     _isLogin = false;
     secureStorage.setBool("isLogin", _isLogin);
-    Env.goto(const LoginPage(), context);
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) => const LoginPage()));
     notifyListeners();
   }
 

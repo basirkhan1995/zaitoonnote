@@ -114,10 +114,10 @@ class _PersonActivitiesState extends State<PersonActivities> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<MyProvider>(context, listen: false);
-
-    double credit = double.parse(received.toString());
+    double width = MediaQuery.of(context).size.width;
     double debit = double.parse(paid.toString());
-    double balance = debit - credit;
+    double credit = double.parse(received.toString());
+    double balance = credit - debit;
     String currentLocale = Locales.currentLocale(context).toString();
 
     return Scaffold(
@@ -173,36 +173,36 @@ class _PersonActivitiesState extends State<PersonActivities> {
                     children: [
                       ListTile(
                         visualDensity: const VisualDensity(vertical: -4),
-                        title: LocaleText("debit",
+                        title: LocaleText("credit",
                             style: TextStyle(
                                 fontFamily:
                                     currentLocale == "en" ? "Ubuntu" : "Dubai",
-                                fontSize: normalSize,
+                                fontSize: width/26,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey)),
                         dense: true,
                         trailing: Text(
-                          Env.currencyFormat(debit.toInt(), "en_US"),
-                          style: const TextStyle(
-                              fontSize: normalSize,
+                          Env.currencyFormat(credit.toInt(), "en_US"),
+                          style: TextStyle(
+                              fontSize: width/22,
                               fontWeight: FontWeight.bold,
                               color: Colors.grey),
                         ),
                       ),
                       ListTile(
                         visualDensity: const VisualDensity(vertical: -4),
-                        title: LocaleText("credit",
+                        title: LocaleText("debit",
                             style: TextStyle(
                                 fontFamily:
                                     currentLocale == "en" ? "Ubuntu" : "Dubai",
-                                fontSize: normalSize,
+                                fontSize: width/26,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey)),
                         dense: true,
                         trailing: Text(
-                          Env.currencyFormat(credit.toInt(), "en_US"),
-                          style: const TextStyle(
-                              fontSize: normalSize,
+                          Env.currencyFormat(debit.toInt(), "en_US"),
+                          style: TextStyle(
+                              fontSize: width/22,
                               fontWeight: FontWeight.bold,
                               color: Colors.grey),
                         ),
@@ -213,14 +213,14 @@ class _PersonActivitiesState extends State<PersonActivities> {
                             style: TextStyle(
                                 fontFamily:
                                     currentLocale == "en" ? "Ubuntu" : "Dubai",
-                                fontSize: normalSize,
+                                fontSize: width/26,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.grey)),
                         dense: true,
                         trailing: Text(
                             Env.currencyFormat(balance.toInt(), "en_US"),
-                            style: const TextStyle(
-                                fontSize: normalSize, fontWeight: FontWeight.bold)),
+                            style: TextStyle(
+                                fontSize: width/22, fontWeight: FontWeight.bold, color: balance.toInt()<0?Colors.red.shade900:Colors.green)),
                       ),
                     ],
                   ),
@@ -320,7 +320,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                                 decoration: BoxDecoration(
                                                     color: items[index]
                                                                 .trnCategory ==
-                                                            "paid"
+                                                            "received"
                                                         ? Colors.lightGreen
                                                         : Colors.red.shade700,
                                                     borderRadius:
@@ -328,7 +328,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                                             4)),
                                                 child: Icon(
                                                   items[index].trnCategory ==
-                                                          "paid"
+                                                          "received"
                                                       ? UniconsLine
                                                           .arrow_down_left
                                                       : UniconsLine

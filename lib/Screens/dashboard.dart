@@ -1,22 +1,21 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
-
 import '../Datebase Helper/sqlite.dart';
 import '../Methods/colors.dart';
 import '../Methods/env.dart';
 import '../Methods/z_button.dart';
 import '../Provider/provider.dart';
 import 'Activities/create_transaction.dart';
+import 'Json Models/stats.dart';
 import 'Json Models/trn_model.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-
 import 'Notes/create_note.dart';
 import 'Persons/add_person.dart';
 
@@ -32,6 +31,7 @@ class _DashboardState extends State<Dashboard> {
   final db = DatabaseHelper();
   late DatabaseHelper handler;
   late Future<List<TransactionModel>> transactions;
+  late List<ChartData> _chartData;
 
   int totalPaid = 0 ;
   int totalReceived = 0;
@@ -42,6 +42,8 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     handler = DatabaseHelper();
     transactions = handler.getTodayRecentTransactions();
+
+    _chartData = getChartData();
     handler.initDB().whenComplete(() async {
       setState(() {
        transactions = getTransactions();
@@ -49,6 +51,10 @@ class _DashboardState extends State<Dashboard> {
     });
     _onRefresh();
   }
+
+
+
+
 
   //Method to get data from database
   Future<List<TransactionModel>> getTransactions() async {
@@ -77,19 +83,30 @@ class _DashboardState extends State<Dashboard> {
     return totalPaid;
   }
 
+  List<ChartData> getChartData (){
+    final List<ChartData> charData = [
+      ChartData("Credit", totalReceived),
+      ChartData("Debit", totalPaid),
+      ChartData("Checks", 4000),
+      ChartData("Power", 8900)
+    ];
+    return charData;
+  }
+
   //Method to refresh data on pulling the list
   Future<void> _onRefresh() async {
     setState(() {
       transactions = getTransactions();
-
       totalUsers();
       totalCredit();
       totalDebit();
     });
   }
+
+
   @override
   Widget build(BuildContext context) {
-
+    double width = MediaQuery.of(context).size.width;
     final provider = Provider.of<MyProvider>(context, listen: false);
     var currentLocale = Locales.currentLocale(context).toString();
     return Scaffold(
@@ -239,6 +256,18 @@ class _DashboardState extends State<Dashboard> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                        // SfCircularChart(
+                        //   margin: EdgeInsets.all(80),
+                        //   series: <CircularSeries>[
+                        //     PieSeries<ChartData,String>(
+                        //       dataSource: _chartData,
+                        //       xValueMapper: (ChartData data,_) =>data.title,
+                        //       yValueMapper: (ChartData data,_) =>data.stats,
+                        //     )
+                        //
+                        //   ]
+                        // ),
+
                         CircularPercentIndicator(
                           radius: 40.0,
                           lineWidth: 5.0,
@@ -261,7 +290,7 @@ class _DashboardState extends State<Dashboard> {
                           progressColor: Colors.green,
                         ),
                         const SizedBox(height: 8),
-                        Text(Env.currencyFormat(totalReceived, "ar_AR"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold),),
+                        Text(Env.currencyFormat(totalReceived, "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold),),
                          LocaleText("credit",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en" ? "Ubuntu":"Dubai"),),
                       ],
                     ),
@@ -407,17 +436,17 @@ class _DashboardState extends State<Dashboard> {
                                                     Container(
                                                       padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
                                                       decoration: BoxDecoration(
-                                                          color: items[index].trnCategory == "paid"? Colors.lightGreen:Colors.red.shade700,
+                                                          color: items[index].trnCategory == "received"? Colors.lightGreen:Colors.red.shade700,
                                                           borderRadius: BorderRadius.circular(4)
                                                       ),
                                                       child: Icon(
-                                                        items[index].trnCategory == "paid"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
+                                                        items[index].trnCategory == "received"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
                                                 subtitle: Text(currentLocale == "en" ? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString())),
-                                                trailing: Text(Env.currencyFormat(items[index].amount, "en_US"),style: const TextStyle(fontSize: 15),),
+                                                trailing: Text(Env.currencyFormat(items[index].amount, "en_US"),style: TextStyle(fontSize: width/24,color: items[index].trnCategory == "received"?Colors.green:Colors.red.shade900),),
                                                 dense: true,
                                               ),
                                             ),
@@ -440,10 +469,32 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
               ),
+
+              // SfCircularChart(
+              //   legend: const Legend(isVisible: true,overflowMode: LegendItemOverflowMode.wrap),
+              //   series: <CircularSeries>[
+              //     PieSeries<ChartData,String>(
+              //       dataLabelSettings: const DataLabelSettings(isVisible: true),
+              //       dataSource: _chartData,
+              //       xValueMapper: (ChartData data,_) =>data.title,
+              //       yValueMapper: (ChartData data,_) =>data.stats,
+              //
+              //     )
+              //
+              //   ]
+              // ),
             ],
           ),
         ),
       ),
     );
   }
+
+
+}
+
+class ChartData {
+  final String? title;
+  final int stats;
+  ChartData(this.title, this.stats);
 }

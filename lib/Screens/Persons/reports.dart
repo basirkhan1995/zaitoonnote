@@ -4,6 +4,7 @@ import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
+import 'package:zaitoonnote/Screens/Activities/transaction_details.dart';
 import 'dart:io';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import '../../Datebase Helper/sqlite.dart';
@@ -164,6 +165,7 @@ class _PersonReportsState extends State<PersonReports> {
                                       padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
                                       child: ListTile(
                                         horizontalTitleGap: 5,
+                                        onTap: ()=>Env.goto(TransactionDetails(data: items[index]), context),
                                         dense: true,
                                         leading: SizedBox(
                                             height: 40,width: 40,
@@ -178,11 +180,11 @@ class _PersonReportsState extends State<PersonReports> {
                                             Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
                                               decoration: BoxDecoration(
-                                                  color: items[index].trnCategory == "paid"? Colors.lightGreen:Colors.red.shade700,
+                                                  color: items[index].trnCategory == "received"? Colors.lightGreen:Colors.red.shade700,
                                                   borderRadius: BorderRadius.circular(4)
                                               ),
                                               child: Icon(
-                                                items[index].trnCategory == "paid"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
+                                                items[index].trnCategory == "received"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
                                               ),
                                             ),
                                           ],

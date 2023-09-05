@@ -55,6 +55,7 @@ dependencies:
   flutter_date_range_picker: ^0.0.14
   percent_indicator: ^4.2.3
   easy_date_timeline: ^0.0.7
+  syncfusion_flutter_charts: ^22.2.12
 
 dev_dependencies:
   flutter_test:

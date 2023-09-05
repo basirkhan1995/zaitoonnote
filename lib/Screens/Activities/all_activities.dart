@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
@@ -20,57 +21,74 @@ class AllActivities extends StatefulWidget {
 }
 
 class _AllActivitiesState extends State<AllActivities> {
+  final db = DatabaseHelper();
   final searchCtrl = TextEditingController();
-
   String keyword = "";
-  String noteTypeCategory = "activity";
-
-  var today = DateTime.now().toIso8601String();
+  String activityTypeCategory = "activity";
 
   late DatabaseHelper handler;
   late Future<List<TransactionModel>> transactions;
   late Future<List<CategoryModel>> category;
+  late Future<List<TransactionModel>> transactionsByDate;
 
-  final db = DatabaseHelper();
+  DateTime? firstSelectedDate ;
+  DateTime? endSelectedDate ;
 
   DateTime? date;
+  var today = DateTime.now().toIso8601String();
+
+  //Method to get category from database
+  Future<List<CategoryModel>> getCategories() async {
+    return await handler.getCategories(activityTypeCategory);
+  }
+
+  int currentFilterIndex = 0;
+  bool isSearchOn = false;
+
+  int selectedCategoryId = 0;
+  String selectedCategoryName = "";
+
   @override
   void initState() {
     super.initState();
     handler = DatabaseHelper();
-    transactions = handler.getTodayTransactions(today);
+
+    transactions = handler.getAllTransactions();
+    transactionsByDate = handler.getTransactionDateRange(
+        firstSelectedDate.toString(), endSelectedDate.toString());
+
     handler.initDB().whenComplete(() async {
       setState(() {
-        transactions = getTrn();
-        category = handler.getCategories(noteTypeCategory);
-
+        transactions = getAllTransactionByDate();
+        transactions = getAllTransaction();
+        category = getCategories();
       });
     });
     _onRefresh();
   }
 
+  //All Person Transaction By Date Range
+  Future<List<TransactionModel>> getAllTransactionByDate() async {
+    return await handler.getTransactionDateRange(
+        firstSelectedDate.toString(), endSelectedDate.toString());
+  }
 
-  //Method to get data from database
-  Future<List<TransactionModel>> getTrn() async {
+  //All Transactions By Person
+  Future<List<TransactionModel>> getAllTransaction() async {
     return await handler.getTodayTransactions(today);
   }
 
-  //Method to refresh data on pulling the list
+
+
+  //Refresh Data
   Future<void> _onRefresh() async {
     setState(() {
-      transactions = getTrn();
+      transactions = getAllTransaction();
+      transactions = getAllTransactionByDate();
+
       category = getCategories();
     });
   }
-
-  //Method to get category from database
-  Future<List<CategoryModel>> getCategories() async {
-    return await handler.getCategories(noteTypeCategory);
-  }
-
-  int currentFilterIndex = 0;
-
-  bool isSearchOn = false;
 
 
   @override
@@ -79,110 +97,139 @@ class _AllActivitiesState extends State<AllActivities> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: (){
-          Navigator.push(context, MaterialPageRoute(builder: (context)=>const CreateTransaction()));
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const CreateTransaction()));
         },
       ),
-      body:  SafeArea(
+      body: SafeArea(
         child: Column(
           children: [
-
             //Filter buttons
-            isSearchOn ? Container(
-              margin: const EdgeInsets.symmetric(horizontal: 14,vertical: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 3),
-              decoration: BoxDecoration(
-                  color: Colors.deepPurple.withOpacity(.1),
-                  borderRadius: BorderRadius.circular(8)
-              ),
-              child: TextFormField(
-                controller: searchCtrl,
-                onChanged: (value){
-                  setState(() {
-                    keyword = searchCtrl.text;
-                    transactions = db.transactionSearch(keyword);
-                  });
-                },
-                decoration: InputDecoration(
-                    hintText: Locales.string(context,"search"),
-                    icon: const Icon(Icons.search),
-                    border: InputBorder.none
-                ),
-              ),
-            ): SizedBox(
-              height: 50,
-              child: FutureBuilder<List<CategoryModel>>(
-                  future: category,
-                  builder: (BuildContext context, AsyncSnapshot<List<CategoryModel>> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const SizedBox();
-                      //If snapshot has error
-                    } else if (snapshot.hasData && snapshot.data!.isEmpty) {
-                      return const SizedBox();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      //a final variable (item) to hold the snapshot data
-                      final items = snapshot.data ?? <CategoryModel>[];
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 0),
-                        shrinkWrap: true,
-                        itemCount: items.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return InkWell(
-                            splashColor: Colors.transparent,
-                            onTap: (){
-                              setState(() {
-                                currentFilterIndex = index;
-                               transactions = db.filterTransactions(items[index].cName??"");
-                              });
-                            },
-                            child: Container(
-                                margin: const EdgeInsets.symmetric(
-                                    horizontal: 4, vertical: 6),
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  borderRadius:
-                                  BorderRadius.circular(10),
-                                  color: currentFilterIndex == index? Colors.deepPurple.withOpacity(.5): Colors.deepPurple.withOpacity(.1),
-                                ),
-                                child: Center(
-                                  child: LocaleText(
-                                    items[index].cName??"",
-                                    style: TextStyle(
-                                        color: currentFilterIndex == index? Colors.white: Colors.deepPurple,
-                                        fontSize: 14,
-                                        fontWeight: currentFilterIndex == index? FontWeight.bold: FontWeight.w400),
-                                  ),
-                                )),
-                          );
-                        },
-                      );
-                    }
-                  }
-              ),
-            ),
+            isSearchOn
+                ? Container(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                        color: Colors.deepPurple.withOpacity(.1),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: TextFormField(
+                      controller: searchCtrl,
+                      onChanged: (value) {
+                        setState(() {
+                          keyword = searchCtrl.text;
+                          transactions = db.transactionSearch(keyword);
+                        });
+                      },
+                      decoration: InputDecoration(
+                          hintText: Locales.string(context, "search"),
+                          icon: const Icon(Icons.search),
+                          border: InputBorder.none),
+                    ),
+                  )
+                : SizedBox(
+                    height: 50,
+                    child: FutureBuilder<List<CategoryModel>>(
+                        future: category,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<CategoryModel>> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const SizedBox();
+                            //If snapshot has error
+                          } else if (snapshot.hasData &&
+                              snapshot.data!.isEmpty) {
+                            return const SizedBox();
+                          } else if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          } else {
+                            //a final variable (item) to hold the snapshot data
+                            final items = snapshot.data ?? <CategoryModel>[];
+                            return ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 0),
+                              shrinkWrap: true,
+                              itemCount: items.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                return InkWell(
+                                  splashColor: Colors.transparent,
+                                  onTap: () {
+                                    setState(() {
+                                      currentFilterIndex = index;
+                                      transactions = db.filterTransactions(
+                                          items[index].cName ?? "");
+                                    });
+                                  },
+                                  child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 4, vertical: 6),
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(10),
+                                        color: currentFilterIndex == index
+                                            ? Colors.deepPurple.withOpacity(.5)
+                                            : Colors.deepPurple.withOpacity(.1),
+                                      ),
+                                      child: Center(
+                                        child: LocaleText(
+                                          items[index].cName ?? "",
+                                          style: TextStyle(
+                                              color: currentFilterIndex == index
+                                                  ? Colors.white
+                                                  : Colors.deepPurple,
+                                              fontSize: 14,
+                                              fontWeight:
+                                                  currentFilterIndex == index
+                                                      ? FontWeight.bold
+                                                      : FontWeight.w400),
+                                        ),
+                                      )),
+                                );
+                              },
+                            );
+                          }
+                        }),
+                  ),
 
             //Search TextField
             ListTile(
               horizontalTitleGap: 6,
-             leading: const Icon(Icons.access_time),
-             contentPadding: const EdgeInsets.symmetric(horizontal: 15),
-             title: LocaleText("today_transaction",style: TextStyle(fontWeight: FontWeight.bold,fontSize: largeSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
-              //title: Text( currentLocale == "en" ? DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 18),),
-             trailing: IconButton(
-               onPressed: ()=>setState(() {
-                 isSearchOn = !isSearchOn;
-               }),
-               icon: const Icon(UniconsLine.search),
-             ),
-           ),
-       //All Transactions
+              leading: Container(
+                  padding: EdgeInsets.zero,
+                  height: 35,
+                  width: 35,
+                  decoration: BoxDecoration(
+                      color: zPrimaryColor.withOpacity(.15),
+                      //border: Border.all(color: zPrimaryColor),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: IconButton(
+                    splashRadius: 8,
+                    onPressed: () => currentLocale == "en"
+                        ? showGregorianPicker()
+                        : showPersianPicker(),
+                    icon: const Icon(Icons.date_range_rounded,
+                        color: Colors.black, size: 18),
+                  )),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 15),
+              title: LocaleText(endSelectedDate == null? "today_transaction" :"Filtered transactions",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontWeight: FontWeight.bold,fontSize: 20),),
+              trailing: IconButton(
+                onPressed: () => setState(() {
+                  isSearchOn = !isSearchOn;
+                }),
+                icon: const Icon(UniconsLine.search),
+              ),
+            ),
+            //All Transactions
             Expanded(
               child: FutureBuilder<List<TransactionModel>>(
                 future: transactions,
-                builder: (BuildContext context, AsyncSnapshot<List<TransactionModel>> snapshot) {
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<TransactionModel>> snapshot) {
                   //in case whether data is pending
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
@@ -193,19 +240,19 @@ class _AllActivitiesState extends State<AllActivities> {
                   } else if (snapshot.hasData && snapshot.data!.isEmpty) {
                     return Center(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset("assets/Photos/empty.png",width: 250),
-                            // MaterialButton(
-                            //   shape: RoundedRectangleBorder(
-                            //       borderRadius: BorderRadius.circular(4)),
-                            //   minWidth: 100,
-                            //   color: Theme.of(context).colorScheme.inversePrimary,
-                            //   onPressed: () => _onRefresh(),
-                            //   child: const LocaleText("refresh"),
-                            // )
-                          ],
-                        ));
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset("assets/Photos/empty.png", width: 250),
+                        // MaterialButton(
+                        //   shape: RoundedRectangleBorder(
+                        //       borderRadius: BorderRadius.circular(4)),
+                        //   minWidth: 100,
+                        //   color: Theme.of(context).colorScheme.inversePrimary,
+                        //   onPressed: () => _onRefresh(),
+                        //   child: const LocaleText("refresh"),
+                        // )
+                      ],
+                    ));
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
@@ -218,50 +265,104 @@ class _AllActivitiesState extends State<AllActivities> {
                         child: SizedBox(
                           child: ListView.builder(
                               itemCount: items.length,
-                              itemBuilder: (context,index){
-                            return Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 0),
-                                  child: ListTile(
-                                    onTap: ()=> Env.goto(TransactionDetails(data: items[index]), context),
-                                    leading: SizedBox(
-                                        height: 50,width: 50,
-                                        child: CircleAvatar(
-                                          radius: 50,
-                                            backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 12),
-
-                                    title: Row(
-                                      children: [
-                                        Text(items[index].person,style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
-                                        const SizedBox(width: 8),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(horizontal: 3,vertical: 3),
-                                          decoration: BoxDecoration(
-                                              color: items[index].trnCategory == "paid"? Colors.lightGreen:Colors.red.shade700,
-                                              borderRadius: BorderRadius.circular(4)
-                                          ),
-                                          child: Icon(
-                                            items[index].trnCategory == "paid"? UniconsLine.arrow_down_left:UniconsLine.arrow_up_right, color: Colors.white,size: 14,
-                                          ),
+                              itemBuilder: (context, index) {
+                                return Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 4.0, vertical: 0),
+                                      child: ListTile(
+                                        onTap: () => Env.goto(
+                                            TransactionDetails(
+                                                data: items[index]),
+                                            context),
+                                        leading: SizedBox(
+                                            height: 50,
+                                            width: 50,
+                                            child: CircleAvatar(
+                                                radius: 50,
+                                                backgroundImage: items[index]
+                                                        .pImage!
+                                                        .isNotEmpty
+                                                    ? Image.file(
+                                                        File(items[index]
+                                                            .pImage!),
+                                                        fit: BoxFit.cover,
+                                                      ).image
+                                                    : const AssetImage(
+                                                        "assets/Photos/no_user.jpg"))),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 0, horizontal: 12),
+                                        title: Row(
+                                          children: [
+                                            Text(
+                                              items[index].person,
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily:
+                                                      currentLocale == "en"
+                                                          ? "Ubuntu"
+                                                          : "Dubai"),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 3,
+                                                      vertical: 3),
+                                              decoration: BoxDecoration(
+                                                  color: items[index]
+                                                              .trnCategory ==
+                                                          "received"
+                                                      ? Colors.lightGreen
+                                                      : Colors.red.shade700,
+                                                  borderRadius:
+                                                      BorderRadius.circular(4)),
+                                              child: Icon(
+                                                items[index].trnCategory ==
+                                                        "received"
+                                                    ? UniconsLine
+                                                        .arrow_down_left
+                                                    : UniconsLine
+                                                        .arrow_up_right,
+                                                color: Colors.white,
+                                                size: 14,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ],
+                                        subtitle: Text(currentLocale != "en"
+                                            ? Env.persianDateTimeFormat(
+                                                DateTime.parse(items[index]
+                                                    .createdAt
+                                                    .toString()))
+                                            : Env.gregorianDateTimeForm(
+                                                items[index]
+                                                    .createdAt
+                                                    .toString())),
+                                        trailing: Text(
+                                          Env.currencyFormat(
+                                              items[index].amount, "en_US"),
+                                          style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        dense: true,
+                                      ),
                                     ),
-                                    subtitle: Text(currentLocale != "en"? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString())),
-                                    trailing: Text(Env.currencyFormat(items[index].amount,"en_US"),style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),),
-                                    dense: true,
-                                  ),
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(color: Colors.grey.withOpacity(.3)),
-                                  width: MediaQuery.of(context).size.width *.9,
-                                  height: 1,
-                                  margin: EdgeInsets.zero,
-                                )
-                              ],
-                            );
-                          }),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey.withOpacity(.3)),
+                                      width: MediaQuery.of(context).size.width *
+                                          .9,
+                                      height: 1,
+                                      margin: EdgeInsets.zero,
+                                    )
+                                  ],
+                                );
+                              }),
                         ),
                       ),
                     );
@@ -274,7 +375,45 @@ class _AllActivitiesState extends State<AllActivities> {
       ),
     );
   }
-  
 
+  showGregorianPicker() async {
+    final DateTimeRange? dateTimeRange = await showDateRangePicker(
+        context: context,
+        firstDate: DateTime(2000),
+        lastDate: DateTime(3000),
+        initialDateRange: DateTimeRange(
+            start: DateTime.now(),
+            end: DateTime.now().add(const Duration(days: 1))));
+    if (dateTimeRange != null) {
+      setState(() {
+        firstSelectedDate = dateTimeRange.start;
+        endSelectedDate = dateTimeRange.end;
+        transactions = transactionsByDate;
+        _onRefresh();
+      });
+    }
+    return dateTimeRange;
+  }
 
+  showPersianPicker() async {
+    var picked = await showPersianDateRangePicker(
+      context: context,
+      initialEntryMode: PDatePickerEntryMode.calendar,
+      initialDateRange: JalaliRange(
+        start: Jalali.now(),
+        end: Jalali.now(),
+      ),
+      firstDate: Jalali(1350, 8),
+      lastDate: Jalali(1500, 9),
+    );
+    if (picked != null) {
+      setState(() {
+        firstSelectedDate = picked.start.toDateTime();
+        endSelectedDate = picked.end.toDateTime();
+        transactions = transactionsByDate;
+        _onRefresh();
+      });
+    }
+    return picked;
+  }
 }

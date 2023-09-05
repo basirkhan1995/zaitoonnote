@@ -151,7 +151,7 @@ class _AllNotesState extends State<AllNotes> {
                 onChanged: (value) {
                   setState(() {
                     keyword = searchCtrl.text;
-                    notes = db.searchMemo(keyword);
+                    notes = db.searchNote(keyword);
                   });
                 },
                 decoration: InputDecoration(

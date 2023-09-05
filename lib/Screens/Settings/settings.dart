@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
-import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Provider/provider.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
@@ -18,6 +17,7 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+     double width = MediaQuery.of(context).size.width;
     final controller = Provider.of<MyProvider>(context, listen: false);
     String currentLocale = Locales.currentLocale(context).toString();
     List items = [
@@ -75,8 +75,7 @@ class SettingsPage extends StatelessWidget {
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        contentPadding:
-                            const EdgeInsets.symmetric(horizontal: 20),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 20),
                         horizontalTitleGap: 15,
                         onTap: () {
                           Navigator.push(
@@ -84,7 +83,11 @@ class SettingsPage extends StatelessWidget {
                               MaterialPageRoute(
                                   builder: (context) => pages[index]));
                         },
-                        subtitle: LocaleText(subItems[index],style: TextStyle(fontSize: smallSize,color: Colors.grey,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
+                        title: LocaleText(
+                          items[index],
+                          style: TextStyle(fontSize: width/25,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
+                        ),
+                        subtitle: LocaleText(subItems[index],style: TextStyle(fontSize: width/26,color: Colors.grey,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                         leading: Container(
                           margin: const EdgeInsets.all(0),
                           height: 50,
@@ -98,10 +101,7 @@ class SettingsPage extends StatelessWidget {
                             size: 24,
                           ),
                         ),
-                        title: LocaleText(
-                          items[index],
-                          style: TextStyle(fontSize: normalSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
-                        ),
+
                         trailing: Container(
                             height: 25,
                             width: 25,
@@ -137,7 +137,7 @@ class SettingsPage extends StatelessWidget {
                   ),
                   title: LocaleText(
                     "language",
-                    style: TextStyle(fontSize: normalSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
+                    style: TextStyle(fontSize: width/25,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                   ),
                   trailing: Container(
                       height: 25,
@@ -174,7 +174,7 @@ class SettingsPage extends StatelessWidget {
                           "change_password",
                           style: TextStyle(fontSize: normalSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                         ),
-                        subtitle: LocaleText("change_password_hint",style: TextStyle(fontSize: smallSize, fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
+                        subtitle: LocaleText("change_password_hint",style: TextStyle(fontSize: width/25, fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                         trailing: Container(
                             height: 25,
                             width: 25,
@@ -209,7 +209,7 @@ class SettingsPage extends StatelessWidget {
                         ),
                         title: LocaleText(
                           "logout",
-                          style: TextStyle(fontSize: normalSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
+                          style: TextStyle(fontSize: width/25,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                         ),
                         trailing: Container(
                             height: 25,
@@ -228,12 +228,13 @@ class SettingsPage extends StatelessWidget {
   }
 
   void switchLanguage(context) {
+    double width = MediaQuery.of(context).size.width;
     showDialog(
         context: context,
         builder: (context) => AlertDialog(
               contentPadding:
                   const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
-              title: const LocaleText("language"),
+              title: LocaleText("language",style: TextStyle(fontSize: width/22,fontWeight:FontWeight.bold),),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [

@@ -9,7 +9,6 @@ import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Methods/z_button.dart';
 import 'package:zaitoonnote/Methods/z_field.dart';
 import 'package:zaitoonnote/Screens/Persons/add_person.dart';
-import 'package:zaitoonnote/Screens/dashboard.dart';
 import '../../Datebase Helper/sqlite.dart';
 import '../../Methods/env.dart';
 import '../Json Models/category_model.dart';
@@ -24,6 +23,9 @@ class CreateTransaction extends StatefulWidget {
 }
 
 class _CreateTransactionState extends State<CreateTransaction> {
+  
+  DateTime selectedDate = DateTime.now();
+  
   final formKey = GlobalKey<FormState>();
   final db = DatabaseHelper();
   final trnDescription = TextEditingController();
@@ -58,18 +60,6 @@ class _CreateTransactionState extends State<CreateTransaction> {
   final categoryCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final dt = DateTime.now();
-
-    //Gregorian Date format
-    final gregorianDate = DateFormat('dd/MM/yyyy - HH:mm a').format(dt);
-    Jalali persianDate = dt.toJalali();
-
-    //Persian Date format
-    String shamsiDate() {
-      final f = persianDate.formatter;
-      return '${f.yyyy}/${f.mm}/${f.dd}';
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const LocaleText("add_activity"),
@@ -81,7 +71,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
               width: .35,
                 onTap: () {
                   if (formKey.currentState!.validate()) {
-                    db.createTransaction(trnDescription.text, selectedCategoryId, selectedPerson, double.parse(trnAmount.text), _trnImage?.path??"",DateTime.now().toIso8601String()).whenComplete(() => Navigator.pop(context));
+                    db.createTransaction(trnDescription.text, selectedCategoryId, selectedPerson, double.parse(trnAmount.text), _trnImage?.path??"",selectedDate.toIso8601String()).whenComplete(() => Navigator.pop(context));
 
                   }
                 },
@@ -100,11 +90,21 @@ class _CreateTransactionState extends State<CreateTransaction> {
                   children: [
                     Expanded(
                       child: ListTile(
-                        title: Text(
-                          gregorianDate,
-                          style: const TextStyle(fontSize: 18),
+                        title: InkWell(
+                          onTap: ()=>setState(() {
+                            showGregorianPicker();
+                          }),
+                          child: Text(
+                            Env.gregorianDateTimeForm(selectedDate.toString()),
+                            style: const TextStyle(fontSize: 18),
+                          ),
                         ),
-                        subtitle: Text(shamsiDate(),style: const TextStyle(fontSize: 15),),
+                        subtitle: InkWell(
+                          onTap: ()=>
+                            setState(() {
+                              showPersianPicker(); }),
+                            child: Text(
+                              Env.persianDateTimeFormat(selectedDate),style: const TextStyle(fontSize: 15),)),
                       ),
                     ),
 
@@ -205,7 +205,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                                     height: 5,
                                     width: 60,
                                     decoration: BoxDecoration(
-                                        color: Colors.deepPurple,
+                                        color: Colors.grey,
                                         borderRadius:
                                         BorderRadius.circular(15)),
                                   ),
@@ -379,4 +379,37 @@ class _CreateTransactionState extends State<CreateTransaction> {
       print(_trnImage);
     });
   }
+
+  showGregorianPicker()async{
+
+    var picked = await showDatePicker(
+        context: context,
+        firstDate: DateTime(2000),
+        lastDate: DateTime(3000), initialDate: DateTime.now(),
+
+    );
+
+    if(picked != null){
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+    return picked;
+  }
+
+  showPersianPicker()async{
+    var picked = await showPersianDatePicker(
+      context: context,
+      initialEntryMode: PDatePickerEntryMode.calendar,
+      firstDate: Jalali(1350, 8),
+      lastDate: Jalali(1500, 9), initialDate: DateTime.now().toJalali(),
+    );
+    if(picked != null){
+      setState(() {
+        selectedDate = picked.toDateTime();
+      });
+    }
+    return picked;
+  }
+  
 }

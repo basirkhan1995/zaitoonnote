@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:zaitoonnote/Datebase%20Helper/sqlite.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
@@ -10,7 +9,7 @@ import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
 import 'dart:io';
 import '../../Methods/env.dart';
-import '../../Provider/provider.dart';
+
 
 class PersonProfile extends StatefulWidget {
   final PersonModel? profileDetails;
@@ -57,7 +56,6 @@ class _PersonProfileState extends State<PersonProfile> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<MyProvider>(context, listen: false);
     String currentLocale = Locales.currentLocale(context).toString();
     return Scaffold(
       body: SingleChildScrollView(
@@ -162,7 +160,7 @@ class _PersonProfileState extends State<PersonProfile> {
                           "updated_at",
                           style: TextStyle(fontWeight: FontWeight.bold,fontSize: smallSize,color: Colors.grey),
                         ),
-                        Text(currentLocale == "en"
+                        Text(currentLocale != "en"
                             ? Env.persianDateTimeFormat(DateTime.parse(
                                 widget.profileDetails!.updatedAt.toString()))
                             : Env.gregorianDateTimeForm(
@@ -232,6 +230,7 @@ class _PersonProfileState extends State<PersonProfile> {
                   },
                   subtitle: isUpdate
                       ? TextFormField(
+                          keyboardType: TextInputType.phone,
                           controller: phone,
                           decoration: const InputDecoration(
                             contentPadding: EdgeInsets.symmetric(horizontal: 1),
@@ -277,6 +276,7 @@ class _PersonProfileState extends State<PersonProfile> {
                   onTap: () {},
                   subtitle: isUpdate
                       ? TextFormField(
+                    keyboardType: TextInputType.text,
                           controller: jobTitle,
                           decoration: const InputDecoration(
                             contentPadding: EdgeInsets.symmetric(horizontal: 1),
@@ -509,3 +509,5 @@ class _PersonProfileState extends State<PersonProfile> {
     });
   }
 }
+
+

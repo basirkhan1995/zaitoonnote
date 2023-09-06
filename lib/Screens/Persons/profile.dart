@@ -103,15 +103,11 @@ class _PersonProfileState extends State<PersonProfile> {
                                  child: IconButton(
                                      onPressed: () {
                                        setState(() {
-                                         getImage(ImageSource.gallery)
-                                             .whenComplete(() {
+                                         getImage(ImageSource.gallery).whenComplete(() {
                                            if (_pImage == null) return;
                                            db.updateProfileImage(
-                                               _pImage?.path ??
-                                                   widget.profileDetails?.pImage ??
-                                                   "",
-                                               widget.profileDetails?.pId ?? 0);
-                                         });
+                                               _pImage?.path ?? widget.profileDetails?.pImage ?? "", widget.profileDetails?.pId ?? 0);
+                                         }).then((value) => Navigator.push(context, MaterialPageRoute(builder: (context)=> const AccountSettings())));
                                        });
                                      },
                                      icon: const Icon(
@@ -348,7 +344,7 @@ class _PersonProfileState extends State<PersonProfile> {
                          borderRadius: BorderRadius.circular(50),
                          color: Colors.deepPurple.withOpacity(.09)),
                      child: const Icon(
-                       Icons.person,
+                       Icons.account_circle,
                        color: Colors.deepPurple,
                        size: 24,
                      ),
@@ -382,21 +378,21 @@ class _PersonProfileState extends State<PersonProfile> {
                       children: [
                         Container(
                           decoration: BoxDecoration(
-                          color: zPrimaryColor.withOpacity(.09),
+                          color: zPrimaryColor,
                           borderRadius: BorderRadius.circular(50)
                         ),
                           width: 40,
                           height: 40,
-                            child: IconButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile(person: widget.profileDetails!))), icon: const Icon(Icons.edit)),
+                            child: IconButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile(person: widget.profileDetails!))), icon: const Icon(Icons.edit,color: Colors.white)),
                         ),
                         Container(
                           decoration: BoxDecoration(
-                              color: zPrimaryColor.withOpacity(.09),
+                              color: Colors.red.shade900,
                               borderRadius: BorderRadius.circular(50)
                           ),
                           width: 40,
                           height: 40,
-                          child: IconButton(onPressed: ()=>db.deletePerson(widget.profileDetails!.pId.toString(),context), icon: const Icon(Icons.delete)),
+                          child: IconButton(onPressed: ()=>db.deletePerson(widget.profileDetails!.pId.toString(),context).whenComplete(() => Env.goto(const AccountSettings(), context)), icon: const Icon(Icons.delete,color: Colors.white,)),
                         ),
                       ],
                     ),

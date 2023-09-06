@@ -42,7 +42,7 @@ class _EditProfileState extends State<EditProfile> {
         title: Text(widget.person.pName!),
         actions: [
           Container(
-            margin: EdgeInsets.all(8),
+            margin: const EdgeInsets.all(8),
             height: 40,
             width: 40,
             decoration: BoxDecoration(

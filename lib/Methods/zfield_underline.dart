@@ -80,21 +80,21 @@ class ZFieldLine extends StatelessWidget {
                         controller: controller,
                         style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai"),
                         decoration: InputDecoration(
-                            helperStyle: const TextStyle(fontFamily: "Dubai"),
+                            helperStyle: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai"),
                             // suffixIconConstraints: const BoxConstraints(maxWidth: 14),
                             suffixIcon: trailing,
                             suffix: end,
                             isDense: true,
                             enabledBorder: UnderlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
-                                borderSide:  const BorderSide(color: zPrimaryColor,width: 1)
+                                borderSide:  const BorderSide(color: zPrimaryColor,width: 1.5)
                             ),
                             focusedBorder: UnderlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
-                                borderSide: const BorderSide(color: zPrimaryColor,width: 1.5)),
+                                borderSide: const BorderSide(color: zPrimaryColor,width: 2)),
                             focusedErrorBorder: UnderlineInputBorder(
                               //borderRadius: BorderRadius.circular(widget.radius!),
-                              borderSide: BorderSide(color: Colors.red.shade900,width: 1.5),
+                              borderSide: BorderSide(color: Colors.red.shade900,width: 2),
                             ),
                             errorBorder: UnderlineInputBorder(
                               //borderRadius: BorderRadius.circular(widget.radius!),
@@ -102,7 +102,7 @@ class ZFieldLine extends StatelessWidget {
                             ),
                             prefixIcon: Icon(icon,size: 20,color: zPrimaryColor),
                             hintText: Locales.string(context,title),
-                            hintStyle: const TextStyle(fontSize: 16,fontFamily: "Dubai")
+                            hintStyle: TextStyle(fontSize: 16,fontFamily: locale == "en"?"Ubuntu":"Dubai")
                         ),
                       ))
                 ],

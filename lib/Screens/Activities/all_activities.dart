@@ -31,8 +31,8 @@ class _AllActivitiesState extends State<AllActivities> {
   late Future<List<CategoryModel>> category;
   late Future<List<TransactionModel>> transactionsByDate;
 
-  DateTime? firstSelectedDate ;
-  DateTime? endSelectedDate ;
+  DateTime firstSelectedDate = DateTime.now() ;
+  DateTime endSelectedDate = DateTime.now() ;
 
   DateTime? date;
   var today = DateTime.now().toIso8601String();
@@ -65,6 +65,7 @@ class _AllActivitiesState extends State<AllActivities> {
       });
     });
     _onRefresh();
+    _onDateRefresh();
   }
 
   //All Person Transaction By Date Range
@@ -84,9 +85,15 @@ class _AllActivitiesState extends State<AllActivities> {
   Future<void> _onRefresh() async {
     setState(() {
       transactions = getAllTransaction();
-      transactions = getAllTransactionByDate();
-
       category = getCategories();
+    });
+  }
+
+  //Refresh Data
+  Future<void> _onDateRefresh() async {
+    setState(() {
+      //transactions = getAllTransaction();
+      transactions = getAllTransactionByDate();
     });
   }
 
@@ -97,11 +104,14 @@ class _AllActivitiesState extends State<AllActivities> {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async{
+         String refresh = await Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => const CreateTransaction()));
+          if(refresh == 'refresh'){
+            _onRefresh();
+          }
         },
       ),
       body: SafeArea(
@@ -389,7 +399,7 @@ class _AllActivitiesState extends State<AllActivities> {
         firstSelectedDate = dateTimeRange.start;
         endSelectedDate = dateTimeRange.end;
         transactions = transactionsByDate;
-        _onRefresh();
+        _onDateRefresh();
       });
     }
     return dateTimeRange;
@@ -411,7 +421,7 @@ class _AllActivitiesState extends State<AllActivities> {
         firstSelectedDate = picked.start.toDateTime();
         endSelectedDate = picked.end.toDateTime();
         transactions = transactionsByDate;
-        _onRefresh();
+        _onDateRefresh();
       });
     }
     return picked;

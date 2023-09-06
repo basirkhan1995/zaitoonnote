@@ -2,15 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Methods/z_field.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
 import '../../Datebase Helper/sqlite.dart';
-import '../../Methods/custom_drop_down.dart';
 import '../../Methods/env.dart';
-import '../../Provider/provider.dart';
 
 class TransactionDetails extends StatefulWidget {
   final TransactionModel? data;
@@ -22,40 +19,14 @@ class TransactionDetails extends StatefulWidget {
 
 class _TransactionDetailsState extends State<TransactionDetails> {
   final db = DatabaseHelper();
-
-  File? _trnImage;
   bool isUpdate = false;
-
   final amountCtrl = TextEditingController();
   final contentCtrl = TextEditingController();
   int selectedIndex = 0;
-  int selectedCategory = 0;
 
-  int selectedValue = 0;
-
-  List category = [
-    "paid",
-    "received",
-    "check",
-    "rent",
-    "power",
-  ];
-
-  List categoryId = <int> [
-    2,
-    3,
-    4,
-    5,
-    6,
-  ];
-   
-  void transactionUpdate(){
-   
-  }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<MyProvider>(context, listen: false);
     String currentLocale = Locales.currentLocale(context).toString();
 
     return Scaffold(
@@ -63,6 +34,29 @@ class _TransactionDetailsState extends State<TransactionDetails> {
         titleSpacing: 0,
         title: Text(widget.data!.person),
         actions: [
+      Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+        child: Container(
+          height: 45,
+          width: 45,
+          padding: const EdgeInsets.all(4),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50),
+              color: zPrimaryColor),
+          child: IconButton(
+            onPressed: () {
+              setState(() {
+                isUpdate = !isUpdate;
+                amountCtrl.text = widget.data!.amount.toString();
+                contentCtrl.text = widget.data!.trnDescription.toString();
+                updateTransaction();
+              });
+
+            },
+            icon: const Icon(Icons.edit,color: Colors.white),
+          ),
+        )),
+
           Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5.0),
               child: Container(
@@ -71,7 +65,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(50),
-                    color: zPrimaryColor.withOpacity(.1)),
+                    color: Colors.red.shade900),
                 child: IconButton(
                   onPressed: () {
                     setState(() {
@@ -81,33 +75,9 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                     });
 
                   },
-                  icon: const Icon(Icons.delete,color: Colors.red),
+                  icon: const Icon(Icons.delete,color: Colors.white),
                 ),
               )),
-
-          Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-              child: Container(
-                height: 45,
-                width: 45,
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(50),
-                    color: zPrimaryColor.withOpacity(.1)),
-                child: IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isUpdate = !isUpdate;
-                      amountCtrl.text = widget.data!.amount.toString();
-                      contentCtrl.text = widget.data!.trnDescription.toString();
-                      updateTransaction();
-                    });
-
-                  },
-                  icon: const Icon(Icons.edit),
-                ),
-              )),
-
         ],
       ),
       body: Padding(
@@ -153,13 +123,32 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
-                      color: Colors.grey)),
+                      color: Colors.grey,fontSize: 18)),
             ),
+            Divider(color: Colors.grey.withOpacity(.4),indent: 10,endIndent: 10),
+            ListTile(
+              subtitle: Text(
+                widget.data?.trnDescription ?? "",
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai"),
+              ),
+              title: LocaleText(
+                "description",
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            Divider(color: Colors.grey.withOpacity(.4),indent: 10,endIndent: 10),
             ListTile(
               subtitle: Text(
                 widget.data?.person ?? "",
                 style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai"),
               ),
@@ -172,6 +161,23 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                     fontWeight: FontWeight.bold),
               ),
             ),
+            Divider(color: Colors.grey.withOpacity(.4),indent: 10,endIndent: 10),
+            ListTile(
+              subtitle: Text(
+                Env.currencyFormat(widget.data?.trnId ?? 0, "en_US"),
+                style:
+                const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              title: LocaleText(
+                "trn_id",
+                style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey,
+                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            Divider(color: Colors.grey.withOpacity(.4),indent: 10,endIndent: 10),
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 6),
               title: LocaleText(
@@ -194,38 +200,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                     fontWeight: FontWeight.bold),
               ),
             ),
-            ListTile(
-              subtitle: Text(
-                Env.currencyFormat(widget.data?.trnId ?? 0, "en_US"),
-                style:
-                    const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-              ),
-              title: LocaleText(
-                "trn_id",
-                style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            ListTile(
-              subtitle: Text(
-                widget.data?.trnDescription ?? "",
-                style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai"),
-              ),
-              title: LocaleText(
-                "description",
-                style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
-                    fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
+            Divider(color: Colors.grey.withOpacity(.4),indent: 10,endIndent: 10),
             ListTile(
               title: LocaleText(
                 "trn_image",
@@ -300,7 +275,6 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                               child: IconButton(
                                   onPressed: (){
                                     db.updateTransaction(contentCtrl.text, int.parse(amountCtrl.text), widget.data!.trnId).whenComplete(() => Navigator.pop(context));
-                                     print(selectedValue.toString());
                                   },
                                   icon: const Icon(Icons.check,color: Colors.black87,size: 18)),
                             ),
@@ -392,7 +366,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                   //               fit: BoxFit.cover)
                   //               .image)),
                   // ):const SizedBox()
-                      SizedBox(height: 20)
+                      const SizedBox(height: 20)
                     ],
                   ),
                 ),
@@ -407,8 +381,6 @@ class _TransactionDetailsState extends State<TransactionDetails> {
     final pickedFile = await picker.pickImage(source: imageSource);
     if(pickedFile == null)return;
     setState((){
-      _trnImage = File(pickedFile.path);
-      print(_trnImage);
     });
   }
 }

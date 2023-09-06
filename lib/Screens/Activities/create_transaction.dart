@@ -71,7 +71,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
               width: .35,
                 onTap: () {
                   if (formKey.currentState!.validate()) {
-                    db.createTransaction(trnDescription.text, selectedCategoryId, selectedPerson, double.parse(trnAmount.text), _trnImage?.path??"",selectedDate.toIso8601String()).whenComplete(() => Navigator.pop(context));
+                    db.createTransaction(trnDescription.text, selectedCategoryId, selectedPerson, double.parse(trnAmount.text), _trnImage?.path??"",selectedDate.toIso8601String()).whenComplete(() => Navigator.pop(context,'refresh'));
 
                   }
                 },

@@ -519,6 +519,7 @@ class DatabaseHelper {
     return count;
   }
 
+
   Future<int?> totalSumByCategoryByDateRange(
       int trnType, start, end) async {
     final Database db = await initDB();

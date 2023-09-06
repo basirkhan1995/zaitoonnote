@@ -150,5 +150,6 @@
   "attention": "Attention",
   "password_not_matched": "Passwords don't match",
   "old_password_required": "Old password is required",
-  "confirm_password_required": "Re-enter your password"
+  "confirm_password_required": "Re-enter your password",
+  "colors": "Color"
 }

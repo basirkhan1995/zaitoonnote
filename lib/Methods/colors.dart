@@ -5,6 +5,11 @@ const double normalSize = 13;
 const double mediumSize = 14;
 const double largeSize = 16;
 
+const noteColor1 = Color(0xFFf6abb6);
+const noteColor2 = Color(0xFF2d3392);
+const noteColor3 = Color(0xFFf6cd61);
+const noteColor4 = Color(0xFFcce6ff);
+const noteColor5 = Color(0xFF0392cf);
 
 const zBlackHalf = Color(0xFF212121);
 const zBlack =  Color(0xFF000000);

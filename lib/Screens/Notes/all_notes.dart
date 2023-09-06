@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
@@ -69,6 +68,7 @@ class _AllNotesState extends State<AllNotes> {
 
   bool isFilterTrue = false;
   bool isSearchTrue = false;
+  String refresh = 'refresh';
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +79,9 @@ class _AllNotesState extends State<AllNotes> {
           controller.darkLight ? Colors.grey.withOpacity(.3) : Colors.white,
       floatingActionButton: FloatingActionButton(
         onPressed: () async{
-         String refresh = await Navigator.push(context,
+          refresh = await Navigator.push(context,
               MaterialPageRoute(builder: (context) => const CreateNote()));
-         if(refresh == 'refresh'){
+         if(refresh.isNotEmpty && refresh == 'refresh'){
           _onRefresh();
          }
         },
@@ -253,9 +253,8 @@ class _AllNotesState extends State<AllNotes> {
                                 return InkWell(
                                   splashColor: Colors.white,
                                   onTap: () async{
-                                    print("Note Color: ${items[index].color}");
                                     //To hold the data in text fields for update method
-                                   String refresh = await Navigator.push(
+                                    refresh = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => NoteDetails(
@@ -274,12 +273,8 @@ class _AllNotesState extends State<AllNotes> {
                                           borderRadius: BorderRadius.circular(15),
                                           color: controller.darkLight
                                               ? Colors.black
-                                              : Color(items[index].color??Colors.blue.value),
-                                          boxShadow: const [
-                                            BoxShadow(
-                                                blurRadius: 1,
-                                                color: Colors.grey)
-                                          ]),
+                                              : Color(items[index].color??zPrimaryColor.value),
+                                        ),
                                       child: Column(
                                         mainAxisAlignment: MainAxisAlignment.start,
                                         crossAxisAlignment: CrossAxisAlignment.start,

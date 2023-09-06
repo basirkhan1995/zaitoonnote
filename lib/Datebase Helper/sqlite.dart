@@ -409,7 +409,7 @@ class DatabaseHelper {
   Future<List<Notes>> getFilteredNotes(String category) async {
     final Database db = await initDB();
     final List<Map<String, Object?>> queryResult = await db.rawQuery(
-        "select noteId, noteTitle, noteContent, noteStatus, noteCreatedAt, cName, noteImage from notes As a INNER JOIN category As b ON a.noteCategory = b.cId where cName = ? ",
+        "select noteId, noteTitle,color, noteContent, noteStatus, noteCreatedAt, cName from notes As a INNER JOIN category As b ON a.noteCategory = b.cId where cName = ? ",
         ["%$category%"]);
     return queryResult.map((e) => Notes.fromMap(e)).toList();
   }
@@ -418,7 +418,7 @@ class DatabaseHelper {
   Future<List<Notes>> getAllNotes() async {
     final Database db = await initDB();
     final List<Map<String, Object?>> queryResult = await db.rawQuery(
-        "select noteId, noteTitle, noteContent, noteStatus, noteCreatedAt, cName,cId, noteImage from notes As a INNER JOIN category As b ON a.noteCategory = b.cId where b.categoryType = ? ",
+        "select noteId, noteTitle, noteContent, color, noteStatus, noteCreatedAt, cName,cId from notes As a INNER JOIN category As b ON a.noteCategory = b.cId where b.categoryType = ? ",
         ["note"]);
     return queryResult.map((e) => Notes.fromMap(e)).toList();
   }

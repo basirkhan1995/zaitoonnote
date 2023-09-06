@@ -150,5 +150,6 @@
   "attention": "توجه",
   "password_not_matched": "کلمه عبور همخوانی ندارد",
   "old_password_required": "کلمه عبور فعلی خود را وارید نمایید",
-  "confirm_password_required": "کلمه عبور خود را تکرار بنویسید"
+  "confirm_password_required": "کلمه عبور خود را تکرار بنویسید",
+  "colors": "رنگ"
 }

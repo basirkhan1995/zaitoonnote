@@ -34,9 +34,15 @@ class _CreateNoteState extends State<CreateNote> {
   final categoryCtrl = TextEditingController();
 
   List colors = [
+    noteColor1.value,
+    noteColor2.value,
+    noteColor3.value,
+    noteColor4.value,
+    noteColor5.value,
     zPrimaryColor.value,
-    Colors.blue.value,
-    Colors.red.value,
+    Colors.red.shade900.value,
+    Colors.green.value,
+    Colors.lime.value
   ];
 
   @override
@@ -58,7 +64,7 @@ class _CreateNoteState extends State<CreateNote> {
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       setState(() {
-                       db.createNote(titleCtrl.text, contentCtrl.text, selectedCategoryId, colors[selectedIndex]).whenComplete(() => Navigator.pop(context,'refresh'));
+                       db.createNote(titleCtrl.text, contentCtrl.text, selectedCategoryId, colorValue!).whenComplete(() => Navigator.pop(context,'refresh'));
                       });
                     }
                   },
@@ -83,7 +89,7 @@ class _CreateNoteState extends State<CreateNote> {
                         }),
                         child: Text(
                           Env.gregorianDateTimeForm(selectedDate.toString()),
-                          style: TextStyle(fontSize: 17,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
+                          style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                         ),
                       ),
                       subtitle: InkWell(
@@ -100,13 +106,12 @@ class _CreateNoteState extends State<CreateNote> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4),
                         child: SizedBox(
-                          height: 50,
+                          height: 35,
                           width: 110,
 
                           child: DropdownSearch<CategoryModel>(
                             popupProps: const PopupPropsMultiSelection.menu(
                               fit: FlexFit.loose,
-
                             ),
 
                             asyncItems: (value) => db.getCategoryByType("note"),
@@ -159,52 +164,65 @@ class _CreateNoteState extends State<CreateNote> {
                   maxLines: null,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 0),
-                child: TextFormField(
-                  validator: (value){
-                    if(value!.isEmpty){
-                      return Locales.string(context, "content_required");
-                    }
-                    return null;
-                  },
-                  style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 17,),
-                  controller: contentCtrl,
-                  decoration: InputDecoration(
-                    hintText: Locales.string(context, "content",),
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 17),
+              Expanded(
+                flex: 2,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 0),
+                  child: TextFormField(
+                    validator: (value){
+                      if(value!.isEmpty){
+                        return Locales.string(context, "content_required");
+                      }
+                      return null;
+                    },
+                    style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 17,),
+                    controller: contentCtrl,
+                    decoration: InputDecoration(
+                      hintText: Locales.string(context, "content",),
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 17),
+                    ),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
                   ),
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
                 ),
               ),
 
               Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(
-                      spacing: 5,
-                      children: List<Widget>.generate(3, (index){
-                        selectedColor = selectedIndex == index;
-                        return GestureDetector(
-                          onTap: (){
-                            setState(() {
-                              selectedIndex = index;
-                              print(colors[selectedIndex]);
-                            });
-                          },
-                          child: CircleAvatar(
-                            radius: 20,
-                            backgroundColor: index == 0? Colors.pink:index == 1?Colors.blue:zPrimaryColor,
-                            child: selectedColor? const Icon(Icons.check,color: Colors.white): const SizedBox(),
-                          ),
-                        );
-                      }),
-                    ),
-                  ],
+                flex: 1,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      ListTile(
+                        title: LocaleText("colors",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 15,fontWeight: FontWeight.bold),),
+                        leading: const Icon(Icons.color_lens),
+                        horizontalTitleGap: 4,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 30),
+                      ),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 8,
+                        children: List<Widget>.generate(colors.length, (index){
+                          selectedColor = selectedIndex == index;
+                          return GestureDetector(
+                            onTap: (){
+                              setState(() {
+                                selectedIndex = index;
+                                colorValue = colors[selectedIndex];
+                              });
+                            },
+                            child: CircleAvatar(
+                              radius: 30,
+                              backgroundColor: index == 0 ? zPrimaryColor:index == 1?noteColor2: index ==2 ? noteColor3: index==3 ? noteColor4: index == 4? noteColor5:index == 5?noteColor1:index == 6?Colors.red.shade900:index == 7?Colors.green:index == 8?Colors.lime:zPrimaryColor,
+                              child: selectedColor? const Icon(Icons.check,color: Colors.white): const SizedBox(),
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
                 ),
               )
             ],

@@ -136,7 +136,7 @@
   "trn_image": "Attachment",
   "trn_id": "Transaction ID",
   "update_transaction": "Transaction update",
-  "about_app": "Zaitoon app is developed with Flutter, dart language and sqlite as backend to store daily transactions and notes for individuals.",
+  "about_app": "Zaitoon app is a financial app to store daily transactions and notes with local backup, beautiful UX/UI, developeb by M.Basir Hashimi under Zaitoon Software and Technology Company in Afghanistan, please use this app and share any suggestion and bugs for better performance.",
   "no_activities": "No activities for today",
   "today_transaction": "Today's transactions",
   "filter_date": "Filter by date",
@@ -151,5 +151,7 @@
   "password_not_matched": "Passwords don't match",
   "old_password_required": "Old password is required",
   "confirm_password_required": "Re-enter your password",
-  "colors": "Color"
+  "colors": "Color",
+  "whatsapp": "Whatsapp",
+  "email": "Email"
 }

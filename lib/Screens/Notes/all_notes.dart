@@ -51,6 +51,7 @@ class _AllNotesState extends State<AllNotes> {
     return await handler.getAllNotes();
   }
 
+
   //Method to get data from database
   Future<List<CategoryModel>> getCategories() async {
     return await handler.getCategories(noteTypeCategory);
@@ -63,6 +64,7 @@ class _AllNotesState extends State<AllNotes> {
       category = getCategories();
     });
   }
+
 
   int currentFilterIndex = 0;
 

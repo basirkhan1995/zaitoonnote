@@ -3,7 +3,6 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Methods/z_button.dart';
@@ -375,7 +374,6 @@ class _CreateTransactionState extends State<CreateTransaction> {
     if(pickedFile == null)return;
     setState((){
       _trnImage = File(pickedFile.path);
-      print(_trnImage);
     });
   }
 

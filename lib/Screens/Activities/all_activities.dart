@@ -1,8 +1,6 @@
 import 'dart:io';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
-import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
@@ -119,7 +117,7 @@ class _AllActivitiesState extends State<AllActivities> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               //Filter buttons
               isFilterOn? SizedBox(
                 height: 50,
@@ -206,7 +204,7 @@ class _AllActivitiesState extends State<AllActivities> {
                             icon: const Icon(Icons.search),
                             border: InputBorder.none),
                       ),
-                    ):SizedBox(),
+                    ):const SizedBox(),
 
               //Header title
               ListTile(

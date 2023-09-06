@@ -49,14 +49,24 @@ class AboutApp extends StatelessWidget {
                           ])),
                 ),
 
-
-
                 const Expanded(
                   child: Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
+                        ListTile(
+                          title: LocaleText("email"),
+                          subtitle: Text(
+                            "info@zaitoon.tech",style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        ListTile(
+                          title: LocaleText("whatsapp"),
+                          subtitle: Text(
+                            "+93790128308",style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
                         Text(
                           "Developed by",style: TextStyle(fontWeight: FontWeight.bold),
                         ),

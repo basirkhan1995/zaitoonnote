@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:zaitoonnote/Datebase%20Helper/sqlite.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
-import 'package:zaitoonnote/Methods/z_field.dart';
 import 'package:zaitoonnote/Methods/zfield_underline.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
@@ -68,7 +67,7 @@ class _EditProfileState extends State<EditProfile> {
                  ListTile(
                   title: LocaleText("profile_update",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai",fontSize: 20 ,fontWeight: FontWeight.bold),),
                 ),
-               SizedBox(height: 15),
+               const SizedBox(height: 15),
                ZFieldLine(
                  icon: Icons.person,
                  title: "name",

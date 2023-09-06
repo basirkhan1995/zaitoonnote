@@ -8,7 +8,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/note_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
-import 'package:zaitoonnote/Screens/Json%20Models/stats.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/users.dart';
 import '../Methods/env.dart';
@@ -23,7 +22,7 @@ class DatabaseHelper {
   String categories =
       "create table category (cId integer primary key AUTOINCREMENT, cName TEXT NOT NULL,categoryType TEXT) ";
   String notes =
-      "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,noteCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId) ON DELETE CASCADE)";
+      "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL,color INTEGER, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,noteCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId) ON DELETE CASCADE)";
   String persons =
       "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT, jobTitle TEXT, cardNumber TEXT, accountName TEXT, pImage TEXT,pPhone TEXT,updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
   String activities =
@@ -343,6 +342,14 @@ class DatabaseHelper {
     return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
   }
 
+  //Show transactions
+  Future<List<TransactionModel>> getPersonTodayTransactions(date,person) async {
+    final Database db = await initDB();
+    final List<Map<String, Object?>> queryResult = await db.rawQuery(
+        "select trnId, cName, trnImage, pImage, trnDescription, pName, amount, trnDate from transactions As a INNER JOIN persons As b ON a.trnPerson = b.pId INNER JOIN category As c ON a.trnType = c.cId AND DATE(trnDate) = DATE(?) AND pName = ?",[date,person]);
+    return queryResult.map((e) => TransactionModel.fromMap(e)).toList();
+  }
+
   //Transaction by Date Range and Person Id
   Future<List<TransactionModel>> getTransactionDateRange(first, end) async {
     final Database db = await initDB();
@@ -383,11 +390,11 @@ class DatabaseHelper {
   //Notes ----------------------------------------------------------------------
 
   //Create a new note
-  Future<int> createNote(title, content, int category) async {
+  Future<int> createNote(title, content, int category,int color) async {
     final Database db = await initDB();
     return db.rawInsert(
-        "insert into notes (noteTitle, noteContent, noteStatus,noteCategory) values (?,?,$noteStatus,?)",
-        [title, content, category]);
+        "insert into notes (noteTitle, noteContent, noteStatus, noteCategory, color) values (?,?,$noteStatus,?,?)",
+        [title, content, category,color]);
   }
 
   //Show incomplete notes with 1 status
@@ -411,7 +418,7 @@ class DatabaseHelper {
   Future<List<Notes>> getAllNotes() async {
     final Database db = await initDB();
     final List<Map<String, Object?>> queryResult = await db.rawQuery(
-        "select noteId, noteTitle, noteContent, noteStatus, noteCreatedAt, cName, noteImage from notes As a INNER JOIN category As b ON a.noteCategory = b.cId where b.categoryType = ? ",
+        "select noteId, noteTitle, noteContent, noteStatus, noteCreatedAt, cName,cId, noteImage from notes As a INNER JOIN category As b ON a.noteCategory = b.cId where b.categoryType = ? ",
         ["note"]);
     return queryResult.map((e) => Notes.fromMap(e)).toList();
   }
@@ -436,19 +443,19 @@ class DatabaseHelper {
     }
   }
 
-  //Update note
-  Future<int> updateNotes(Notes note) async {
-    final Database db = await initDB();
-    var result = await db.update('notes', note.toMap(),
-        where: 'noteId = ?', whereArgs: [note.noteId]);
-    return result;
-  }
-
   //Update note Status to complete
   Future<int> setNoteStatus(int? id) async {
     final Database db = await initDB();
     final res = await db
         .rawUpdate('UPDATE notes SET noteStatus = 0 WHERE noteId = ?', [id]);
+    return res;
+  }
+
+  //Update note Status to complete
+  Future<int> updateNote(title,content,category,date, int? id) async {
+    final Database db = await initDB();
+    final res = await db
+        .rawUpdate('UPDATE notes SET noteTitle = ?, noteContent = ?, noteCategory = ? , noteCreatedAt = ?  WHERE noteId = ?', [title,content,category,date,id]);
     return res;
   }
 
@@ -503,12 +510,30 @@ class DatabaseHelper {
     return count;
   }
 
+  Future<int?> totalSumByCategoryAndPerson(
+      int trnType, int person) async {
+    final Database db = await initDB();
+    final count = Sqflite.firstIntValue(await db.rawQuery(
+        "select sum(amount) from transactions where trnType = ? AND trnPerson = ?",
+        [trnType, person]));
+    return count;
+  }
+
   Future<int?> totalSumByCategoryByDateRange(
       int trnType, start, end) async {
     final Database db = await initDB();
     final count = Sqflite.firstIntValue(await db.rawQuery(
         "select sum(amount) from transactions where trnType = ? AND DATE(trnDate) BETWEEN ? AND ?",
         [trnType, start, end]));
+    return count;
+  }
+
+  Future<int?> totalSumByCategory(
+      int trnType) async {
+    final Database db = await initDB();
+    final count = Sqflite.firstIntValue(await db.rawQuery(
+        "select sum(amount) from transactions where trnType = ?",
+        [trnType]));
     return count;
   }
 

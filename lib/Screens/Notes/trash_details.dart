@@ -73,19 +73,6 @@ class _TrashDetailsState extends State<TrashDetails> {
                 onPressed: () {
                   setState(() {
                     isUpdate = !isUpdate;
-                    db.updateNotes(Notes(
-                        noteTitle: titleCtrl.text,
-                        noteContent: contentCtrl.text,
-                        category: dropValue == 0
-                            ? "work"
-                            : dropValue == 1
-                            ? "payment"
-                            : dropValue == 2
-                            ? "received"
-                            : dropValue == 3
-                            ? "meeting"
-                            : "other",
-                        noteId: widget.details!.noteId));
                   });
                 },
                 icon: const Icon(

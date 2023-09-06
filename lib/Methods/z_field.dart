@@ -37,7 +37,7 @@ class ZField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+  String locale = Locales.currentLocale(context).toString();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0,vertical: 6),
       child: SizedBox(
@@ -55,7 +55,7 @@ class ZField extends StatelessWidget {
                       children: [
                         LocaleText(
                           title,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(fontWeight: FontWeight.bold,fontFamily: locale == "en"?"Ubuntu":"Dubai"),
                         ),
                         isRequire? Text(" *",style: TextStyle(color: Colors.red.shade900),): const SizedBox(),
                       ],
@@ -92,11 +92,11 @@ class ZField extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide: const BorderSide(color: zPrimaryColor,width: 1.5)),
                             focusedErrorBorder: OutlineInputBorder(
-                              //borderRadius: BorderRadius.circular(widget.radius!),
+                              borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(color: Colors.red.shade900,width: 1.5),
                             ),
                             errorBorder: OutlineInputBorder(
-                              //borderRadius: BorderRadius.circular(widget.radius!),
+                              borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide(color: Colors.red.shade900),
                             ),
                             prefixIcon: Icon(icon,size: 20,color: zPrimaryColor),

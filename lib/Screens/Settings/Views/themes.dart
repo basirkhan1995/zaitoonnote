@@ -27,6 +27,10 @@ class _ChangeThemesState extends State<ChangeThemes> {
               }, icon: Icon(controller.darkLight? Icons.dark_mode: Icons.light_mode))
         ],
       ),
+
+      body: const Center(
+        child: LocaleText("coming_soon",style: TextStyle(fontSize: 20),),
+      ),
     );
   }
 }

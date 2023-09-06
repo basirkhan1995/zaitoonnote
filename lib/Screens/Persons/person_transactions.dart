@@ -26,8 +26,8 @@ class _PersonActivitiesState extends State<PersonActivities> {
   late Future<List<TransactionModel>> transactionsByDate;
   late DatabaseHelper handler;
 
-  DateTime firstSelectedDate = DateTime.now();
-  DateTime endSelectedDate = DateTime.now();
+  DateTime? firstSelectedDate;
+  DateTime? endSelectedDate;
 
   int paid = 0;
   int received = 0;
@@ -75,8 +75,27 @@ class _PersonActivitiesState extends State<PersonActivities> {
         .getTransactionByPersonId(widget.data?.pId.toString() ?? "");
   }
 
+//Total Received count
+  Future<int> allTimeCredits()async{
+    int? count = await handler.totalSumByCategoryAndPerson(3,widget.data?.pId ?? 0);
+    setState((){
+      received = count??0;
+    });
+    return received;
+  }
+
+  //Total Received count
+  Future<int> allTimeDebits()async{
+    int? count = await handler.totalSumByCategoryAndPerson(2, widget.data?.pId ?? 0,);
+    setState((){
+      paid = count??0;
+    });
+    return paid;
+  }
+
+
   //Total Paid
-  Future<int> sumPaid() async {
+  Future<int> debitByDate() async {
     int? count = await handler.totalSumByCategoryAndPersonByDateRange(
         2,
         widget.data?.pId ?? 0,
@@ -89,7 +108,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
   }
 
   //Total Received count
-  Future<int> sumReceived() async {
+  Future<int> creditByDate() async {
     int? count = await handler.totalSumByCategoryAndPersonByDateRange(
         3,
         widget.data?.pId ?? 0,
@@ -101,13 +120,22 @@ class _PersonActivitiesState extends State<PersonActivities> {
     return received;
   }
 
+
+
   //Refresh Data
   Future<void> _onRefresh() async {
     setState(() {
       transactions = getAllTransaction();
+      allTimeCredits();
+      allTimeDebits();
+    });
+  }
+
+  Future<void> _onDateRefresh() async {
+    setState(() {
       transactions = getAllTransactionByDate();
-      sumReceived();
-      sumPaid();
+      creditByDate();
+      debitByDate();
     });
   }
 
@@ -126,15 +154,17 @@ class _PersonActivitiesState extends State<PersonActivities> {
           children: [
             ListTile(
               leading: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                  padding: EdgeInsets.zero,
+                  height: 35,
+                  width: 35,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    color: zPrimaryColor,
-                  ),
+                      color: zPrimaryColor,
+                      //border: Border.all(color: zPrimaryColor),
+                      borderRadius: BorderRadius.circular(8)),
                   child: const Icon(
-                    Icons.sort_rounded,
+                    Icons.edit_calendar_rounded,
                     color: Colors.white,
+                    size: 20,
                   )),
               onTap: () {
                 currentLocale == "en" ? showPicker() : showPersianPicker();
@@ -271,7 +301,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
                       return Scrollbar(
                         //The refresh indicator
                         child: RefreshIndicator(
-                          onRefresh: _onRefresh,
+                          onRefresh: endSelectedDate == null ? _onRefresh : _onDateRefresh,
                           child: SizedBox(
                             child: ListView.builder(
                                 itemCount: items.length,
@@ -412,7 +442,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
         firstSelectedDate = dateTimeRange.start;
         endSelectedDate = dateTimeRange.end;
         transactions = transactionsByDate;
-        _onRefresh();
+        _onDateRefresh();
       });
     }
     return dateTimeRange;
@@ -434,7 +464,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
         firstSelectedDate = picked.start.toDateTime();
         endSelectedDate = picked.end.toDateTime();
         transactions = transactionsByDate;
-        _onRefresh();
+        _onDateRefresh();
       });
     }
     return picked;

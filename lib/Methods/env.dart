@@ -86,7 +86,7 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
    static persianDateTimeFormat(DateTime date) {
      Jalali persian = date.toJalali();
      final f = persian.formatter;
-     return '${f.yyyy}-${f.mm}-${f.dd} ${f.wN}';
+     return '${f.yyyy}-${f.mm}-${f.dd}';
    }
 
    static persianDatePicker(var pickedDate,context)async{

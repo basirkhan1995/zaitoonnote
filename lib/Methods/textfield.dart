@@ -18,6 +18,7 @@ class UnderlineInputField extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(8),
       child: TextFormField(
+        style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
         keyboardType: inputType,
         validator: validator,
         controller: controller,

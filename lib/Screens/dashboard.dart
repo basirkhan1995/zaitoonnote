@@ -29,7 +29,7 @@ class _DashboardState extends State<Dashboard> {
   final db = DatabaseHelper();
   late DatabaseHelper handler;
   late Future<List<TransactionModel>> transactions;
-  late List<ChartData> _chartData;
+
 
   int totalPaid = 0 ;
   int totalReceived = 0;
@@ -40,8 +40,6 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     handler = DatabaseHelper();
     transactions = handler.getTodayRecentTransactions();
-
-    _chartData = getChartData();
     handler.initDB().whenComplete(() async {
       setState(() {
        transactions = getTransactions();
@@ -79,16 +77,6 @@ class _DashboardState extends State<Dashboard> {
     int? count = await handler.totalAmountToday(2);
     setState(() => totalPaid = count??0);
     return totalPaid;
-  }
-
-  List<ChartData> getChartData (){
-    final List<ChartData> charData = [
-      ChartData("Credit", totalReceived),
-      ChartData("Debit", totalPaid),
-      ChartData("Checks", 4000),
-      ChartData("Power", 8900)
-    ];
-    return charData;
   }
 
   //Method to refresh data on pulling the list
@@ -254,18 +242,6 @@ class _DashboardState extends State<Dashboard> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // SfCircularChart(
-                        //   margin: EdgeInsets.all(80),
-                        //   series: <CircularSeries>[
-                        //     PieSeries<ChartData,String>(
-                        //       dataSource: _chartData,
-                        //       xValueMapper: (ChartData data,_) =>data.title,
-                        //       yValueMapper: (ChartData data,_) =>data.stats,
-                        //     )
-                        //
-                        //   ]
-                        // ),
-
                         CircularPercentIndicator(
                           radius: 40.0,
                           lineWidth: 5.0,
@@ -338,7 +314,15 @@ class _DashboardState extends State<Dashboard> {
                                     backgroundColor: zPrimaryColor.withOpacity(.9),
                                     width: .92,
                                     label: "add_activity",
-                                    onTap: ()=>Env.goto(const CreateTransaction(), context),
+                                    onTap: ()async{
+                                      String refresh = await Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => const CreateTransaction()));
+                                      if(refresh == 'refresh'){
+                                        _onRefresh();
+                                      }
+                                    },
                                   ),
                                 ),
 
@@ -491,8 +475,3 @@ class _DashboardState extends State<Dashboard> {
 
 }
 
-class ChartData {
-  final String? title;
-  final int stats;
-  ChartData(this.title, this.stats);
-}

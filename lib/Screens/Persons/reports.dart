@@ -25,7 +25,7 @@ class _PersonReportsState extends State<PersonReports> {
   late Future<List<TransactionModel>> transactions;
   late DatabaseHelper handler;
 
-  DateTime? selectedTimeLine;
+  DateTime selectedTimeLine = DateTime.now();
 
   int paid = 0;
   int received = 0;
@@ -49,7 +49,6 @@ class _PersonReportsState extends State<PersonReports> {
       });
     });
     _onRefresh();
-
   }
 
   //All Person Transaction By Date Range

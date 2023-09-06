@@ -29,11 +29,14 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
   late Future<List<TransactionModel>> transactionsByDate;
   late DatabaseHelper handler;
 
-  DateTime firstSelectedDate = DateTime.now();
-  DateTime endSelectedDate = DateTime.now();
+  DateTime? firstSelectedDate;
+  DateTime? endSelectedDate;
 
   int paid = 0;
   int received = 0;
+
+  int debit = 0;
+  int credit = 0;
 
   int selectedCategoryId = 0;
   String selectedCategoryName = "";
@@ -58,7 +61,6 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
       });
     });
     _onRefresh();
-
   }
 
   //All Person Transaction By Date Range
@@ -72,7 +74,7 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
   }
 
   //Total Paid
-  Future<int> sumPaid()async{
+  Future<int> allDebit()async{
     int? count = await handler.totalSumByCategoryByDateRange(2,firstSelectedDate.toString(),endSelectedDate.toString());
     setState((){
       paid = count??0;
@@ -81,7 +83,7 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
   }
 
   //Total Received count
-  Future<int> sumReceived()async{
+  Future<int> allCredit()async{
     int? count = await handler.totalSumByCategoryByDateRange(3,firstSelectedDate.toString(),endSelectedDate.toString());
     setState((){
       received = count??0;
@@ -89,13 +91,38 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
     return received;
   }
 
+  //Total Received count
+  Future<int> sumReceived()async{
+    int? count = await handler.totalSumByCategory(3);
+    setState((){
+      received = count??0;
+    });
+    return received;
+  }
+
+  //Total Received count
+  Future<int> sumPaid()async{
+    int? count = await handler.totalSumByCategory(2);
+    setState((){
+      paid = count??0;
+    });
+    return paid;
+  }
+
   //Refresh Data
   Future<void> _onRefresh() async {
     setState(() {
       transactions = getAllTransaction();
-      transactions = getAllTransactionByDate();
       sumReceived();
       sumPaid();
+    });
+  }
+
+  Future<void> _onDateRefresh() async {
+    setState(() {
+      transactions = getAllTransactionByDate();
+      allCredit();
+      allDebit();
     });
   }
 
@@ -118,12 +145,14 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
             ListTile(
               contentPadding: const EdgeInsets.only(right: 18,left: 10),
               leading: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 4,vertical: 4),
+                  padding: EdgeInsets.zero,
+                  height: 35,
+                  width: 35,
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(6),
-                    color: zPrimaryColor,
-                  ),
-                  child: const Icon(Icons.sort_rounded,color: Colors.white,)),
+                      color: zPrimaryColor,
+                      //border: Border.all(color: zPrimaryColor),
+                      borderRadius: BorderRadius.circular(8)),
+                  child: const Icon(Icons.edit_calendar_rounded,color: Colors.white,)),
               onTap: (){
                 currentLocale == "en"?showGregorianPicker():showPersianPicker();
               },
@@ -218,7 +247,7 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                       return Scrollbar(
                         //The refresh indicator
                         child: RefreshIndicator(
-                          onRefresh: _onRefresh,
+                          onRefresh: endSelectedDate == null ? _onRefresh : _onDateRefresh,
                           child: SizedBox(
                             child: ListView.builder(
                                 itemCount: items.length,
@@ -300,7 +329,7 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
         firstSelectedDate = dateTimeRange.start;
         endSelectedDate = dateTimeRange.end;
         transactions = transactionsByDate;
-        _onRefresh();
+        _onDateRefresh();
       });
     }
     return dateTimeRange;
@@ -322,7 +351,7 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
         firstSelectedDate = picked.start.toDateTime();
         endSelectedDate = picked.end.toDateTime();
         transactions = transactionsByDate;
-        _onRefresh();
+        _onDateRefresh();
       });
     }
     return picked;

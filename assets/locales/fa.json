@@ -98,7 +98,7 @@
   "username": "حساب کاربر",
   "password": "کلمه عبور",
   "login": "ورود",
-  "login_hint": "وارید شوید تا به اطلاعات خود دسترسی پیدا یابید",
+  "login_hint": "وارید شوید تا به اطلاعات خود دسترسی یابید",
   "username_required": "حساب کاربر خود را وارید نمایید",
   "password_required": "کلمه عبور را وارید نمایید",
   "total_paid": "پرداختی ها",
@@ -109,7 +109,7 @@
   "logout": "خروج از حساب",
   "change_password": "تغییر کلمه عبور",
   "current_password": "کلمه عبور فعلی",
-  "confirm_password": "تائید کلمه عبور",
+  "confirm_password": "تکرار کلمه عبور",
   "password_change_failed_message": "کلمه عبور فعلی خود را اشتباه وارید کردید",
   "password_change_success_message": "کلمه عبور موفقانه برو رسانی گردید",
   "operation_failed": "عملیات نا موفقانه",
@@ -142,5 +142,13 @@
   "filter_date": "ترتیب بر تاریخ",
   "filter_category": "ترتیب بر کتگوری",
   "filtered_transactions": "فعالیت های فلتر شده",
-  "profile_update": "بروزرسانی پروفایل"
+  "profile_update": "بروزرسانی پروفایل",
+  "recent_update": "آخرین بروزرسانی",
+  "coming_soon": "بزودی...",
+  "default_login_msg": "ورود پیش فرض",
+  "attention_msg": "شما میتوانید فقط کلمه عبور خود را در تنظیمات تغییر دهید.",
+  "attention": "توجه",
+  "password_not_matched": "کلمه عبور همخوانی ندارد",
+  "old_password_required": "کلمه عبور فعلی خود را وارید نمایید",
+  "confirm_password_required": "کلمه عبور خود را تکرار بنویسید"
 }

@@ -70,7 +70,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                   onPressed: () {
                     setState(() {
                      db.deleteTransaction(widget.data?.trnId??0).whenComplete((){
-                       Navigator.pop(context);
+                       Navigator.pop(context,'refresh');
                      });
                     });
 
@@ -274,7 +274,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                                   borderRadius: BorderRadius.circular(50)),
                               child: IconButton(
                                   onPressed: (){
-                                    db.updateTransaction(contentCtrl.text, int.parse(amountCtrl.text), widget.data!.trnId).whenComplete(() => Navigator.pop(context));
+                                    db.updateTransaction(contentCtrl.text, int.parse(amountCtrl.text), widget.data!.trnId).whenComplete(() => Navigator.pop(context,'refresh')).then((value) => Navigator.pop(context,'refresh'));
                                   },
                                   icon: const Icon(Icons.check,color: Colors.black87,size: 18)),
                             ),
@@ -282,90 +282,6 @@ class _TransactionDetailsState extends State<TransactionDetails> {
 
                       ZField(title: "amount",isRequire: true,controller: amountCtrl,icon: Icons.currency_rupee_rounded,),
                       ZField(title: "description",controller: contentCtrl,icon: Icons.info),
-                  //
-                  //     const ListTile(title: Text("Category"),visualDensity: VisualDensity(vertical: -4)),
-                  //     Padding(
-                  //       padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 8),
-                  //       child: Row(
-                  //         children: [
-                  //
-                  //           Expanded(
-                  //             flex: 2,
-                  //             child: Container(
-                  //               padding: const EdgeInsets.symmetric(horizontal: 15),
-                  //               height: 50,
-                  //               decoration: BoxDecoration(
-                  //                   border: Border.all(
-                  //                       color: zPrimaryColor
-                  //                   ),
-                  //                   borderRadius: BorderRadius.circular(8)),
-                  //               child: CustomDropDown(
-                  //                 items: const [
-                  //                   CustomDropdownMenuItem(
-                  //                       value: 2,
-                  //                       child: LocaleText("paid")
-                  //                   ),
-                  //                   CustomDropdownMenuItem(
-                  //                     value: 3,
-                  //                     child: LocaleText("received"),
-                  //                   ),
-                  //                   CustomDropdownMenuItem(
-                  //                     value: 4,
-                  //                     child: LocaleText("check"),
-                  //                   ),
-                  //
-                  //                 ],
-                  //                 hintText: Locales.string(context, "select_category"),
-                  //                 borderRadius: 5,
-                  //                 onChanged: (val) {
-                  //                   setState(() {
-                  //                     selectedValue = val;
-                  //                   });
-                  //                 },
-                  //               ),
-                  //             ),
-                  //           ),
-                  //
-                  //           Expanded(
-                  //             child: Container(
-                  //               margin: const EdgeInsets.symmetric(horizontal: 6),
-                  //               decoration: BoxDecoration(
-                  //                   borderRadius: BorderRadius.circular(8),
-                  //                   color: zPrimaryColor.withOpacity(.2)
-                  //               ),
-                  //               child: IconButton(onPressed: (){
-                  //                 getImage(ImageSource.gallery);
-                  //               }, icon: const Icon(Icons.camera_alt)),
-                  //             ),
-                  //           )
-                  //         ],
-                  //       ),
-                  //     ),
-                  //
-                  //     widget.data!.trnImage!.isNotEmpty
-                  //         ? Container(
-                  //       width: MediaQuery.of(context).size.width * .95,
-                  //       height: 250,
-                  //       decoration: BoxDecoration(
-                  //           borderRadius: BorderRadius.circular(10),
-                  //           image: DecorationImage(
-                  //               fit: BoxFit.cover,
-                  //               image: Image.file(
-                  //                   File(widget.data!.trnImage.toString()),
-                  //                   fit: BoxFit.cover)
-                  //                   .image)),
-                  //     ): _trnImage != null ? Container(
-                  //   width: MediaQuery.of(context).size.width * .95,
-                  //   height: 250,
-                  //   decoration: BoxDecoration(
-                  //       borderRadius: BorderRadius.circular(10),
-                  //       image: DecorationImage(
-                  //           fit: BoxFit.cover,
-                  //           image: Image.file(
-                  //               File(_trnImage.toString()),
-                  //               fit: BoxFit.cover)
-                  //               .image)),
-                  // ):const SizedBox()
                       const SizedBox(height: 20)
                     ],
                   ),

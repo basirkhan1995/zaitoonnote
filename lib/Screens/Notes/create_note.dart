@@ -1,13 +1,11 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
+import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
-import 'dart:io';
 import '../../Datebase Helper/sqlite.dart';
 import '../../Methods/env.dart';
-import '../../Methods/textfield.dart';
 import '../Json Models/note_model.dart';
 
 class CreateNote extends StatefulWidget {
@@ -23,16 +21,23 @@ class _CreateNoteState extends State<CreateNote> {
   final db = DatabaseHelper();
 
   late Future<List<Notes>> notes;
-  File? _noteImage;
+  String categoryType = "note";
   var dropValue = 0;
   var selectedDate = DateTime.now();
 
   int selectedCategoryId = 9;
-  String categoryType = "note";
-
+  bool selectedColor = false;
+  int selectedIndex = 0;
+  int? colorValue = zPrimaryColor.value;
   final titleCtrl = TextEditingController();
   final contentCtrl = TextEditingController();
   final categoryCtrl = TextEditingController();
+
+  List colors = [
+    zPrimaryColor.value,
+    Colors.blue.value,
+    Colors.red.value,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +58,7 @@ class _CreateNoteState extends State<CreateNote> {
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       setState(() {
-                       db.createNote(titleCtrl.text, contentCtrl.text, selectedCategoryId).whenComplete(() => Navigator.pop(context));
+                       db.createNote(titleCtrl.text, contentCtrl.text, selectedCategoryId, colors[selectedIndex]).whenComplete(() => Navigator.pop(context,'refresh'));
                       });
                     }
                   },
@@ -174,83 +179,39 @@ class _CreateNoteState extends State<CreateNote> {
                   maxLines: null,
                 ),
               ),
+
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: 5,
+                      children: List<Widget>.generate(3, (index){
+                        selectedColor = selectedIndex == index;
+                        return GestureDetector(
+                          onTap: (){
+                            setState(() {
+                              selectedIndex = index;
+                              print(colors[selectedIndex]);
+                            });
+                          },
+                          child: CircleAvatar(
+                            radius: 20,
+                            backgroundColor: index == 0? Colors.pink:index == 1?Colors.blue:zPrimaryColor,
+                            child: selectedColor? const Icon(Icons.check,color: Colors.white): const SizedBox(),
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ),
       ),
     );
-  }
-
-  void addCategory(){
-    showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        builder: (context) {
-          return Padding(
-            padding: MediaQuery.of(context).viewInsets,
-            child: SizedBox(
-              height: 200,
-              width: double.maxFinite,
-              child: Form(
-                key: cFormKey,
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10),
-                      height: 5,
-                      width: 60,
-                      decoration: BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius:
-                          BorderRadius
-                              .circular(8)),
-                    ),
-                    UnderlineInputField(
-                      validator: (value){
-                        if(value.isEmpty){
-                          return Locales.string(context, "category_required");
-                        }
-                        return null;
-                      },
-                      hint: "category_name",
-                      controller: categoryCtrl,
-                    ),
-                    Row(
-                      children: [
-                        TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child:
-                            const LocaleText("cancel")),
-                        TextButton(
-                            onPressed: () {
-                              if(cFormKey.currentState!.validate()){
-                                db.createCategory(CategoryModel(cName: categoryCtrl.text,categoryType: categoryType)).whenComplete(() => Navigator.pop(context));
-                              }
-                            },
-                            child:
-                            const LocaleText(
-                                "create")),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-          );
-        });
-  }
-
-  Future <void> getImage(ImageSource imageSource)async{
-    final ImagePicker picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: imageSource);
-    if(pickedFile == null)return;
-    setState((){
-      _noteImage = File(pickedFile.path);
-      print(_noteImage);
-    });
   }
 
   showGregorianPicker()async{

@@ -6,7 +6,6 @@ import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
 import 'package:zaitoonnote/Datebase%20Helper/sqlite.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
-import 'package:zaitoonnote/Methods/z_button.dart';
 import 'package:zaitoonnote/Methods/z_field.dart';
 import 'package:zaitoonnote/Provider/provider.dart';
 import 'package:zaitoonnote/Screens/Home/start_screen.dart';
@@ -25,10 +24,13 @@ class _LoginPageState extends State<LoginPage> {
   final username = TextEditingController();
   final password = TextEditingController();
   final formKey = GlobalKey<FormState>();
+  bool isVisible = false;
   String selectedValue = "";
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<MyProvider>(context, listen: false);
+    String locale = Locales.currentLocale(context).toString();
     return Scaffold(
       body: Form(
         key: formKey,
@@ -90,16 +92,16 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(50),
                               image: const DecorationImage(
                                   fit: BoxFit.cover,
-                                  image: AssetImage("assets/Photos/login_bg.jpg"))),
+                                  image: AssetImage("assets/Photos/loginbg.jpg"))),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 4.0),
+                         Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
                           child: ListTile(
                             title: LocaleText(
                               "login",
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                              style: TextStyle(fontWeight: FontWeight.bold,fontFamily: locale == "en"?"Ubuntu":"Dubai",fontSize: 25),
                             ),
-                            subtitle: LocaleText("login_hint"),
+                            subtitle: LocaleText("login_hint",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai",color: Colors.grey),),
                           ),
                         ),
                         ZField(
@@ -117,6 +119,15 @@ class _LoginPageState extends State<LoginPage> {
                           controller: password,
                           title: "password",
                           icon: Icons.lock,
+                          securePassword: !isVisible,
+                          trailing: IconButton(
+                            icon: Icon(isVisible? Icons.visibility:Icons.visibility_off,color: zPrimaryColor),
+                            onPressed: (){
+                            setState(() {
+                              isVisible = !isVisible;
+                            });
+                          },
+                          ),
                           validator: (value) {
                             if (value.isEmpty) {
                               return Locales.string(context, "password_required");
@@ -127,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                         Consumer<MyProvider>(builder: (context, provider, child) {
                           return ListTile(
                             horizontalTitleGap: 0,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                            contentPadding: const EdgeInsets.only(left: 10,right: 8),
                             title: const LocaleText("remember_me"),
                             leading: Checkbox(
                               value: provider.rememberMe,
@@ -135,46 +146,91 @@ class _LoginPageState extends State<LoginPage> {
                                 provider.setRememberMe();
                               },
                             ),
+                            trailing: IconButton(
+                              onPressed: (){
+                                showDialog(context: context, builder: (ctx){
+                                 return  AlertDialog(
+                                   title: LocaleText("default_login_msg",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai"),),
+                                   content: Column(
+                                     mainAxisSize: MainAxisSize.min,
+                                     children: [
+
+                                       ListTile(
+                                         leading: LocaleText("username",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai",fontSize: 16)),
+                                         title: Text("admin",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai")),
+
+                                         visualDensity: const VisualDensity(vertical: -4),
+                                       ),
+                                       ListTile(
+                                         leading: LocaleText("password",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai",fontSize: 16)),
+                                         title: Text("123456",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai")),
+                                         visualDensity: const VisualDensity(vertical: -4),
+                                       ),
+                                       ListTile(
+                                         title: LocaleText("attention",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai",color: Colors.red.shade900,fontWeight: FontWeight.bold)),
+                                         subtitle: LocaleText("attention_msg",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai")),
+                                         dense: true,
+                                         visualDensity: const VisualDensity(vertical: -4),
+                                       )
+                                     ],
+                                   ),
+                                 );
+                                });
+                              },
+                              icon: const Icon(Icons.info,color: Colors.blue),),
                           );
                         }),
-                        Consumer<MyProvider>(builder: (context, provider, child) {
-                          return ZButton(
-                            label: "login",
-                            onTap: () async {
-                              if (formKey.currentState!.validate()) {
-                                var db = DatabaseHelper();
-                                var result = await db.authenticateUser(UsersModel(
-                                    usrName: username.text,
-                                    usrPassword: password.text));
-                                if (result == true) {
-                                  if (controller.rememberMe == true) {
-                                    controller.setLoginTrue();
-                                  }
-                                  if (!mounted) return;
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                          const BottomNavBar()));
-                                } else {
-                                  if (!mounted) return;
-                                  Env.showSnackBar2(
-                                      "access_denied",
-                                      "access_denied_message",
-                                      ContentType.failure,
-                                      context);
-                                  if (kDebugMode) {
-                                    print(result);
-                                  }
-                                  if (kDebugMode) {
-                                    print("username and password are incorrect");
+
+
+                       Consumer<MyProvider>(builder: (context, provider, child) {
+                          return Container(
+                            height: 55,
+                            width: MediaQuery.of(context).size.width *.9,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              color: zPrimaryColor,
+                            ),
+                            child: TextButton(
+                              child: isLoading? const CircularProgressIndicator(color: Colors.white,strokeWidth: 4) : LocaleText("login",style: TextStyle(fontSize: 18,fontFamily: locale == "en"?"Ubuntu":"Dubai",color: Colors.white),),
+                              onPressed: () async {
+                                if (formKey.currentState!.validate()) {
+                                  var db = DatabaseHelper();
+                                  loading();
+                                  var result = await db.authenticateUser(UsersModel(
+                                      usrName: username.text,
+                                      usrPassword: password.text));
+                                  if (result == true) {
+                                    if (controller.rememberMe == true) {
+                                      controller.setLoginTrue();
+                                    }
+                                    if (!mounted) return;
+                                    Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                            const BottomNavBar()));
+                                  } else {
+                                    hideLoading();
+                                    if (!mounted) return;
+                                    Env.showSnackBar2(
+                                        "access_denied",
+                                        "access_denied_message",
+                                        ContentType.failure,
+                                        context);
+                                    if (kDebugMode) {
+                                      print(result);
+                                    }
+                                    if (kDebugMode) {
+                                      print("username and password are incorrect");
+                                    }
                                   }
                                 }
-                              }
-                            },
-                            width: .91,
+                              },
+                            ),
                           );
                         }),
+
+
                       ],
                     ),
                   ),
@@ -187,4 +243,17 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
+
+   void loading(){
+    setState(() {
+      isLoading = true;
+    });
+  }
+
+  void hideLoading(){
+    setState(() {
+      isLoading = false;
+    });
+  }
+
 }

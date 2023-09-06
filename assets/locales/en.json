@@ -109,7 +109,7 @@
   "logout": "Sign out",
   "change_password": "Change password",
   "current_password": "Current password",
-  "confirm_password": "Confirm password",
+  "confirm_password": "Re-enter password",
   "password_change_failed_message": "Current password is incorrect",
   "password_change_success_message": "Password has successfully changed",
   "operation_failed": "Operation failed",
@@ -142,5 +142,13 @@
   "filter_date": "Filter by date",
   "filter_category": "Filter by category",
   "filtered_transactions": "Filtered transactions",
-  "profile_update": "Profile update"
+  "profile_update": "Profile update",
+  "recent_update": "Recent update",
+  "coming_soon": "Coming soon...",
+  "default_login_msg": "Default login",
+  "attention_msg": "You can only change your password in settings.",
+  "attention": "Attention",
+  "password_not_matched": "Passwords don't match",
+  "old_password_required": "Old password is required",
+  "confirm_password_required": "Re-enter your password"
 }

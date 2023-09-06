@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/category_model.dart';
 import '../../Datebase Helper/sqlite.dart';
+import '../../Methods/env.dart';
 import '../../Provider/provider.dart';
 import '../Json Models/note_model.dart';
 import 'create_note.dart';
@@ -77,10 +78,14 @@ class _AllNotesState extends State<AllNotes> {
       backgroundColor:
           controller.darkLight ? Colors.grey.withOpacity(.3) : Colors.white,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(context,
+        onPressed: () async{
+         String refresh = await Navigator.push(context,
               MaterialPageRoute(builder: (context) => const CreateNote()));
+         if(refresh == 'refresh'){
+          _onRefresh();
+         }
         },
+
         child: const Icon(Icons.add),
       ),
       body: SafeArea(
@@ -228,14 +233,6 @@ class _AllNotesState extends State<AllNotes> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Image.asset("assets/Photos/empty.png", width: 250),
-                            // MaterialButton(
-                            //   shape: RoundedRectangleBorder(
-                            //       borderRadius: BorderRadius.circular(4)),
-                            //   minWidth: 100,
-                            //   color: Theme.of(context).colorScheme.inversePrimary,
-                            //   onPressed: () => _onRefresh(),
-                            //   child: const LocaleText("refresh"),
-                            // )
                           ],
                         ));
                       } else if (snapshot.hasError) {
@@ -252,18 +249,22 @@ class _AllNotesState extends State<AllNotes> {
                               shrinkWrap: true,
                               itemCount: items.length,
                               itemBuilder: (BuildContext context, int index) {
-                                final dt = DateTime.parse(items[index].createdAt.toString());
-                                final noteDate = DateFormat('yyyy-MM-dd').format(dt);
-
+                              
                                 return InkWell(
-                                  onTap: () {
+                                  splashColor: Colors.white,
+                                  onTap: () async{
+                                    print("Note Color: ${items[index].color}");
                                     //To hold the data in text fields for update method
-                                    Navigator.push(
+                                   String refresh = await Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => NoteDetails(
                                                   details: items[index],
                                                 )));
+
+                                   if(refresh == 'refresh'){
+                                     _onRefresh();
+                                   }
                                   },
                                   child: Container(
                                       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
@@ -273,8 +274,7 @@ class _AllNotesState extends State<AllNotes> {
                                           borderRadius: BorderRadius.circular(15),
                                           color: controller.darkLight
                                               ? Colors.black
-                                              : Colors.deepPurple
-                                                  .withOpacity(.4),
+                                              : Color(items[index].color??Colors.blue.value),
                                           boxShadow: const [
                                             BoxShadow(
                                                 blurRadius: 1,
@@ -313,7 +313,7 @@ class _AllNotesState extends State<AllNotes> {
                                               child: Column(
                                             mainAxisAlignment: MainAxisAlignment.end,
                                             children: [
-                                              Text(noteDate,
+                                              Text(currentLocale == "en"?Env.gregorianDateTimeForm(items[index].createdAt.toString()):Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())),
                                                   style: const TextStyle(
                                                       color: Colors.white,fontWeight: FontWeight.bold)),
                                             ],

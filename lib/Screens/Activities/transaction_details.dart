@@ -70,7 +70,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                   onPressed: () {
                     setState(() {
                      db.deleteTransaction(widget.data?.trnId??0).whenComplete((){
-                       Navigator.pop(context,'refresh');
+                       Navigator.of(context).pop(true);
                      });
                     });
 
@@ -213,17 +213,23 @@ class _TransactionDetailsState extends State<TransactionDetails> {
             ),
 
             widget.data!.trnImage!.isNotEmpty
-                ? Container(
-                  width: MediaQuery.of(context).size.width * .95,
-                  height: 250,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                          fit: BoxFit.cover,
-                          image: Image.file(
-                                  File(widget.data!.trnImage.toString()),
-                                  fit: BoxFit.cover)
-                              .image)),
+                ? GestureDetector(
+                 onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>ImageDetails(image: widget.data))),
+                  child: Hero(
+                    tag: 'image',
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * .95,
+                      height: 250,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: Image.file(
+                                      File(widget.data!.trnImage.toString()),
+                                      fit: BoxFit.cover)
+                                  .image)),
+                    ),
+                  ),
                 )
                 : const SizedBox()
           ],
@@ -298,5 +304,46 @@ class _TransactionDetailsState extends State<TransactionDetails> {
     if(pickedFile == null)return;
     setState((){
     });
+  }
+
+
+
+}
+
+
+class ImageDetails extends StatefulWidget {
+  final TransactionModel? image;
+  const ImageDetails({super.key,this.image});
+
+  @override
+  State<ImageDetails> createState() => _ImageDetailsState();
+}
+
+class _ImageDetailsState extends State<ImageDetails> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: InteractiveViewer(
+          maxScale: 5.0,
+          minScale: 0.01,
+          boundaryMargin: const EdgeInsets.all(double.infinity),
+          child: Hero(
+            tag: 'image',
+            child: Container(
+              width: MediaQuery.of(context).size.width * .95,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: Image.file(
+                          File(widget.image!.trnImage.toString()),
+                          fit: BoxFit.cover)
+                          .image)),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

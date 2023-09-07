@@ -89,6 +89,10 @@ class _DashboardState extends State<Dashboard> {
     });
   }
 
+  @override
+  void setState(fn) {
+    if (mounted) super.setState(fn);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +202,7 @@ class _DashboardState extends State<Dashboard> {
                                   progressColor: Colors.purple,
                                 ),
                              onTap: (){
-                               Env.goto(const AccountSettings(), context);
+                               Navigator.push(context, MaterialPageRoute(builder: (context)=>const AccountSettings()));
                              },
                            ),
                            const SizedBox(height: 8),
@@ -208,6 +212,7 @@ class _DashboardState extends State<Dashboard> {
                        ),
                      ],
                    ),
+
                     //Total Debit
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -238,6 +243,7 @@ class _DashboardState extends State<Dashboard> {
                          LocaleText("debit",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en" ? "Ubuntu":"Dubai"),),
                       ],
                     ),
+
                     //Total Credit
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -272,7 +278,6 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
               Column(
-
                 children: [
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 0),
@@ -315,13 +320,15 @@ class _DashboardState extends State<Dashboard> {
                                     width: .92,
                                     label: "add_activity",
                                     onTap: ()async{
-                                      String refresh = await Navigator.push(
+                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => const CreateTransaction()));
-                                      if(refresh == 'refresh'){
-                                        _onRefresh();
-                                      }
+                                              builder: (context) => const CreateTransaction())).then((value) {
+                                               if(value){
+                                                 _onRefresh();
+                                               }
+                                              });
+
                                     },
                                   ),
                                 ),
@@ -345,7 +352,7 @@ class _DashboardState extends State<Dashboard> {
               //Recent Transaction
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 0),
-                height: MediaQuery.of(context).size.height*.4,
+                height: MediaQuery.of(context).size.height *.43,
                 margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
@@ -452,19 +459,6 @@ class _DashboardState extends State<Dashboard> {
                 ),
               ),
 
-              // SfCircularChart(
-              //   legend: const Legend(isVisible: true,overflowMode: LegendItemOverflowMode.wrap),
-              //   series: <CircularSeries>[
-              //     PieSeries<ChartData,String>(
-              //       dataLabelSettings: const DataLabelSettings(isVisible: true),
-              //       dataSource: _chartData,
-              //       xValueMapper: (ChartData data,_) =>data.title,
-              //       yValueMapper: (ChartData data,_) =>data.stats,
-              //
-              //     )
-              //
-              //   ]
-              // ),
             ],
           ),
         ),

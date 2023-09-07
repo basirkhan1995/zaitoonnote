@@ -74,7 +74,9 @@ class _AccountSettingsState extends State<AccountSettings> {
             ),
             child: IconButton(
                 onPressed: (){
-                  Env.goto(const AddPerson(), context);
+                 Navigator.push(context, MaterialPageRoute(builder: (context)=>const AddPerson())).then((value) {
+                   _onRefresh();
+                 });
                 }, icon: const Icon(Icons.add,color: Colors.white)),
           ),
 

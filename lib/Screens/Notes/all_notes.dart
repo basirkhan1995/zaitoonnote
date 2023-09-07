@@ -80,12 +80,14 @@ class _AllNotesState extends State<AllNotes> {
       backgroundColor:
           controller.darkLight ? Colors.grey.withOpacity(.3) : Colors.white,
       floatingActionButton: FloatingActionButton(
-        onPressed: () async{
-          refresh = await Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const CreateNote()));
-         if(refresh.isNotEmpty && refresh == 'refresh'){
-          _onRefresh();
-         }
+        onPressed: (){
+           Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const CreateNote())).then((value) {
+                if(value){
+                  _onRefresh();
+                }
+           });
+
         },
 
         child: const Icon(Icons.add),
@@ -254,18 +256,19 @@ class _AllNotesState extends State<AllNotes> {
                               
                                 return InkWell(
                                   splashColor: Colors.white,
-                                  onTap: () async{
+                                  onTap: (){
                                     //To hold the data in text fields for update method
-                                    refresh = await Navigator.push(
+                                    Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => NoteDetails(
                                                   details: items[index],
-                                                )));
+                                                ))).then((value) {
+                                                  if(value){
+                                                    _onRefresh();
+                                                  }
+                                    });
 
-                                   if(refresh == 'refresh'){
-                                     _onRefresh();
-                                   }
                                   },
                                   child: Container(
                                       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),

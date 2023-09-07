@@ -47,8 +47,9 @@ class _AddPersonState extends State<AddPerson> {
                       accountName: cardName.text,
                       jobTitle: jobTitle.text,
                       pImage: _pImage?.path ?? ""))
-                      .whenComplete(() => Env.goto(
-                      const AccountSettings(), context));
+                      .whenComplete((){
+                    Navigator.of(context).pop(true);
+                  });
                 }
               },
               label: "create",
@@ -92,25 +93,31 @@ class _AddPersonState extends State<AddPerson> {
                         }
                         return null;
                       },
+                      inputAction: TextInputAction.next,
                       title: "name",
                       icon: Icons.person,
                       controller: fullName),
                   ZField(
+
+                      inputAction: TextInputAction.next,
                       title: "phone",
                       icon: Icons.phone,
                       controller: phone,
                       keyboardInputType: TextInputType.phone),
                   ZField(
+                      inputAction: TextInputAction.next,
                       title: "job",
                       icon: Icons.work,
                       controller: jobTitle,
                       keyboardInputType: TextInputType.text),
                   ZField(
                       title: "card_number",
+                      inputAction: TextInputAction.next,
                       icon: Icons.credit_card,
                       controller: cardNumber,
                       keyboardInputType: TextInputType.number),
                   ZField(
+                      inputAction: TextInputAction.done,
                       title: "account_name",
                       icon: Icons.person,
                       controller: cardName,

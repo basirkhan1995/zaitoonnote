@@ -2,6 +2,7 @@
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
 import 'package:zaitoonnote/Datebase%20Helper/sqlite.dart';
@@ -105,6 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                         ZField(
+                          inputFormat: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                           controller: username,
                           title: "username",
                           icon: Icons.account_circle,
@@ -116,6 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                           },
                         ),
                         ZField(
+                          inputFormat: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
                           controller: password,
                           title: "password",
                           icon: Icons.lock,

@@ -18,7 +18,7 @@ void main() {
         systemNavigationBarIconBrightness: Brightness.dark,
         statusBarIconBrightness: Brightness.dark,
       ));
-  Locales.init(['fa', 'en']);
+  Locales.init(['en', 'fa']);
   runApp(const MyApp());
 }
 
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
                   MaterialApp(
                     themeMode: controller.darkLight? ThemeMode.dark: ThemeMode.light,
                     darkTheme: controller.darkLight? ThemeData.dark() : ThemeData.light(),
-                    title: 'Zaitoon',
+                    title: 'zWallet',
                     localizationsDelegates: Locales.delegates,
                     supportedLocales: Locales.supportedLocales,
                     locale: locale,

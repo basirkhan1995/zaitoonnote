@@ -78,17 +78,25 @@ class _PersonProfileState extends State<PersonProfile> {
                              child: CircleAvatar(
                                radius: 58,
                                backgroundColor: zPrimaryColor,
-                               child: CircleAvatar(
-                                   radius: 56,
-                                   backgroundImage:
-                                   widget.profileDetails!.pImage!.isNotEmpty
-                                       ? Image.file(
-                                     File(widget.profileDetails!.pImage
-                                         .toString()),
-                                     fit: BoxFit.cover,
-                                   ).image
-                                       : const AssetImage(
-                                       "assets/Photos/no_user.jpg")),
+                               child: GestureDetector(
+                                 onTap: (){
+                                   Navigator.push(context, MaterialPageRoute(builder: (context)=>ProfileImageDetails(image: widget.profileDetails)));
+                                 },
+                                 child: Hero(
+                                   tag: 'image',
+                                   child: CircleAvatar(
+                                       radius: 56,
+                                       backgroundImage:
+                                       widget.profileDetails!.pImage!.isNotEmpty
+                                           ? Image.file(
+                                         File(widget.profileDetails!.pImage
+                                             .toString()),
+                                         fit: BoxFit.cover,
+                                       ).image
+                                           : const AssetImage(
+                                           "assets/Photos/no_user.jpg")),
+                                 ),
+                               ),
                              ),
                            ),
                            Positioned(
@@ -383,7 +391,9 @@ class _PersonProfileState extends State<PersonProfile> {
                         ),
                           width: 40,
                           height: 40,
-                            child: IconButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile(person: widget.profileDetails!))), icon: const Icon(Icons.edit,color: Colors.white)),
+                            child: IconButton(onPressed: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>EditProfile(person: widget.profileDetails!))).then((value) {
+                              Env.goto(const AccountSettings(), context);
+                            }), icon: const Icon(Icons.edit,color: Colors.white)),
                         ),
                         Container(
                           decoration: BoxDecoration(
@@ -392,7 +402,7 @@ class _PersonProfileState extends State<PersonProfile> {
                           ),
                           width: 40,
                           height: 40,
-                          child: IconButton(onPressed: ()=>db.deletePerson(widget.profileDetails!.pId.toString(),context).whenComplete(() => Env.goto(const AccountSettings(), context)), icon: const Icon(Icons.delete,color: Colors.white,)),
+                          child: IconButton(onPressed: ()=>db.deletePerson(widget.profileDetails!.pId.toString(),context).whenComplete(() => Navigator.of(context).pop(true) ), icon: const Icon(Icons.delete,color: Colors.white,)),
                         ),
                       ],
                     ),
@@ -425,6 +435,49 @@ class _PersonProfileState extends State<PersonProfile> {
       }
     });
   }
+
+
 }
 
 
+class ProfileImageDetails extends StatefulWidget {
+  final PersonModel? image;
+  const ProfileImageDetails({super.key,this.image});
+
+  @override
+  State<ProfileImageDetails> createState() => _ProfileImageDetailsState();
+}
+
+class _ProfileImageDetailsState extends State<ProfileImageDetails> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Hero(
+          tag: 'image',
+          child: InteractiveViewer(
+            maxScale: 5.0,
+            minScale: 0.01,
+            boundaryMargin: const EdgeInsets.all(double.infinity),
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height * .5,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: widget.image!.pImage!.isNotEmpty
+                          ? Image.file(
+                        File(widget.image!.pImage
+                            .toString()),
+                        fit: BoxFit.contain,
+                      ).image
+                          : const AssetImage(
+                          "assets/Photos/no_user.jpg")
+                          )),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

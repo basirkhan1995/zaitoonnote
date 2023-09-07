@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
+import 'package:zaitoonnote/Screens/Activities/transaction_details.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 
 import '../../../Datebase Helper/sqlite.dart';
@@ -257,6 +258,12 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                                       Padding(
                                         padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
                                         child: ListTile(
+                                          onTap: ()async{
+                                           String refresh = await Navigator.push(context, MaterialPageRoute(builder: (context)=>TransactionDetails(data: items[index],)));
+                                           if(refresh == 'refresh'){
+                                             _onRefresh();
+                                           }
+                                          },
                                           dense: true,
                                           leading: SizedBox(
                                               height: 40,width: 40,

@@ -80,7 +80,6 @@ class ZField extends StatelessWidget {
                         controller: controller,
                         decoration: InputDecoration(
                             helperStyle: const TextStyle(fontFamily: "Dubai"),
-                            // suffixIconConstraints: const BoxConstraints(maxWidth: 14),
                             suffixIcon: trailing,
                             suffix: end,
                             isDense: true,

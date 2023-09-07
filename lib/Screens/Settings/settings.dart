@@ -172,9 +172,9 @@ class SettingsPage extends StatelessWidget {
                         ),
                         title: LocaleText(
                           "change_password",
-                          style: TextStyle(fontSize: normalSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
+                          style: TextStyle(fontSize: width/25,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                         ),
-                        subtitle: LocaleText("change_password_hint",style: TextStyle(fontSize: width/25, fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
+                        subtitle: LocaleText("change_password_hint",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                         trailing: Container(
                             height: 25,
                             width: 25,

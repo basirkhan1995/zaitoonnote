@@ -121,7 +121,7 @@ class _NoteDetailsState extends State<NoteDetails> {
                     borderRadius: BorderRadius.circular(50),
                     color: Colors.red.shade900
                 ),
-                child: IconButton(onPressed: ()=>db.deleteNote(widget.details!.noteId.toString()).whenComplete(() => Navigator.pop(context,'refresh')), icon:const Icon(Icons.delete,color: Colors.white,),)),
+                child: IconButton(onPressed: ()=>db.deleteNote(widget.details!.noteId.toString()).whenComplete(() => Navigator.of(context).pop(true)), icon:const Icon(Icons.delete,color: Colors.white,),)),
           ),
         ],
         title: Text(widget.details!.noteTitle),

@@ -95,21 +95,23 @@ class _AllActivitiesState extends State<AllActivities> {
     });
   }
 
-
+  late String refresh ;
   @override
   Widget build(BuildContext context) {
     String currentLocale = Locales.currentLocale(context).toString();
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
-        onPressed: () async{
-         String refresh = await Navigator.push(
+        onPressed: () {
+        Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => const CreateTransaction()));
-          if(refresh == 'refresh'){
-            _onRefresh();
-          }
+                  builder: (context) => const CreateTransaction())).then((value) {
+                    if(value){
+                      _onRefresh();
+                    }
+        });
+
         },
       ),
       body: SafeArea(
@@ -267,14 +269,6 @@ class _AllActivitiesState extends State<AllActivities> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Image.asset("assets/Photos/empty.png", width: 250),
-                          // MaterialButton(
-                          //   shape: RoundedRectangleBorder(
-                          //       borderRadius: BorderRadius.circular(4)),
-                          //   minWidth: 100,
-                          //   color: Theme.of(context).colorScheme.inversePrimary,
-                          //   onPressed: () => _onRefresh(),
-                          //   child: const LocaleText("refresh"),
-                          // )
                         ],
                       ));
                     } else if (snapshot.hasError) {
@@ -297,10 +291,9 @@ class _AllActivitiesState extends State<AllActivities> {
                                             horizontal: 4.0, vertical: 0),
                                         child: ListTile(
                                           onTap: ()async{
-                                            String refresh = await Navigator.push(context, MaterialPageRoute(builder: (context)=>TransactionDetails(data: items[index])));
-                                            if(refresh == 'refresh'){
+                                            Navigator.push(context, MaterialPageRoute(builder: (context)=>TransactionDetails(data: items[index]))).then((value) {
                                               _onRefresh();
-                                            }
+                                            });
                                             },
                                           leading: SizedBox(
                                               height: 50,

@@ -80,11 +80,11 @@ class ZFieldLine extends StatelessWidget {
                         controller: controller,
                         style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai"),
                         decoration: InputDecoration(
+                            isDense: true,
                             helperStyle: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai"),
                             // suffixIconConstraints: const BoxConstraints(maxWidth: 14),
                             suffixIcon: trailing,
                             suffix: end,
-                            isDense: true,
                             enabledBorder: UnderlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
                                 borderSide:  const BorderSide(color: zPrimaryColor,width: 1.5)

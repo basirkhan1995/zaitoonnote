@@ -26,6 +26,7 @@ class UnderlineInputField extends StatelessWidget {
         maxLength: maxChar,
         expands: expand,
         decoration: InputDecoration(
+          isDense: true,
           border: InputBorder.none,
           labelText: Locales.string(context,hint),
           hintText: Locales.string(context,hint),

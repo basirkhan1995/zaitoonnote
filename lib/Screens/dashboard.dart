@@ -405,7 +405,7 @@ class _DashboardState extends State<Dashboard> {
                                                     ),
                                                   ],
                                                 ),
-                                                subtitle: Text(currentLocale == "en" ? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString())),
+                                                subtitle: Text(currentLocale != "en" ? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString())),
                                                 trailing: Text(Env.currencyFormat(items[index].amount, "en_US"),style: TextStyle(fontSize: width/24,color: items[index].trnCategory == "received"?Colors.green:Colors.red.shade900),),
                                                 dense: true,
                                               ),

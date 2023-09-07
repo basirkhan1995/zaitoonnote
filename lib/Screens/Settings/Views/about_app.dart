@@ -30,7 +30,7 @@ class AboutApp extends StatelessWidget {
                   ),
                   width: double.infinity,
                   height: MediaQuery.of(context).size.height *.35,
-                 child: Image.asset("assets/Photos/zaitoon.png"),
+                 child: Image.asset("assets/Photos/wallet.png"),
                 ),
                 const Padding(
                   padding: EdgeInsets.all(8.0),

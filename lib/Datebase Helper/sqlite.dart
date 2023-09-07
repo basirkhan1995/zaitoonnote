@@ -409,8 +409,8 @@ class DatabaseHelper {
   Future<List<Notes>> getFilteredNotes(String category) async {
     final Database db = await initDB();
     final List<Map<String, Object?>> queryResult = await db.rawQuery(
-        "select noteId, noteTitle,color, noteContent, noteStatus, noteCreatedAt, cName , cId from notes As a INNER JOIN category As b ON a.noteCategory = b.cId where cName = ? ",
-        [category]);
+        "select noteId, noteTitle,color, noteContent, noteStatus, noteCreatedAt, cName , cId from notes As a INNER JOIN category As b ON a.noteCategory = b.cId where cName LIKE ? ",
+        ["%$category%"]);
     return queryResult.map((e) => Notes.fromMap(e)).toList();
   }
 

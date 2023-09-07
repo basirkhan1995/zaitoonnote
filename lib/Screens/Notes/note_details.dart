@@ -78,7 +78,7 @@ class _NoteDetailsState extends State<NoteDetails> {
                          contentCtrl.text,
                          selectedCategoryId.toString(),
                          selectedDate.toString(),
-                         widget.details!.noteId).whenComplete(() => Navigator.pop(context,'refresh'));
+                         widget.details!.noteId).whenComplete(() => Navigator.of(context).pop(true));
                   });
                 },
                 icon: const Icon(

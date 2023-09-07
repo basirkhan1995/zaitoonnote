@@ -32,8 +32,8 @@ class PersonModel{
       'jobTitle':jobTitle,
       'pImage':pImage,
       'pPhone':pPhone,
-      'updatedAt': updatedAt??DateTime.now().toIso8601String(),
-      'createdAt': createdAt??DateTime.now().toIso8601String(),
+      'updatedAt': updatedAt,
+      'createdAt': createdAt,
     };
   }
 

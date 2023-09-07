@@ -31,7 +31,7 @@ class Notes{
       'noteContent':noteContent,
       'noteStatus':noteStatus,
       'cName':category,
-      'noteCreatedAt': createdAt??DateTime.now().toIso8601String(),
+      'noteCreatedAt': createdAt,
     };
   }
 

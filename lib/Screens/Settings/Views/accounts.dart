@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
-import 'package:intl/intl.dart';
-import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Home/start_screen.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
@@ -57,6 +55,7 @@ class _AccountSettingsState extends State<AccountSettings> {
 
   @override
   Widget build(BuildContext context) {
+    String locale = Locales.currentLocale(context).toString();
     return Scaffold(
       appBar: AppBar(
         title: const LocaleText("accounts"),
@@ -75,7 +74,9 @@ class _AccountSettingsState extends State<AccountSettings> {
             child: IconButton(
                 onPressed: (){
                  Navigator.push(context, MaterialPageRoute(builder: (context)=>const AddPerson())).then((value) {
-                   _onRefresh();
+                   if(value){
+                     _onRefresh();
+                   }
                  });
                 }, icon: const Icon(Icons.add,color: Colors.white)),
           ),
@@ -142,14 +143,6 @@ class _AccountSettingsState extends State<AccountSettings> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Image.asset("assets/Photos/empty.png",width: 250),
-                            // MaterialButton(
-                            //   shape: RoundedRectangleBorder(
-                            //       borderRadius: BorderRadius.circular(4)),
-                            //   minWidth: 100,
-                            //   color: Theme.of(context).colorScheme.inversePrimary,
-                            //   onPressed: () => _onRefresh(),
-                            //   child: const LocaleText("refresh"),
-                            // )
                           ],
                         ));
                   } else if (snapshot.hasError) {
@@ -176,8 +169,8 @@ class _AccountSettingsState extends State<AccountSettings> {
                                             backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
                                     contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 18),
                                     dense: true,
-                                    title: Text(items[index].pName??"",style: const TextStyle(color: zPrimaryColor,fontSize: 16,fontWeight: FontWeight.bold),),
-                                    subtitle: Text(items[index].pPhone.toString(),style: const TextStyle(color: zGrey),),
+                                    title: Text(items[index].pName??"",style: TextStyle(color: zPrimaryColor,fontSize: 16,fontWeight: FontWeight.bold,fontFamily: locale == "en"?"Ubuntu":"Dubai"),),
+                                    subtitle: Text(items[index].pPhone.toString(),style:  TextStyle(color: zGrey,fontFamily: locale == "en"?"Ubuntu":"Dubai"),),
                                     trailing: const Icon(Icons.arrow_forward_ios_outlined,size: 15,color: zPrimaryColor)
 
                                   ),

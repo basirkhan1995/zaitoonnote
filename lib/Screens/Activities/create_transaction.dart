@@ -32,6 +32,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
   final personCtrl = TextEditingController();
   int selectedPerson = 0;
   var trnTypeValue = 0;
+
   File? _trnImage;
   late DatabaseHelper handler;
   late Future <List<PersonModel>> persons;
@@ -399,7 +400,8 @@ class _CreateTransactionState extends State<CreateTransaction> {
       context: context,
       initialEntryMode: PDatePickerEntryMode.calendar,
       firstDate: Jalali(1350, 8),
-      lastDate: Jalali(1500, 9), initialDate: DateTime.now().toJalali(),
+      lastDate: Jalali(1500, 9),
+      initialDate: DateTime.now().toJalali(),
     );
     if(picked != null){
       setState(() {

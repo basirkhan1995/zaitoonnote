@@ -79,7 +79,7 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 
    static gregorianDateTimeForm(String date){
      final format = DateTime.parse(date);
-     final gregorian = DateFormat('yyyy-MM-dd – kk:mm a').format(format);
+     final gregorian = DateFormat('yyyy-MM-dd').format(format);
      return gregorian;
    }
 

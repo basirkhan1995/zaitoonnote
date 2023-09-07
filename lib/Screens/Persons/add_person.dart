@@ -5,10 +5,8 @@ import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Methods/z_button.dart';
 import 'package:zaitoonnote/Methods/z_field.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
-import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
 import 'dart:io';
 import '../../Datebase Helper/sqlite.dart';
-import '../../Methods/env.dart';
 
 class AddPerson extends StatefulWidget {
   const AddPerson({super.key});
@@ -46,6 +44,8 @@ class _AddPersonState extends State<AddPerson> {
                       cardNumber: cardNumber.text,
                       accountName: cardName.text,
                       jobTitle: jobTitle.text,
+                      createdAt: DateTime.now().toIso8601String(),
+                      updatedAt: DateTime.now().toIso8601String(),
                       pImage: _pImage?.path ?? ""))
                       .whenComplete((){
                     Navigator.of(context).pop(true);

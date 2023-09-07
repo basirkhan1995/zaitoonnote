@@ -267,7 +267,7 @@ class DatabaseHelper {
       String description, int type, int person, double amount, trnImage,date) async {
     final Database db = await initDB();
     return db.rawInsert(
-        "insert into transactions (trnDescription, trnType, trnPerson, amount, trnImage,trnDate) values (?,?,?,?,?,?)",
+        "insert into transactions (trnDescription, trnType, trnPerson, amount, trnImage, trnDate) values (?,?,?,?,?,?)",
         [description, type, person, amount, trnImage,date]);
   }
 
@@ -390,11 +390,11 @@ class DatabaseHelper {
   //Notes ----------------------------------------------------------------------
 
   //Create a new note
-  Future<int> createNote(title, content, int category,int color) async {
+  Future<int> createNote(title, content, int category,int color,date) async {
     final Database db = await initDB();
     return db.rawInsert(
-        "insert into notes (noteTitle, noteContent, noteStatus, noteCategory, color) values (?,?,$noteStatus,?,?)",
-        [title, content, category,color]);
+        "insert into notes (noteTitle, noteContent, noteStatus, noteCategory, color, noteCreatedAt) values (?,?,$noteStatus,?,?,?)",
+        [title, content, category,color,date]);
   }
 
   //Show incomplete notes with 1 status

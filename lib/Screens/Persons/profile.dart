@@ -402,7 +402,7 @@ class _PersonProfileState extends State<PersonProfile> {
                           ),
                           width: 40,
                           height: 40,
-                          child: IconButton(onPressed: ()=>db.deletePerson(widget.profileDetails!.pId.toString(),context).whenComplete(() => Navigator.of(context).pop(true) ), icon: const Icon(Icons.delete,color: Colors.white,)),
+                          child: IconButton(onPressed: ()=>db.deletePerson(widget.profileDetails!.pId.toString(),context).whenComplete(() => Navigator.of(context).push(MaterialPageRoute(builder: (context)=>const AccountSettings())) ), icon: const Icon(Icons.delete,color: Colors.white,)),
                         ),
                       ],
                     ),

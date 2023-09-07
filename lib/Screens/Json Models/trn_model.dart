@@ -30,7 +30,7 @@ class TransactionModel{
       'trnDescription':trnDescription,
       'amount':amount,
       'pName':person,
-      'trnDate': createdAt??DateTime.now().toIso8601String(),
+      'trnDate': createdAt,
     };
   }
 

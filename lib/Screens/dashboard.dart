@@ -107,44 +107,10 @@ class _DashboardState extends State<Dashboard> {
               ListTile(
                 dense: true,
                 horizontalTitleGap: 6,
-                leading: provider.enableDisableLogin?Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                  child: InkWell(
-                    onTap: (){
-                      showDialog(context: context, builder: (context){
-                        return AlertDialog(
-                          title: LocaleText("logout_title",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
-                          content: LocaleText("logout_msg",style: TextStyle(fontSize: normalSize,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai")),
-                          actionsPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                          actions: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: ZButton(
-                                    label: "yes",
-                                    onTap: (){
-                                      provider.logout(context);
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: ZButton(
-                                    label: "no",
-                                    onTap: (){
-                                      Navigator.pop(context);
-                                    },
-                                  ),
-                                ),
-                              ],
-                            )
-                          ],
-                        );
-                      });
-                    },
-                    child: const CircleAvatar(
-                      backgroundImage: AssetImage("assets/Photos/no_user.jpg"),
-                    ),
+                leading: provider.enableDisableLogin?const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 0.0),
+                  child: CircleAvatar(
+                    backgroundImage: AssetImage("assets/Photos/no_user.jpg"),
                   ),
                 ):null,
                 title: LocaleText("welcome",style: TextStyle(fontFamily: currentLocale.toString() == "en"?"Ubuntu":"Dubai",fontSize: 16),),
@@ -277,6 +243,7 @@ class _DashboardState extends State<Dashboard> {
                   ],
                 ),
               ),
+
               Column(
                 children: [
                   Container(
@@ -341,7 +308,11 @@ class _DashboardState extends State<Dashboard> {
                             backgroundColor: zPrimaryColor.withOpacity(.2),
                             width: .92,
                             label: "add_account",
-                            onTap: ()=>Env.goto(const AddPerson(), context),
+                            onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>const AddPerson())).then((value) {
+                              if(value){
+                                _onRefresh();
+                              }
+                            }),
                           ),
                       ],
                     ),

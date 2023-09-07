@@ -64,7 +64,7 @@ class _CreateNoteState extends State<CreateNote> {
                   onPressed: () {
                     if (formKey.currentState!.validate()) {
                       setState(() {
-                       db.createNote(titleCtrl.text, contentCtrl.text, selectedCategoryId, colorValue!).whenComplete(() => Navigator.of(context).pop(true));
+                       db.createNote(titleCtrl.text, contentCtrl.text, selectedCategoryId, colorValue!,selectedDate.toIso8601String()).whenComplete(() => Navigator.of(context).pop(true));
                       });
                     }
                   },

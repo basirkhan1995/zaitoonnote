@@ -73,6 +73,7 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
    }
 
    static String persianFormatWithWeekDay(Date date){
+
        final format = date.formatter;
        return '${format.wN} ${format.d} ${format.mN}';
    }

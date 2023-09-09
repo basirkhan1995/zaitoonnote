@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Screens/Activities/transaction_details.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
 import '../../Datebase Helper/sqlite.dart';
 import '../../Methods/colors.dart';
 import '../../Methods/env.dart';
-import '../../Provider/provider.dart';
 import '../Json Models/trn_model.dart';
 
 class PersonActivities extends StatefulWidget {
@@ -141,7 +139,6 @@ class _PersonActivitiesState extends State<PersonActivities> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<MyProvider>(context, listen: false);
     double width = MediaQuery.of(context).size.width;
     double debit = double.parse(paid.toString());
     double credit = double.parse(received.toString());

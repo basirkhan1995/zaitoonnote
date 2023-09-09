@@ -380,7 +380,7 @@ class _PersonProfileState extends State<PersonProfile> {
                 children: [
                   ListTile(
                     title: LocaleText("created_at",style: TextStyle(fontFamily: locale == "en" ? "Ubuntu":"Dubai" ),),
-                    subtitle: Text(Env.gregorianDateTimeForm(widget.profileDetails!.createdAt.toString()),style: TextStyle(fontFamily: locale == "en" ? "Ubuntu":"Dubai" )),
+                    subtitle: Text(locale != "en"? Env.persianDateTimeFormat(DateTime.parse(widget.profileDetails!.createdAt.toString())) :  Env.gregorianDateTimeForm(widget.profileDetails!.createdAt.toString()),style: TextStyle(fontFamily: locale == "en" ? "Ubuntu":"Dubai" )),
                     trailing: Wrap(
                       spacing: 10,
                       children: [

@@ -370,7 +370,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                             ],
                                           ),
                                           subtitle: Text(
-                                            provider.showHidePersianDate
+                                            currentLocale != "en"
                                                 ? Env.persianDateTimeFormat(
                                                     DateTime.parse(items[index]
                                                         .createdAt

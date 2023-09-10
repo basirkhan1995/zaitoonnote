@@ -30,7 +30,6 @@ class _DashboardState extends State<Dashboard> {
   late DatabaseHelper handler;
   late Future<List<TransactionModel>> transactions;
 
-
   double totalPaid = 0 ;
   double totalReceived = 0;
   int totalUser = 0;
@@ -47,9 +46,6 @@ class _DashboardState extends State<Dashboard> {
     });
     _onRefresh();
   }
-
-
-
 
 
   //Method to get data from database

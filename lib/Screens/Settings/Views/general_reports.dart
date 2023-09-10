@@ -2,12 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
 import 'package:zaitoonnote/Screens/Activities/transaction_details.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
-
 import '../../../Datebase Helper/sqlite.dart';
 import '../../../Methods/colors.dart';
 import '../../../Methods/env.dart';
@@ -124,8 +124,13 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
   }
 
 
+
+
   @override
   Widget build(BuildContext context) {
+
+
+
     double width = MediaQuery.of(context).size.width;
     final provider = Provider.of<MyProvider>(context, listen: false);
     String currentLocale = Locales.currentLocale(context).toString();
@@ -255,10 +260,12 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                                         padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
                                         child: ListTile(
                                           onTap: ()async{
-                                           String refresh = await Navigator.push(context, MaterialPageRoute(builder: (context)=>TransactionDetails(data: items[index],)));
-                                           if(refresh == 'refresh'){
-                                             _onRefresh();
-                                           }
+                                           Navigator.push(context, MaterialPageRoute(builder: (context)=>TransactionDetails(data: items[index]))).then((value) {
+                                             if(value){
+                                               _onRefresh();
+                                             }
+                                           });
+
                                           },
                                           dense: true,
                                           leading: SizedBox(
@@ -359,8 +366,6 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
     }
     return picked;
   }
-
-
 
 }
 

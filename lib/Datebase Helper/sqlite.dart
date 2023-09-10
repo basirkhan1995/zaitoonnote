@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
+import 'package:pdf/widgets.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
@@ -13,28 +14,20 @@ import 'package:zaitoonnote/Screens/Json%20Models/users.dart';
 import '../Methods/env.dart';
 
 class DatabaseHelper {
-  final databaseName = "zaitoon.db";
+  final databaseName = "zWallet.db";
   int noteStatus = 1;
 
   String dirName = "Backup";
-  String user =
-      "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text, personInfo int, FOREIGN KEY (personInfo) REFERENCES persons (pId) ON DELETE CASCADE)";
-  String categories =
-      "create table category (cId integer primary key AUTOINCREMENT, cName TEXT NOT NULL,categoryType TEXT) ";
-  String notes =
-      "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL,color INTEGER, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,noteCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId) ON DELETE CASCADE)";
-  String persons =
-      "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT, jobTitle TEXT, cardNumber TEXT, accountName TEXT, pImage TEXT,pPhone TEXT,updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
-  String activities =
-      "create table transactions (trnId INTEGER PRIMARY KEY AUTOINCREMENT, trnDescription TEXT, trnType INTEGER, trnPerson INTEGER NOT NULL, amount REAL NOT NULL, trnImage TEXT,trnDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (trnPerson) REFERENCES persons (pId) ON DELETE CASCADE, FOREIGN KEY (trnType) REFERENCES category (cId)ON DELETE CASCADE)";
+  String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text, personInfo int, FOREIGN KEY (personInfo) REFERENCES persons (pId) ON DELETE CASCADE)";
+  String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT NOT NULL,categoryType TEXT) ";
+  String notes = "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL,color INTEGER, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,noteCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId) ON DELETE CASCADE)";
+  String persons = "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT, jobTitle TEXT, cardNumber TEXT, accountName TEXT, pImage TEXT,pPhone TEXT,updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
+  String activities = "create table transactions (trnId INTEGER PRIMARY KEY AUTOINCREMENT, trnDescription TEXT, trnType INTEGER, trnPerson INTEGER NOT NULL, amount REAL NOT NULL, trnImage TEXT,trnDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (trnPerson) REFERENCES persons (pId) ON DELETE CASCADE, FOREIGN KEY (trnType) REFERENCES category (cId)ON DELETE CASCADE)";
 
   //Default Data
-  String defaultActivityData =
-      "INSERT INTO category (cId, cName, categoryType) values (1,'%', 'activity'),(2,'paid', 'activity' ),(3,'received', 'activity'),(4,'check', 'activity'),(5,'rent', 'activity'),(6,'power', 'activity')";
-  String defaultNoteData =
-      "INSERT INTO category (cId, cName, categoryType) values (8,'%', 'note'), (9,'home', 'note'),(10,'work', 'note'),(11,'personal', 'note'),(12,'wishlist', 'note'),(13,'birthday','note')";
-  String userData =
-      "insert into users (usrId, usrName, usrPassword) values(1,'admin','123456')";
+  String defaultActivityData = "INSERT INTO category (cId, cName, categoryType) values (1,'%', 'activity'),(2,'paid', 'activity' ),(3,'received', 'activity'),(4,'check', 'activity'),(5,'rent', 'activity'),(6,'power', 'activity')";
+  String defaultNoteData = "INSERT INTO category (cId, cName, categoryType) values (8,'%', 'note'), (9,'home', 'note'),(10,'work', 'note'),(11,'personal', 'note'),(12,'wishlist', 'note'),(13,'birthday','note')";
+  String userData = "insert into users (usrId, usrName, usrPassword) values(1,'admin','123456')";
 
   //Future init method to create a database, user table and user default data
   Future<Database> initDB() async {
@@ -386,6 +379,21 @@ class DatabaseHelper {
         print("deleting failed: $err");
       }
     }
+  }
+
+
+  //Transactions to PDF
+  Future<void> transactionToPDF(TransactionModel model)async{
+    final pdf = Document();
+
+    pdf.addPage(Page(build: (context)=>Center(child: Text(model.toString()))));
+
+    final directory = await getExternalStorageDirectory();
+    final file = File("${directory?.path}/allTransactions.pdf");
+    await file.writeAsBytes((await pdf.save().whenComplete(() => print("success"))));
+
+    print("Location: $file");
+
   }
 
   //Notes ----------------------------------------------------------------------

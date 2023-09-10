@@ -65,20 +65,6 @@ class _DashboardState extends State<Dashboard> {
     return totalUser;
   }
 
-  //Total Received count
-  // Future<int> totalCredit()async{
-  //   int? count = await handler.totalAmountToday(3);
-  //   setState(() => totalReceived = count??0);
-  //   return totalReceived;
-  // }
-  //
-  // //Total Received count
-  // Future<int> totalDebit()async{
-  //   int? count = await handler.totalAmountToday(2);
-  //   setState(() => totalPaid = count??0);
-  //   return totalPaid;
-  // }
-
   //Method to refresh data on pulling the list
   Future<void> _onRefresh() async {
     setState(() {
@@ -93,20 +79,22 @@ class _DashboardState extends State<Dashboard> {
   void setState(fn) {
     if (mounted) super.setState(fn);
   }
-  int tCredit = 0;
 
-  void totalCredit()async{
-    var total = (await db.totalAmountByCategory(3))[0]['total'];
+  Future<double> totalCredit()async{
+    double? total = (await db.totalAmountByCategory(3))[0]['total'];
     setState(() {
-      totalReceived = total;
+      totalReceived = total??0;
     });
+
+    return totalReceived;
   }
 
-  void totalDebit()async{
-    var total = (await db.totalAmountByCategory(2))[0]['total'];
+  Future<double> totalDebit()async{
+    double? total = (await db.totalAmountByCategory(2))[0]['total'];
     setState(() {
-      totalPaid = total;
+      totalPaid = total??0;
     });
+    return totalPaid;
   }
 
   @override

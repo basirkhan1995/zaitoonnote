@@ -33,11 +33,8 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
   DateTime? firstSelectedDate;
   DateTime? endSelectedDate;
 
-  int paid = 0;
-  int received = 0;
-
-  int debit = 0;
-  int credit = 0;
+  double allTimePaid = 0;
+  double allTimeReceived = 0;
 
   int selectedCategoryId = 0;
   String selectedCategoryName = "";
@@ -74,56 +71,55 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
     return await handler.getAllTransactions();
   }
 
-  //Total Paid
-  Future<int> allDebit()async{
-    int? count = await handler.totalSumByCategoryByDateRange(2,firstSelectedDate.toString(),endSelectedDate.toString());
-    setState((){
-      paid = count??0;
+  Future<double> creditsByDate()async{
+    double? total = (await db.totalAmountByCategoryDate(3,firstSelectedDate.toString(),endSelectedDate.toString()))[0]['total'];
+    setState(() {
+      allTimeReceived = total??0;
     });
-    return paid;
+    return allTimeReceived;
   }
 
-  //Total Received count
-  Future<int> allCredit()async{
-    int? count = await handler.totalSumByCategoryByDateRange(3,firstSelectedDate.toString(),endSelectedDate.toString());
-    setState((){
-      received = count??0;
+  Future<double> debitsByDate()async{
+    double? total = (await db.totalAmountByCategoryDate(2,firstSelectedDate.toString(),endSelectedDate.toString()))[0]['total'];
+    setState(() {
+      allTimePaid = total??0;
     });
-    return received;
+    return allTimePaid;
   }
 
-  //Total Received count
-  Future<int> sumReceived()async{
-    int? count = await handler.totalSumByCategory(3);
-    setState((){
-      received = count??0;
+
+
+  //////////////////////////////////
+  Future<double> totalAllTimeCredit()async{
+    double? total = (await db.totalAmountByCategory(3))[0]['total'];
+    setState(() {
+      allTimeReceived = total??0;
     });
-    return received;
+    return allTimeReceived;
   }
 
-  //Total Received count
-  Future<int> sumPaid()async{
-    int? count = await handler.totalSumByCategory(2);
-    setState((){
-      paid = count??0;
+  Future<double> totalAllTimeDebit()async{
+    double? total = (await db.totalAmountByCategory(2))[0]['total'];
+    setState(() {
+      allTimePaid = total??0;
     });
-    return paid;
+    return allTimePaid;
   }
 
   //Refresh Data
   Future<void> _onRefresh() async {
     setState(() {
       transactions = getAllTransaction();
-      sumReceived();
-      sumPaid();
+      totalAllTimeCredit();
+      totalAllTimeDebit();
     });
   }
 
   Future<void> _onDateRefresh() async {
     setState(() {
       transactions = getAllTransactionByDate();
-      allCredit();
-      allDebit();
+      creditsByDate();
+      debitsByDate();
     });
   }
 
@@ -134,8 +130,8 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
     final provider = Provider.of<MyProvider>(context, listen: false);
     String currentLocale = Locales.currentLocale(context).toString();
 
-    double debit = double.parse(paid.toString());
-    double credit = double.parse(received.toString());
+    double debit = double.parse(allTimePaid.toString());
+    double credit = double.parse(allTimeReceived.toString());
     double balance = credit - debit;
 
 
@@ -195,9 +191,9 @@ class _GeneralTransactionReportsState extends State<GeneralTransactionReports> {
                     mainAxisAlignment: MainAxisAlignment.center,
 
                     children: [
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("credit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: width/26,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(credit.toInt(), "en_US"),style: TextStyle(fontSize: width/22,fontWeight: FontWeight.bold,color: Colors.grey),),),
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("debit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: width/26,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(debit.toInt(), "en_US"),style: TextStyle(fontSize: width/22,fontWeight: FontWeight.bold,color: Colors.grey),),),
-                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("balance",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: width/26,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true, trailing: Text(Env.currencyFormat(balance.toInt(), "en_US"),style: TextStyle(fontSize: width/22,fontWeight: FontWeight.bold,color: balance.toInt()<0?Colors.red.shade900:Colors.green)),),
+                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("credit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: width/26,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(credit, "en_US"),style: TextStyle(fontSize: width/22,fontWeight: FontWeight.bold,color: Colors.grey),),),
+                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("debit",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: width/26,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true,trailing: Text(Env.currencyFormat(debit, "en_US"),style: TextStyle(fontSize: width/22,fontWeight: FontWeight.bold,color: Colors.grey),),),
+                      ListTile(visualDensity: const VisualDensity(vertical: -4),title:   LocaleText("balance",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: width/26,fontWeight: FontWeight.bold,color: Colors.grey)),dense: true, trailing: Text(Env.currencyFormat(balance, "en_US"),style: TextStyle(fontSize: width/22,fontWeight: FontWeight.bold,color: balance.toInt()<0?Colors.red.shade900:Colors.green)),),
                     ],
                   ),
                 ),

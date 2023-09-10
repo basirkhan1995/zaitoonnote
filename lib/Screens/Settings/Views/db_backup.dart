@@ -66,20 +66,6 @@ class _DatabaseBackupState extends State<DatabaseBackup> {
                   db.backUpDB(ContentType.success,ContentType.failure,context);
                 },
               ),
-              // ZButton(
-              //   width: .9,
-              //   label: "delete db",
-              //   onTap: (){
-              //     db.deleteDb();
-              //   },
-              // ),
-              // ZButton(
-              //   width: .9,
-              //   label: "get path",
-              //   onTap: (){
-              //     db.backUp();
-              //   },
-              // ),
 
               ZButton(
                 width: .9,
@@ -88,6 +74,36 @@ class _DatabaseBackupState extends State<DatabaseBackup> {
                   db.restoreDb(ContentType.success,context);
                 },
               ),
+
+              ZButton(
+                width: .9,
+                label: "delete_db",
+                onTap: ()=>  showDialog(context: context, builder: (context){
+                  return AlertDialog(
+                    actionsPadding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+                    title: const LocaleText("are_you_sure"),
+                    content: const LocaleText("delete_db_msg"),
+                    actions: [
+                      ZButton(
+                        onTap: (){
+                          db.deleteDb(ContentType.success,context);
+                          Navigator.of(context).pop(true);
+                        },
+                        label: Locales.string(context, "yes"),
+                      ),
+
+                      ZButton(
+                        onTap: ()=>Navigator.of(context).pop(),
+                        label: Locales.string(context, "no"),
+                      ),
+                    ],
+
+                  );
+                })
+                  //db.deleteDb();
+
+              ),
+
             ],
           ),
         ),

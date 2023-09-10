@@ -67,8 +67,8 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
    }
 
 
-   static String currencyFormat(int amount,String localeCurrency){
-     String output = NumberFormat.simpleCurrency(decimalDigits: 0, locale: localeCurrency,name: "").format(amount);
+   static String currencyFormat(double amount,String localeCurrency){
+     String output = NumberFormat.decimalPatternDigits(decimalDigits: 2,locale: localeCurrency).format(amount);
      return output;
    }
 

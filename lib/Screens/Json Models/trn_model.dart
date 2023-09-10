@@ -3,7 +3,7 @@ class TransactionModel{
   final int? trnId;
   final String trnCategory;
   final String trnDescription;
-  final int amount;
+  final double amount;
   final String person;
   final String? pImage;
   final String? trnImage;

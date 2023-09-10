@@ -31,8 +31,8 @@ class _DashboardState extends State<Dashboard> {
   late Future<List<TransactionModel>> transactions;
 
 
-  int totalPaid = 0 ;
-  int totalReceived = 0;
+  double totalPaid = 0 ;
+  double totalReceived = 0;
   int totalUser = 0;
 
   @override
@@ -66,18 +66,18 @@ class _DashboardState extends State<Dashboard> {
   }
 
   //Total Received count
-  Future<int> totalCredit()async{
-    int? count = await handler.totalAmountToday(3);
-    setState(() => totalReceived = count??0);
-    return totalReceived;
-  }
-
-  //Total Received count
-  Future<int> totalDebit()async{
-    int? count = await handler.totalAmountToday(2);
-    setState(() => totalPaid = count??0);
-    return totalPaid;
-  }
+  // Future<int> totalCredit()async{
+  //   int? count = await handler.totalAmountToday(3);
+  //   setState(() => totalReceived = count??0);
+  //   return totalReceived;
+  // }
+  //
+  // //Total Received count
+  // Future<int> totalDebit()async{
+  //   int? count = await handler.totalAmountToday(2);
+  //   setState(() => totalPaid = count??0);
+  //   return totalPaid;
+  // }
 
   //Method to refresh data on pulling the list
   Future<void> _onRefresh() async {
@@ -92,6 +92,21 @@ class _DashboardState extends State<Dashboard> {
   @override
   void setState(fn) {
     if (mounted) super.setState(fn);
+  }
+  int tCredit = 0;
+
+  void totalCredit()async{
+    var total = (await db.totalAmountByCategory(3))[0]['total'];
+    setState(() {
+      totalReceived = total;
+    });
+  }
+
+  void totalDebit()async{
+    var total = (await db.totalAmountByCategory(2))[0]['total'];
+    setState(() {
+      totalPaid = total;
+    });
   }
 
   @override
@@ -172,7 +187,7 @@ class _DashboardState extends State<Dashboard> {
                              },
                            ),
                            const SizedBox(height: 8),
-                           Text(totalUser.toString(),style: const TextStyle(fontSize: 15,fontWeight: FontWeight.bold),),
+                           Text(totalUser.toString(),style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                             LocaleText("accounts",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en" ? "Ubuntu":"Dubai"),),
                          ],
                        ),
@@ -205,7 +220,7 @@ class _DashboardState extends State<Dashboard> {
                           progressColor: Colors.red.shade900,
                         ),
                         const SizedBox(height: 8),
-                        Text(Env.currencyFormat(totalPaid, "en_US"),style: const TextStyle(fontSize: mediumSize,fontWeight: FontWeight.bold),),
+                        Text(Env.currencyFormat(totalPaid, "en_US"),style: TextStyle(fontSize: mediumSize,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                          LocaleText("debit",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en" ? "Ubuntu":"Dubai"),),
                       ],
                     ),
@@ -236,7 +251,7 @@ class _DashboardState extends State<Dashboard> {
                           progressColor: Colors.green,
                         ),
                         const SizedBox(height: 8),
-                        Text(Env.currencyFormat(totalReceived, "en_US"),style: const TextStyle(fontSize: normalSize,fontWeight: FontWeight.bold),),
+                        Text(Env.currencyFormat(totalReceived, "en_US"),style: TextStyle(fontSize: mediumSize,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                          LocaleText("credit",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en" ? "Ubuntu":"Dubai"),),
                       ],
                     ),
@@ -406,7 +421,7 @@ class _DashboardState extends State<Dashboard> {
                                                   ],
                                                 ),
                                                 subtitle: Text(currentLocale != "en" ? Env.persianDateTimeFormat(DateTime.parse(items[index].createdAt.toString())):Env.gregorianDateTimeForm(items[index].createdAt.toString())),
-                                                trailing: Text(Env.currencyFormat(items[index].amount, "en_US"),style: TextStyle(fontSize: width/24,color: items[index].trnCategory == "received"?Colors.green:Colors.red.shade900),),
+                                                trailing: Text(Env.currencyFormat(items[index].amount, "en_US"),style: TextStyle(fontSize: width/24,color: items[index].trnCategory == "received"?Colors.green:Colors.red.shade900,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontWeight: FontWeight.bold),),
                                                 dense: true,
                                               ),
                                             ),

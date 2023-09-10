@@ -26,7 +26,7 @@ class DatabaseHelper {
   String persons =
       "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT, jobTitle TEXT, cardNumber TEXT, accountName TEXT, pImage TEXT,pPhone TEXT,updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
   String activities =
-      "create table transactions (trnId INTEGER PRIMARY KEY AUTOINCREMENT, trnDescription TEXT, trnType INTEGER, trnPerson INTEGER NOT NULL, amount INTEGER NOT NULL, trnImage TEXT,trnDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (trnPerson) REFERENCES persons (pId) ON DELETE CASCADE, FOREIGN KEY (trnType) REFERENCES category (cId)ON DELETE CASCADE)";
+      "create table transactions (trnId INTEGER PRIMARY KEY AUTOINCREMENT, trnDescription TEXT, trnType INTEGER, trnPerson INTEGER NOT NULL, amount REAL NOT NULL, trnImage TEXT,trnDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (trnPerson) REFERENCES persons (pId) ON DELETE CASCADE, FOREIGN KEY (trnType) REFERENCES category (cId)ON DELETE CASCADE)";
 
   //Default Data
   String defaultActivityData =
@@ -146,10 +146,11 @@ class DatabaseHelper {
 
   //Delete Db
 
-  deleteDb() async {
+  deleteDb(contentType, context) async {
     try {
       deleteDatabase(
-          "/data/user/0/com.example.zaitoonnote/databases/$databaseName");
+          "/data/user/0/com.example.zaitoonnote/databases/$databaseName").whenComplete(() => Env.showSnackBar2(
+          "successfully", "records_deleted", contentType, context));
       if (kDebugMode) {
         print("success deleted");
       }
@@ -547,6 +548,30 @@ class DatabaseHelper {
         "select sum(amount) from transactions where trnType = ? AND trnPerson = ?",
         [trnType, person]));
     return count;
+  }
+
+  Future totalAmountByCategory (int type)async{
+    final Database db = await initDB();
+    final result = await db.rawQuery("select sum(amount) as total from transactions where trnType = ?",[type]);
+    return result;
+  }
+
+  Future totalAmountByCategoryAndPerson (int type,int person)async{
+    final Database db = await initDB();
+    final result = await db.rawQuery("select sum(amount) as total from transactions where trnType = ? AND trnPerson = ?",[type,person]);
+    return result;
+  }
+
+  Future totalAmountByCategoryPersonDate (int type,int person,startDate, endDate)async{
+    final Database db = await initDB();
+    final result = await db.rawQuery("select sum(amount) as total from transactions where trnType = ? AND trnPerson = ? AND DATE(trnDate) BETWEEN ? AND ?",[type,person,startDate,endDate]);
+    return result;
+  }
+
+  Future totalAmountByCategoryDate (int type,startDate, endDate)async{
+    final Database db = await initDB();
+    final result = await db.rawQuery("select sum(amount) as total from transactions where trnType = ? AND DATE(trnDate) BETWEEN ? AND ?",[type,startDate,endDate]);
+    return result;
   }
 
 }

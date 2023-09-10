@@ -27,8 +27,8 @@ class _PersonActivitiesState extends State<PersonActivities> {
   DateTime? firstSelectedDate;
   DateTime? endSelectedDate;
 
-  int paid = 0;
-  int received = 0;
+  double totalDebit = 0;
+  double totalCredit = 0;
 
   int selectedCategoryId = 0;
   String selectedCategoryName = "";
@@ -43,8 +43,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
     super.initState();
     handler = DatabaseHelper();
 
-    transactions =
-        handler.getTransactionByPersonId(widget.data?.pId.toString() ?? "");
+    transactions = handler.getTransactionByPersonId(widget.data?.pId.toString() ?? "");
     transactionsByDate = handler.getTransactionByDateRange(
         widget.data?.pId.toString() ?? "",
         firstSelectedDate.toString(),
@@ -73,52 +72,48 @@ class _PersonActivitiesState extends State<PersonActivities> {
         .getTransactionByPersonId(widget.data?.pId.toString() ?? "");
   }
 
-//Total Received count
-  Future<int> allTimeCredits()async{
-    int? count = await handler.totalSumByCategoryAndPerson(3,widget.data?.pId ?? 0);
-    setState((){
-      received = count??0;
+
+  ////////////////////////////////////////////////////////
+  Future<double> allTimeCredits()async{
+    double? total = (await db.totalAmountByCategoryAndPerson(3, widget.data?.pId ?? 0))[0]['total'];
+    setState(() {
+      totalCredit = total??0;
     });
-    return received;
+    return totalCredit;
   }
 
-  //Total Received count
-  Future<int> allTimeDebits()async{
-    int? count = await handler.totalSumByCategoryAndPerson(2, widget.data?.pId ?? 0,);
-    setState((){
-      paid = count??0;
+  Future<double> allTimeDebits()async{
+    double? total = (await db.totalAmountByCategoryAndPerson(2, widget.data?.pId ?? 0,))[0]['total'];
+    setState(() {
+      totalDebit = total??0;
     });
-    return paid;
+    return totalDebit;
   }
 
-
-  //Total Paid
-  Future<int> debitByDate() async {
-    int? count = await handler.totalSumByCategoryAndPersonByDateRange(
-        2,
+  Future<double> creditByDate()async{
+    double? total = (
+        await db.totalAmountByCategoryPersonDate( 3,
         widget.data?.pId ?? 0,
         firstSelectedDate.toString(),
-        endSelectedDate.toString());
+        endSelectedDate.toString()))[0]['total'];
     setState(() {
-      paid = count ?? 0;
+      totalCredit = total??0;
     });
-    return paid;
+
+    return totalCredit;
   }
 
-  //Total Received count
-  Future<int> creditByDate() async {
-    int? count = await handler.totalSumByCategoryAndPersonByDateRange(
-        3,
+  Future<double> debitByDate()async{
+    double? total = (await db.totalAmountByCategoryPersonDate(2,
         widget.data?.pId ?? 0,
         firstSelectedDate.toString(),
-        endSelectedDate.toString());
+        endSelectedDate.toString()))[0]['total'];
     setState(() {
-      received = count ?? 0;
+      totalDebit = total??0;
     });
-    return received;
+    return totalDebit;
   }
-
-
+///////////////////////////////////////////
 
   //Refresh Data
   Future<void> _onRefresh() async {
@@ -140,8 +135,8 @@ class _PersonActivitiesState extends State<PersonActivities> {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    double debit = double.parse(paid.toString());
-    double credit = double.parse(received.toString());
+    double debit = double.parse(totalDebit.toString());
+    double credit = double.parse(totalCredit.toString());
     double balance = credit - debit;
     String currentLocale = Locales.currentLocale(context).toString();
 
@@ -209,7 +204,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                 color: Colors.grey)),
                         dense: true,
                         trailing: Text(
-                          Env.currencyFormat(credit.toInt(), "en_US"),
+                          Env.currencyFormat(credit, "en_US"),
                           style: TextStyle(
                               fontSize: width/22,
                               fontWeight: FontWeight.bold,
@@ -227,7 +222,7 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                 color: Colors.grey)),
                         dense: true,
                         trailing: Text(
-                          Env.currencyFormat(debit.toInt(), "en_US"),
+                          Env.currencyFormat(debit, "en_US"),
                           style: TextStyle(
                               fontSize: width/22,
                               fontWeight: FontWeight.bold,
@@ -245,8 +240,8 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                 color: Colors.grey)),
                         dense: true,
                         trailing: Text(
-                            Env.currencyFormat(balance.toInt(), "en_US"),
-                            style: TextStyle(
+                            Env.currencyFormat(balance, "en_US"),
+                            style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",
                                 fontSize: width/22, fontWeight: FontWeight.bold, color: balance.toInt()<0?Colors.red.shade900:Colors.green)),
                       ),
                     ],
@@ -320,14 +315,9 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                                           .pImage!
                                                           .isNotEmpty
                                                       ? Image.file(
-                                                              File(items[index]
-                                                                  .pImage!),
-                                                              fit: BoxFit.cover)
-                                                          .image
-                                                      : const AssetImage(
-                                                          "assets/Photos/no_user.jpg"))),
-                                          contentPadding:
-                                              const EdgeInsets.symmetric(
+                                                              File(items[index].pImage!),
+                                                              fit: BoxFit.cover).image : const AssetImage("assets/Photos/no_user.jpg"))),
+                                          contentPadding: const EdgeInsets.symmetric(
                                                   vertical: 0, horizontal: 6),
                                           title: Row(
                                             children: [
@@ -387,8 +377,8 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                                 Env.currencyFormat(
                                                     items[index].amount,
                                                     "en_US"),
-                                                style: const TextStyle(
-                                                    fontSize: 13),
+                                                style: TextStyle(
+                                                    fontSize: 15,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                                               )),
                                             ],
                                           ),

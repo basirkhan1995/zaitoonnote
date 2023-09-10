@@ -164,7 +164,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
             Divider(color: Colors.grey.withOpacity(.4),indent: 10,endIndent: 10),
             ListTile(
               subtitle: Text(
-                Env.currencyFormat(widget.data?.trnId ?? 0, "en_US"),
+                widget.data!.trnId.toString(),
                 style:
                 const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),

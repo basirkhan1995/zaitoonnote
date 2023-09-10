@@ -211,7 +211,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                                   Padding(
                                       padding: const EdgeInsets.only(top: 0, left: 10),
                                       child: ListTile(
-                                        title: const LocaleText("select_category",style: TextStyle(fontSize: 18),),
+                                        title: const LocaleText("activity_category",style: TextStyle(fontSize: 18),),
                                         leading: const Icon(Icons.ac_unit_outlined),
                                         trailing: Container(
                                           height: 35,
@@ -242,7 +242,7 @@ class _CreateTransactionState extends State<CreateTransaction> {
                             dropdownDecoratorProps: DropDownDecoratorProps(
                               dropdownSearchDecoration: InputDecoration(
                                   hintStyle: const TextStyle(fontSize: 15,fontFamily: "Dubai"),
-                                  hintText: Locales.string(context, "select_category"),
+                                  hintText: Locales.string(context, "category"),
                                   contentPadding: const EdgeInsets.symmetric(
                                       horizontal: 14, vertical: 20),
                                   border: InputBorder.none),

@@ -153,5 +153,12 @@
   "confirm_password_required": "Re-enter your password",
   "colors": "Color",
   "whatsapp": "Whatsapp",
-  "email": "Email"
+  "email": "Email",
+  "delete_db": "Delete all records",
+  "are_you_sure": "Are you sure?",
+  "delete_db_msg": "Do you wanna delete all records?",
+  "activity_category": "Select activity category",
+  "zero_amount": "Please enter a value greater than zero",
+  "records_deleted": "All records has been deleted successfully",
+  "successfully": "Operation succeed"
 }

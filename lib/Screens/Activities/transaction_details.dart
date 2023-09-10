@@ -181,7 +181,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
             ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 6),
               title: LocaleText(
-                "created_at",
+                "trn_date",
                 style: TextStyle(
                     fontFamily: currentLocale == "en" ? "Ubuntu" : "Dubai",
                     color: Colors.grey,

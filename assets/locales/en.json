@@ -160,5 +160,6 @@
   "activity_category": "Select activity category",
   "zero_amount": "Please enter a value greater than zero",
   "records_deleted": "All records has been deleted successfully",
-  "successfully": "Operation succeed"
+  "successfully": "Operation succeed",
+  "trn_date": "Transaction date"
 }

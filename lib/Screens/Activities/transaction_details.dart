@@ -280,7 +280,7 @@ class _TransactionDetailsState extends State<TransactionDetails> {
                                   borderRadius: BorderRadius.circular(50)),
                               child: IconButton(
                                   onPressed: (){
-                                    db.updateTransaction(contentCtrl.text, int.parse(amountCtrl.text), widget.data!.trnId).whenComplete(() => Navigator.pop(context,'refresh')).then((value) => Navigator.pop(context,'refresh'));
+                                    db.updateTransaction(contentCtrl.text, double.parse(amountCtrl.text), widget.data!.trnId).whenComplete(() => Navigator.pop(context,'refresh')).then((value) => Navigator.pop(context,'refresh'));
                                   },
                                   icon: const Icon(Icons.check,color: Colors.black87,size: 18)),
                             ),

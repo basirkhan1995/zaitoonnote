@@ -89,9 +89,9 @@ class DatabaseHelper {
 
       databasePath
           .copy("/storage/emulated/0/ZaitoonBackup/$databaseName")
-          .whenComplete(() => Env.showSnackBar2(
+          .whenComplete(() => Env.showSnackBar(
               "backup", "backup_success", contentType, context))
-          .onError((error, stackTrace) => Env.showSnackBar2(
+          .onError((error, stackTrace) => Env.showSnackBar(
               "operation_failed", "failed_backup_msg", contentType, context));
     } catch (e) {
       if (kDebugMode) {
@@ -121,9 +121,9 @@ class DatabaseHelper {
         File backupFile = File(newPath);
         backupFile
             .copy(recoveryPath)
-            .whenComplete(() => Env.showSnackBar2(
+            .whenComplete(() => Env.showSnackBar(
                 "backup", "backup_restored", contentType, context))
-            .onError((error, stackTrace) => Env.showSnackBar2(
+            .onError((error, stackTrace) => Env.showSnackBar(
                 "operation_failed", "failed_backup", contentType, context));
       }
 
@@ -142,7 +142,7 @@ class DatabaseHelper {
   deleteDb(contentType, context) async {
     try {
       deleteDatabase(
-          "/data/user/0/com.example.zaitoonnote/databases/$databaseName").whenComplete(() => Env.showSnackBar2(
+          "/data/user/0/com.example.zaitoonnote/databases/$databaseName").whenComplete(() => Env.showSnackBar(
           "successfully", "records_deleted", contentType, context));
       if (kDebugMode) {
         print("success deleted");
@@ -363,7 +363,7 @@ class DatabaseHelper {
   }
 
   //Update note
-  Future<int> updateTransaction(details, int amount, id) async {
+  Future<int> updateTransaction(details, double amount, id) async {
     final Database db = await initDB();
     var result = await db.rawUpdate('update transactions set trnDescription = ? ,amount = ? where trnId = ?',[details, amount,id]);
     return result;
@@ -390,9 +390,7 @@ class DatabaseHelper {
 
     final directory = await getExternalStorageDirectory();
     final file = File("${directory?.path}/allTransactions.pdf");
-    await file.writeAsBytes((await pdf.save().whenComplete(() => print("success"))));
-
-    print("Location: $file");
+    await file.writeAsBytes((await pdf.save()));
 
   }
 

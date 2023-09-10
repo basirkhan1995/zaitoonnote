@@ -81,7 +81,6 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       totalReceived = total??0;
     });
-
     return totalReceived;
   }
 
@@ -112,7 +111,7 @@ class _DashboardState extends State<Dashboard> {
                     backgroundImage: AssetImage("assets/Photos/no_user.jpg"),
                   ),
                 ):null,
-                title: LocaleText("welcome",style: TextStyle(fontFamily: currentLocale.toString() == "en"?"Ubuntu":"Dubai",fontSize: 16),),
+                title: LocaleText("welcome", style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16),),
                 trailing: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: mediumSize),),
               ),
 
@@ -171,7 +170,7 @@ class _DashboardState extends State<Dashboard> {
                              },
                            ),
                            const SizedBox(height: 8),
-                           Text(totalUser.toString(),style: TextStyle(fontSize: 15,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
+                           Text(totalUser.toString(),style: TextStyle(fontSize: width/22,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                             LocaleText("accounts",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en" ? "Ubuntu":"Dubai"),),
                          ],
                        ),
@@ -186,7 +185,7 @@ class _DashboardState extends State<Dashboard> {
                           radius: 40.0,
                           lineWidth: 5.0,
                           animation: true,
-                          percent: .2,
+                          percent: .4,
                           center:  Container(
                             height: 45,
                             width: 45,
@@ -204,7 +203,7 @@ class _DashboardState extends State<Dashboard> {
                           progressColor: Colors.red.shade900,
                         ),
                         const SizedBox(height: 8),
-                        Text(Env.currencyFormat(totalPaid, "en_US"),style: TextStyle(fontSize: mediumSize,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
+                        Text(Env.currencyFormat(totalPaid, "en_US"),style: TextStyle(fontSize: width/22,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                          LocaleText("debit",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en" ? "Ubuntu":"Dubai"),),
                       ],
                     ),
@@ -235,7 +234,7 @@ class _DashboardState extends State<Dashboard> {
                           progressColor: Colors.green,
                         ),
                         const SizedBox(height: 8),
-                        Text(Env.currencyFormat(totalReceived, "en_US"),style: TextStyle(fontSize: mediumSize,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
+                        Text(Env.currencyFormat(totalReceived, "en_US"),style: TextStyle(fontSize: width/22,fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                          LocaleText("credit",style: TextStyle(fontSize: mediumSize,fontFamily: currentLocale == "en" ? "Ubuntu":"Dubai"),),
                       ],
                     ),
@@ -409,12 +408,7 @@ class _DashboardState extends State<Dashboard> {
                                                 dense: true,
                                               ),
                                             ),
-                                            Container(
-                                              decoration: BoxDecoration(color: Colors.grey.withOpacity(.3)),
-                                              width: MediaQuery.of(context).size.width *.9,
-                                              height: 1,
-                                              margin: EdgeInsets.zero,
-                                            )
+                                            Divider(endIndent: 15,indent: 15,color: Colors.grey.withOpacity(.25),height: 1)
                                           ],
                                         );
                                       }),

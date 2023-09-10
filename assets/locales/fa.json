@@ -88,7 +88,7 @@
   "show_or_hide_properties": "فعال و غیر فعال سازی تنظیمات",
   "backup": "پشتیبانی",
   "backup_data": "تهیه پشتیبانی از اطلاعات",
-  "show_login": "صفحه ورود",
+  "show_login": "فعال سازی صفحه ورود",
   "backup_success": "تهیه پشتیبانی با موفقیت انجام شد",
   "backup_restored": "اطلاعات پشتیبانی موفقانه کپی شد",
   "restore_backup": "بازیابی اطلاعات",
@@ -107,7 +107,7 @@
   "access_denied": "عملیات نا موفق",
   "access_denied_message": "کلمه عبور و حساب کاربر نادرست میباشد",
   "logout": "خروج از حساب",
-  "change_password": "تغییر کلمه عبور",
+  "change_password": "تنظیمات رمز عبور",
   "current_password": "کلمه عبور فعلی",
   "confirm_password": "تکرار کلمه عبور",
   "password_change_failed_message": "کلمه عبور فعلی خود را اشتباه وارید کردید",
@@ -115,7 +115,7 @@
   "operation_failed": "عملیات نا موفقانه",
   "operation_success": "عملیات موفقانه",
   "new_password": "کلمه عبور جدید",
-  "change_password_hint": "تغییر کلمه عبور",
+  "change_password_hint": "تغییر رمزعبور",
   "attachment": "تصویر",
   "today": "امروز",
   "failed_backup_msg": "تهیه پشتیبانی انجام نشد، دوباره تلاش نمایید",
@@ -161,5 +161,6 @@
   "zero_amount": "لطفا ملبغ خود را بزرگتر از صفر وارید نمایید",
   "records_deleted": "همه اطلاعات برنامه موفقانه حذف گردید",
   "successfully": "عملیات موفق",
-  "trn_date": "تاریخ فعالیت"
+  "trn_date": "تاریخ فعالیت",
+  "general_reports": "گزارش عمومی طلبات و دریافتی ها"
 }

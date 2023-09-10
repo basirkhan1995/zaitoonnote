@@ -11,11 +11,12 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>route));
    }
 
-   static showSnackBar2(String title, String message, snackType, context){
+   static showSnackBar(String title, String message, snackType, context){
      final snackBar = SnackBar(
-       elevation: 0,
-       behavior: SnackBarBehavior.floating,
-       backgroundColor: Colors.transparent,
+       elevation: 5,
+       duration: const Duration(milliseconds: 1500),
+       behavior: SnackBarBehavior.fixed,
+       backgroundColor: Colors.white,
        content: AwesomeSnackbarContent(
          color: Colors.deepPurple,
          title: Locales.string(context, title),
@@ -28,30 +29,11 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
        ..showSnackBar(snackBar);
    }
 
-   static showSnackBar(String title,String? message,context){
-     if(message == null) return;
-     final materialBanner = MaterialBanner(
-       elevation: 0,
-       backgroundColor: Colors.transparent,
-       forceActionsBelow: true,
-       content: AwesomeSnackbarContent(
-         title: Locales.string(context, title),
-         message: Locales.string(context, message),
-         inMaterialBanner: true,
-         contentType: ContentType.success,
-       ), actions: const [SizedBox.shrink()],
-     );
-
-     ScaffoldMessenger.of(context)
-       ..hideCurrentMaterialBanner()
-       ..showMaterialBanner(materialBanner);
-   }
-
    static String currencyFormat(double amount,String localeCurrency){
-
-     String output = NumberFormat.decimalPatternDigits(decimalDigits: 2,locale: localeCurrency).format(amount);
+     String output = NumberFormat.decimalPatternDigits(decimalDigits: 2,locale: localeCurrency).format(amount).replaceAll(RegExp(r"([.]*00)(?!.*\d)"),"");
      return output;
    }
+
 
    static String persianFormatWithWeekDay(Date date){
        final format = date.formatter;

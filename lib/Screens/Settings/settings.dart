@@ -33,7 +33,7 @@ class SettingsPage extends StatelessWidget {
       "themesdetails",
       "show or hide properties",
       "backup_data",
-      "reports",
+      "general_reports",
       "about"
     ];
 
@@ -87,7 +87,7 @@ class SettingsPage extends StatelessWidget {
                           items[index],
                           style: TextStyle(fontSize: width/25,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                         ),
-                        subtitle: LocaleText(subItems[index],style: TextStyle(fontSize: width/26,color: Colors.grey,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
+                        subtitle: LocaleText(subItems[index],style: TextStyle(fontSize: width/28,color: Colors.grey,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
                         leading: Container(
                           margin: const EdgeInsets.all(0),
                           height: 50,
@@ -113,6 +113,7 @@ class SettingsPage extends StatelessWidget {
                       );
                     }),
               ),
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: ListTile(
@@ -121,7 +122,7 @@ class SettingsPage extends StatelessWidget {
                   onTap: () {
                     switchLanguage(context);
                   },
-                  subtitle: LocaleText(Locales.currentLocale(context).toString(),style: const TextStyle(fontSize: smallSize),),
+                  subtitle: LocaleText(Locales.currentLocale(context).toString(),style: TextStyle(fontSize: width/28,color: Colors.grey),),
                   leading: Container(
                     margin: const EdgeInsets.all(0),
                     height: 50,
@@ -174,7 +175,7 @@ class SettingsPage extends StatelessWidget {
                           "change_password",
                           style: TextStyle(fontSize: width/25,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),
                         ),
-                        subtitle: LocaleText("change_password_hint",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai"),),
+                        subtitle: LocaleText("change_password_hint",style: TextStyle(fontSize: width/28,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",color: Colors.grey),),
                         trailing: Container(
                             height: 25,
                             width: 25,

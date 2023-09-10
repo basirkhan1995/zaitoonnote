@@ -158,22 +158,27 @@ class _AccountSettingsState extends State<AccountSettings> {
                           child: ListView.builder(
                               itemCount: items.length,
                               itemBuilder: (context,index){
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 4),
-                                  child: ListTile(
-                                    onTap: ()=> Env.goto(IndividualsRecords(data: items[index],), context),
-                                    leading: SizedBox(
-                                        height: 60,width: 60,
-                                        child: CircleAvatar(
-                                            radius: 50,
-                                            backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
-                                    contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 18),
-                                    dense: true,
-                                    title: Text(items[index].pName??"",style: TextStyle(color: zPrimaryColor,fontSize: 16,fontWeight: FontWeight.bold,fontFamily: locale == "en"?"Ubuntu":"Dubai"),),
-                                    subtitle: Text(items[index].pPhone.toString(),style:  TextStyle(color: zGrey,fontFamily: locale == "en"?"Ubuntu":"Dubai"),),
-                                    trailing: const Icon(Icons.arrow_forward_ios_outlined,size: 15,color: zPrimaryColor)
+                                return Column(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 4.0,vertical: 0),
+                                      child: ListTile(
+                                        onTap: ()=> Env.goto(IndividualsRecords(data: items[index],), context),
+                                        leading: SizedBox(
+                                            height: 60,width: 60,
+                                            child: CircleAvatar(
+                                                radius: 50,
+                                                backgroundImage: items[index].pImage!.isNotEmpty? Image.file(File(items[index].pImage!),fit: BoxFit.cover,).image:const AssetImage("assets/Photos/no_user.jpg"))),
+                                        contentPadding: const EdgeInsets.symmetric(vertical: 0,horizontal: 18),
+                                        dense: true,
+                                        title: Text(items[index].pName??"",style: TextStyle(color: zPrimaryColor,fontSize: 16,fontWeight: FontWeight.bold,fontFamily: locale == "en"?"Ubuntu":"Dubai"),),
+                                        subtitle: Text(items[index].pPhone.toString(),style:  TextStyle(color: zGrey,fontFamily: locale == "en"?"Ubuntu":"Dubai"),),
+                                        trailing: const Icon(Icons.arrow_forward_ios_outlined,size: 15,color: zPrimaryColor),
 
-                                  ),
+                                      ),
+                                    ),
+                                    Divider(endIndent: 25,indent: 25,color: Colors.grey.withOpacity(.25),height: 1,)
+                                  ],
                                 );
                               }),
                         ),
@@ -189,23 +194,4 @@ class _AccountSettingsState extends State<AccountSettings> {
     );
   }
 
-
-  String formatAmount(value){
-    String price = value;
-    String priceInText = "";
-    int counter = 0;
-    for(int i = (price.length - 1);  i >= 0; i--){
-      counter++;
-      String str = price[i];
-      if((counter % 3) != 0 && i !=0){
-        priceInText = "$str$priceInText";
-      }else if(i == 0 ){
-        priceInText = "$str$priceInText";
-
-      }else{
-        priceInText = ",$str$priceInText";
-      }
-    }
-    return priceInText.trim();
-  }
 }

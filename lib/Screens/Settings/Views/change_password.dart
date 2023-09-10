@@ -28,10 +28,10 @@ class _ChangePasswordState extends State<ChangePassword> {
       oldPassword.clear();
       confirmPassword.clear();
       Navigator.pop(context);
-      Env.showSnackBar2("operation_success", "password_change_success_message",
+      Env.showSnackBar("operation_success", "password_change_success_message",
           ContentType.success, context);
     } else {
-      Env.showSnackBar2("operation_failed", "password_change_failed_message",
+      Env.showSnackBar("operation_failed", "password_change_failed_message",
           ContentType.success, context);
     }
   }

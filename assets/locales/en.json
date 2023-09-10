@@ -88,7 +88,7 @@
   "show_or_hide_properties": "Show or hide properties",
   "backup": "Backup",
   "backup_data": "Data reservation ",
-  "show_login": "Login",
+  "show_login": "Enable login page",
   "backup_success": "Back up successfuly",
   "backup_restored": "Back up restored successfully",
   "restore_backup": "Restore backup",
@@ -107,7 +107,7 @@
   "access_denied": "Access denied",
   "access_denied_message": "Username or password is incorrect",
   "logout": "Sign out",
-  "change_password": "Change password",
+  "change_password": "Password settings",
   "current_password": "Current password",
   "confirm_password": "Re-enter password",
   "password_change_failed_message": "Current password is incorrect",
@@ -115,7 +115,7 @@
   "operation_failed": "Operation failed",
   "operation_success": "Operation succeed",
   "new_password": "New password",
-  "change_password_hint": "Change your password ",
+  "change_password_hint": "Change password ",
   "attachment": "Attachment",
   "today": "Today",
   "failed_backup_msg": "Backup operation failed, try again later",
@@ -161,5 +161,6 @@
   "zero_amount": "Please enter a value greater than zero",
   "records_deleted": "All records has been deleted successfully",
   "successfully": "Operation succeed",
-  "trn_date": "Transaction date"
+  "trn_date": "Transaction date",
+  "general_reports": "Gerneral reports of debits and credits"
 }

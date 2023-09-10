@@ -215,7 +215,7 @@ class _LoginPageState extends State<LoginPage> {
                                   } else {
                                     hideLoading();
                                     if (!mounted) return;
-                                    Env.showSnackBar2(
+                                    Env.showSnackBar(
                                         "access_denied",
                                         "access_denied_message",
                                         ContentType.failure,

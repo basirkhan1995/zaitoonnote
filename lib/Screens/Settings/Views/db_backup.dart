@@ -89,12 +89,12 @@ class _DatabaseBackupState extends State<DatabaseBackup> {
                           db.deleteDb(ContentType.success,context);
                           Navigator.of(context).pop(true);
                         },
-                        label: Locales.string(context, "yes"),
+                        label: "yes",
                       ),
 
                       ZButton(
                         onTap: ()=>Navigator.of(context).pop(),
-                        label: Locales.string(context, "no"),
+                        label: "no",
                       ),
                     ],
 

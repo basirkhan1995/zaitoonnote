@@ -383,10 +383,11 @@ class _PersonActivitiesState extends State<PersonActivities> {
                                             ],
                                           ),
                                           onTap: () {
-                                            Env.goto(
-                                                TransactionDetails(
-                                                    data: items[index]),
-                                                context);
+                                          Navigator.push(context, MaterialPageRoute(builder: (context)=>TransactionDetails(data: items[index]))).then((value){
+                                            if(value){
+                                              _onRefresh();
+                                            }
+                                          });
                                           },
                                         ),
                                       ),

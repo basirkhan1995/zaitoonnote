@@ -13,6 +13,7 @@ import 'package:zaitoonnote/Screens/Json%20Models/trn_model.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/users.dart';
 import '../Methods/env.dart';
 
+
 class DatabaseHelper {
   final databaseName = "zWallet.db";
   int noteStatus = 1;
@@ -119,9 +120,7 @@ class DatabaseHelper {
         String recoveryPath = "$databasesPath/$databaseName";
         String newPath = join('${result.files.single.path}');
         File backupFile = File(newPath);
-        backupFile
-            .copy(recoveryPath)
-            .whenComplete(() => Env.showSnackBar(
+        backupFile.copy(recoveryPath).whenComplete(() => Env.showSnackBar(
                 "backup", "backup_restored", contentType, context))
             .onError((error, stackTrace) => Env.showSnackBar(
                 "operation_failed", "failed_backup", contentType, context));
@@ -153,6 +152,7 @@ class DatabaseHelper {
       }
     }
   }
+
 
   //Auth
   //-----------------------------------------------

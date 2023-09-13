@@ -99,6 +99,7 @@ class _AllActivitiesState extends State<AllActivities> {
   @override
   Widget build(BuildContext context) {
     String currentLocale = Locales.currentLocale(context).toString();
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
@@ -116,7 +117,7 @@ class _AllActivitiesState extends State<AllActivities> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
           child: Column(
             children: [
               const SizedBox(height: 5),
@@ -228,7 +229,7 @@ class _AllActivitiesState extends State<AllActivities> {
                           color: Colors.white, size: 18),
                     )),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 15),
-                title: LocaleText(endSelectedDate == null? "today_transaction" :"Filtered transactions",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontWeight: FontWeight.bold,fontSize: 20),),
+                title: LocaleText(endSelectedDate == null? "today_transaction" :"Filtered transactions",style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontWeight: FontWeight.bold,fontSize: size.width/20 ),),
                 trailing: Wrap(
                   children: [
 

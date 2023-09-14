@@ -1,4 +1,4 @@
-package com.example.zaitoonnote
+package com.zaitoontech.zWallet
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -40,7 +40,7 @@ class SettingsPage extends StatelessWidget {
     List icons = [
       Icons.person_rounded,
       Icons.color_lens,
-      Icons.settings_rounded,
+      Icons.fingerprint_rounded,
       Icons.backup,
       Icons.query_stats,
       Icons.info
@@ -149,7 +149,6 @@ class SettingsPage extends StatelessWidget {
                       child: const Icon(Icons.arrow_forward_ios_rounded, size: 12)),
                 ),
               ),
-
               controller.enableDisableLogin? Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: ListTile(

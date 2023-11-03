@@ -18,7 +18,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   int currentIndex = 0;
 
   List<IconData> icons =[
-     Icons.home,
+     Icons.bar_chart_rounded,
     Icons.event_note,
     Icons.event,
     Icons.settings,

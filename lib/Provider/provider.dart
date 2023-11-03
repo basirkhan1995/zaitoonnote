@@ -10,12 +10,14 @@ class MyProvider extends ChangeNotifier{
   bool _showHidePersianDate = false;
   bool _enableDisableLogin = false;
   bool _isLogin = false;
+  bool _isFingerOn = true;
 
   bool get showHidePersianDate => _showHidePersianDate;
   bool get darkLight => _darkLight;
   bool get rememberMe => _rememberMe;
   bool get enableDisableLogin => _enableDisableLogin;
   bool get isLogin => _isLogin;
+  bool get isFingerOn => _isFingerOn;
 
   late SharedPreferences secureStorage;
 
@@ -28,6 +30,12 @@ class MyProvider extends ChangeNotifier{
    setLoginTrue(){
     _isLogin = true;
     secureStorage.setBool("isLogin", _isLogin);
+    notifyListeners();
+  }
+
+  fingerPrint(){
+    _isFingerOn = !_isFingerOn;
+    secureStorage.setBool("finger", _isFingerOn);
     notifyListeners();
   }
 

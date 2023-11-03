@@ -247,7 +247,7 @@ class _DashboardState extends State<Dashboard> {
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 0),
                     height: 150,
-                    margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
+                    margin: const EdgeInsets.symmetric(horizontal: 8,vertical: 2),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       color: Colors.white,
@@ -270,10 +270,10 @@ class _DashboardState extends State<Dashboard> {
                               children: [
                                 Expanded(
                                   child: ZButton(
-                                    backgroundColor: zPrimaryColor.withOpacity(.2),
+                                    backgroundColor: zPrimaryColor,
                                     width: .92,
                                     label: "create_note",
-                                    labelColor: Colors.black87,
+                                    labelColor: Colors.white,
                                     onTap: ()=>Env.goto(const CreateNote(), context),
                                   ),
                                 ),
@@ -281,7 +281,7 @@ class _DashboardState extends State<Dashboard> {
                                 Expanded(
                                   child: ZButton(
                                     labelColor: Colors.white,
-                                    backgroundColor: zPrimaryColor.withOpacity(.9),
+                                    backgroundColor: zPrimaryColor,
                                     width: .92,
                                     label: "add_activity",
                                     onTap: ()async{
@@ -302,9 +302,10 @@ class _DashboardState extends State<Dashboard> {
                             ),
                           ),
                           ZButton(
-                            labelColor: Colors.black87,
-                            backgroundColor: zPrimaryColor.withOpacity(.2),
+                            labelColor: Colors.white,
+                            backgroundColor: zPrimaryColor,
                             width: .92,
+                            height: 50,
                             label: "add_account",
                             onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>const AddPerson())).then((value) {
                               if(value){

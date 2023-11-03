@@ -9,6 +9,7 @@ import 'package:zaitoonnote/Datebase%20Helper/sqlite.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Methods/z_field.dart';
 import 'package:zaitoonnote/Provider/provider.dart';
+import 'package:zaitoonnote/Screens/Authentications/biometric.dart';
 import 'package:zaitoonnote/Screens/Home/start_screen.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/users.dart';
 import '../../Methods/custom_drop_down.dart';
@@ -93,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                               borderRadius: BorderRadius.circular(50),
                               image: const DecorationImage(
                                   fit: BoxFit.cover,
-                                  image: AssetImage("assets/Photos/loginbg.jpg"))),
+                                  image: AssetImage("assets/Photos/bg.png"))),
                         ),
                          Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -180,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                                  );
                                 });
                               },
-                              icon: const Icon(Icons.info,color: Colors.blue),),
+                              icon: const Icon(Icons.info,color: zPrimaryColor),),
                           );
                         }),
 
@@ -232,8 +233,22 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           );
                         }),
+                      const SizedBox(height: 10),
 
-
+                      //Biometric login
+                      controller.isFingerOn? TextButton(
+                          onPressed: ()async{
+                            bool auth = await BiometricAuth.authenticate();
+                            if(auth){
+                              if (!mounted) return;
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                      const BottomNavBar()));
+                            }
+                          },
+                          child: const Icon(Icons.fingerprint,size: 35)):const SizedBox(),
                       ],
                     ),
                   ),

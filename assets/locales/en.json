@@ -162,5 +162,6 @@
   "records_deleted": "All records has been deleted successfully",
   "successfully": "Operation succeed",
   "trn_date": "Transaction date",
-  "general_reports": "Gerneral reports of debits and credits"
+  "general_reports": "Gerneral reports of debits and credits",
+  "finger_print": "Fingerprint"
 }

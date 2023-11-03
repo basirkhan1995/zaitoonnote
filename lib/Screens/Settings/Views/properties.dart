@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
+import 'package:zaitoonnote/Screens/Authentications/biometric.dart';
 
 import '../../../Provider/provider.dart';
 
@@ -40,6 +41,17 @@ class _AppPropertiesState extends State<AppProperties> {
                   title: const LocaleText("show_login"),
                   trailing: LocaleText(provider.enableDisableLogin.toString(),style: const TextStyle(fontSize: 16),),
                 ),
+
+                ListTile(
+                  leading: Switch(
+                      value: provider.isFingerOn,
+                      onChanged: (value){
+                        provider.fingerPrint();
+                      }),
+                  title: const LocaleText("finger_print"),
+                  trailing: LocaleText(provider.isFingerOn.toString(),style: const TextStyle(fontSize: 16),),
+                ),
+
 
 
 

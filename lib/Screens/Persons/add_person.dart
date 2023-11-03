@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Methods/z_button.dart';
 import 'package:zaitoonnote/Methods/z_field.dart';
@@ -137,6 +138,7 @@ class _AddPersonState extends State<AddPerson> {
     if (pickedFile == null) return;
     setState(() {
       _pImage = File(pickedFile.path);
+
     });
   }
 }

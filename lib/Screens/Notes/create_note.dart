@@ -34,12 +34,12 @@ class _CreateNoteState extends State<CreateNote> {
   final categoryCtrl = TextEditingController();
 
   List colors = [
-    noteColor1.value,
+    zPrimaryColor.value,
     noteColor2.value,
     noteColor3.value,
     noteColor4.value,
     noteColor5.value,
-    zPrimaryColor.value,
+    noteColor1.value,
     Colors.red.shade900.value,
     Colors.green.value,
     Colors.lime.value

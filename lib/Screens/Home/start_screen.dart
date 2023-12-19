@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:zaitoonnote/Screens/Activities/all_activities.dart';
+import 'package:zaitoonnote/Screens/Json%20Models/users.dart';
 import 'package:zaitoonnote/Screens/Notes/all_notes.dart';
 import 'package:zaitoonnote/Screens/Settings/settings.dart';
 import '../dashboard.dart';
 
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({Key? key}) : super(key: key);
+  final UsersModel? users;
+  const BottomNavBar({Key? key,this.users}) : super(key: key);
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
@@ -29,14 +31,19 @@ class _BottomNavBarState extends State<BottomNavBar> {
     "activity",
     "settings",
   ];
-  List<Widget> screens = <Widget>[
-    const Dashboard(),
-    const AllNotes(),
-    const AllActivities(),
-    const SettingsPage(),
-  ];
 
+ late List<Widget> screens;
 
+  @override
+  void initState() {
+    screens = <Widget>[
+      Dashboard(usr: widget.users),
+      const AllNotes(),
+      const AllActivities(),
+      const SettingsPage(),
+    ];
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

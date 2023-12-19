@@ -4,6 +4,7 @@ import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
 import 'package:zaitoonnote/Methods/colors.dart';
 import 'package:zaitoonnote/Screens/Authentications/login.dart';
+import 'package:zaitoonnote/Screens/Onboarding/onboarding.dart';
 import 'Provider/provider.dart';
 import 'Screens/Home/start_screen.dart';
 
@@ -27,16 +28,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return ChangeNotifierProvider(
       create: (BuildContext context) => MyProvider()..initialize(),
       child: Consumer<MyProvider>(
         builder: (context, MyProvider notifier,child){
-          final controller = Provider.of<MyProvider>(context, listen: false);
           return LocaleBuilder(
               builder: (locale) =>
                   MaterialApp(
-                    themeMode: controller.darkLight? ThemeMode.dark: ThemeMode.light,
-                    darkTheme: controller.darkLight? ThemeData.dark() : ThemeData.light(),
+                    themeMode: notifier.darkLight? ThemeMode.dark: ThemeMode.light,
+                    darkTheme: notifier.darkLight? ThemeData.dark() : ThemeData.light(),
                     title: 'zWallet',
                     localizationsDelegates: Locales.delegates,
                     supportedLocales: Locales.supportedLocales,
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
                     theme:
                     ThemeData(
                       scaffoldBackgroundColor: Colors.white,
+                      fontFamily: locale.toString() == "en"?"Ubuntu":"Dubai",
                       buttonTheme: const ButtonThemeData(
                       ),
 
@@ -55,13 +57,13 @@ class MyApp extends StatelessWidget {
                         iconTheme: IconThemeData(
                           size: 19,
                         ),
-
                         elevation: 0,
                       ),
                       colorScheme: ColorScheme.fromSeed(seedColor: zPrimaryColor,),
                       useMaterial3: true,
                     ),
-                    home: controller.isLogin? const BottomNavBar(): controller.enableDisableLogin? const LoginPage() : const BottomNavBar(),
+                    home: notifier.onBoarding? const OnboardScreen() : notifier.isLogin? const BottomNavBar(): notifier.enableDisableLogin? const LoginPage() : const BottomNavBar(),
+                    //controller.isLogin? const BottomNavBar(): controller.enableDisableLogin? const LoginPage() : const BottomNavBar(),
                   )
           );},
       ),

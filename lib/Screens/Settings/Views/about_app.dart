@@ -47,7 +47,7 @@ class AboutApp extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         fontSize: MediaQuery.of(context).size.width / 18),
                   ),
-                  subtitle: const Text("Version: 1.0.0+1",
+                  subtitle: const Text("Version: 1.4.0",
                       style: TextStyle(
                           fontFamily: "Ubuntu",
                           fontSize: 13,

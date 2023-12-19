@@ -4,7 +4,6 @@ import 'package:flutter_locales/flutter_locales.dart';
 import 'package:zaitoonnote/Datebase%20Helper/sqlite.dart';
 import 'package:zaitoonnote/Methods/z_button.dart';
 
-
 class DatabaseBackup extends StatefulWidget {
   const DatabaseBackup({super.key});
 
@@ -71,10 +70,17 @@ class _DatabaseBackupState extends State<DatabaseBackup> {
                 width: .9,
                 label: "restore_backup",
                 onTap: (){
-                  db.restoreDb(ContentType.success,context);
+                  db.restoreDirect(ContentType.success,context);
                 },
               ),
 
+              ZButton(
+                width: .9,
+                label: "browse",
+                onTap: (){
+                  db.restoreDb(ContentType.success,context);
+                },
+              ),
 
               ZButton(
                 width: .9,

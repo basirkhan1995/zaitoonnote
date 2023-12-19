@@ -25,6 +25,12 @@ class _AddPersonState extends State<AddPerson> {
 
   File? _pImage;
   final db = DatabaseHelper();
+  var image;
+  @override
+  void initState() {
+    _pImage = _pImage;
+    super.initState();
+  }
 
   final formKey = GlobalKey<FormState>();
   @override
@@ -52,6 +58,7 @@ class _AddPersonState extends State<AddPerson> {
                     Navigator.of(context).pop(true);
                   });
                 }
+                print(_pImage?.path);
               },
               label: "create",
               backgroundColor: zPrimaryColor,
@@ -74,6 +81,7 @@ class _AddPersonState extends State<AddPerson> {
                     splashColor: Colors.transparent,
                     onTap: () {
                       getImage(ImageSource.gallery);
+                      getImage1(ImageSource.gallery);
                     },
                     child: CircleAvatar(
                       radius: 70,
@@ -132,13 +140,48 @@ class _AddPersonState extends State<AddPerson> {
     );
   }
 
+  Future<void> getImage1(ImageSource imageSource) async {
+    final ImagePicker picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: imageSource);
+
+    final appDocDir = await getApplicationDocumentsDirectory();
+    final backupDir = Directory('${appDocDir.path}/backup');
+    final originalDir = Directory('${appDocDir.path}/original');
+
+    // Create backup directory
+    if (!await backupDir.exists()) {
+      await backupDir.create();
+    }
+
+    // Create original directory
+    if (!await originalDir.exists()) {
+      await originalDir.create();
+    }
+
+    if (pickedFile == null) return;
+    setState(() {
+      _pImage = File(pickedFile.path);
+    });
+
+    final newFile = File('${appDocDir.path}/${_pImage?.path.split('/').last}');
+    newFile.copy(backupDir.path);
+
+    print("New path: $newFile");
+    print("Dir: $backupDir");
+
+  }
+
+
+
   Future<void> getImage(ImageSource imageSource) async {
     final ImagePicker picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: imageSource);
     if (pickedFile == null) return;
     setState(() {
       _pImage = File(pickedFile.path);
-
     });
   }
+
+
+
 }

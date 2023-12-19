@@ -15,60 +15,84 @@ import '../Methods/env.dart';
 
 
 class DatabaseHelper {
-  final databaseName = "zWallet.db";
+  final databaseName = "zWallet45.db";
   int noteStatus = 1;
 
-  String dirName = "Backup";
-  String user = "create table users (usrId integer primary key autoincrement, usrName Text UNIQUE, usrPassword Text, personInfo int, FOREIGN KEY (personInfo) REFERENCES persons (pId) ON DELETE CASCADE)";
+  String dirName = "MyBackup";
+  String user = "create table users (usrId integer primary key autoincrement,fullName TEXT, phone TEXT, usrName Text UNIQUE, usrPassword Text)";
   String categories = "create table category (cId integer primary key AUTOINCREMENT, cName TEXT NOT NULL,categoryType TEXT) ";
   String notes = "create table notes (noteId integer primary key autoincrement, noteTitle Text NOT NULL,color INTEGER, noteContent Text NOT NULL,noteStatus integer,noteCategory INTEGER, noteImage TEXT,noteCreatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY (noteCategory) REFERENCES category (cId) ON DELETE CASCADE)";
   String persons = "create table persons (pId INTEGER PRIMARY KEY AUTOINCREMENT, pName TEXT, jobTitle TEXT, cardNumber TEXT, accountName TEXT, pImage TEXT,pPhone TEXT,updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)";
   String activities = "create table transactions (trnId INTEGER PRIMARY KEY AUTOINCREMENT, trnDescription TEXT, trnType INTEGER, trnPerson INTEGER NOT NULL, amount REAL NOT NULL, trnImage TEXT,trnDate TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (trnPerson) REFERENCES persons (pId) ON DELETE CASCADE, FOREIGN KEY (trnType) REFERENCES category (cId)ON DELETE CASCADE)";
 
   //Default Data
-  String defaultActivityData = "INSERT INTO category (cId, cName, categoryType) values (1,'%', 'activity'),(2,'paid', 'activity' ),(3,'received', 'activity'),(4,'check', 'activity'),(5,'rent', 'activity'),(6,'power', 'activity')";
-  String defaultNoteData = "INSERT INTO category (cId, cName, categoryType) values (8,'%', 'note'), (9,'home', 'note'),(10,'work', 'note'),(11,'personal', 'note'),(12,'wishlist', 'note'),(13,'birthday','note')";
-  String userData = "insert into users (usrId, usrName, usrPassword) values(1,'admin','123456')";
+  String defaultActivityData = ''' 
+  INSERT INTO category (cId, cName, categoryType) values 
+  (1,'%', 'activity'),
+  (2,'paid', 'activity' ),
+  (3,'received', 'activity')
+  '''
+  ;
+  String defaultNoteData = ''' 
+  INSERT INTO category (cId, cName, categoryType) values 
+  (4,'%', 'note'), 
+  (5,'home', 'note'),
+  (6,'work', 'note'),
+  (7,'personal', 'note'),
+  (8,'wishlist', 'note'),
+  (9,'birthday','note')
+  ''';
 
   //Future init method to create a database, user table and user default data
   Future<Database> initDB() async {
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, databaseName);
     return await openDatabase(path, version: 1, onCreate: (db, version) async {
-      await db.execute('PRAGMA foreign_keys = ON');
-      //auto execute the user table into the database
+
       await db.execute(user);
-      //auto execute the user default data in the table
-      await db.rawQuery(userData);
       await db.execute(notes);
       await db.execute(persons);
       await db.execute(categories);
+
       await db.rawQuery(defaultActivityData);
       await db.rawQuery(defaultNoteData);
       await db.execute(activities);
+
+      // Close the database
+      await db.close();
     });
+
   }
 
-  Future<Directory?> getLocalDirectory() async {
-    return Platform.isAndroid
-        ? await getExternalStorageDirectory()
-        : await getApplicationSupportDirectory();
+  // Future<Directory?> getLocalDirectory() async {
+  //   return Platform.isAndroid
+  //       ? await getExternalStorageDirectory()
+  //       : await getApplicationSupportDirectory();
+  // }
+  //
+  // Future createFolder() async {
+  //   final dir = Directory(
+  //       '${(Platform.isAndroid ? await getExternalStorageDirectory() : await getApplicationSupportDirectory())!.path}$dirName');
+  //   var status = await Permission.storage.status;
+  //   if (!status.isGranted) {
+  //     await Permission.storage.request();
+  //   }
+  //   if ((await dir.exists())) {
+  //     return dir.path;
+  //   } else {
+  //     dir.create();
+  //     return dir.path;
+  //   }
+  // }
+
+  getPath()async{
+   final directory = await getExternalStorageDirectory();
+   final dirPath = '${directory!.path}/Wow';
+   await Directory(dirPath).create(recursive: true);
+   print(dirPath);
   }
 
-  Future<String> createFolder(String cow) async {
-    final dir = Directory(
-        '${(Platform.isAndroid ? await getExternalStorageDirectory() : await getApplicationSupportDirectory())!.path}$dirName');
-    var status = await Permission.storage.status;
-    if (!status.isGranted) {
-      await Permission.storage.request();
-    }
-    if ((await dir.exists())) {
-      return dir.path;
-    } else {
-      dir.create();
-      return dir.path;
-    }
-  }
+
 
   //SQLITE backup database
   backUpDB(contentType, content, context) async {
@@ -88,8 +112,7 @@ class DatabaseHelper {
           Directory("/storage/emulated/0/ZaitoonBackup/");
       await backUpDestination.create();
 
-      databasePath
-          .copy("/storage/emulated/0/ZaitoonBackup/$databaseName")
+      databasePath.copy("/storage/emulated/0/ZaitoonBackup/$databaseName")
           .whenComplete(() => Env.showSnackBar(
               "backup", "backup_success", contentType, context))
           .onError((error, stackTrace) => Env.showSnackBar(
@@ -101,6 +124,7 @@ class DatabaseHelper {
     }
   }
 
+  //Browse restore method
   restoreDb(contentType, context) async {
     var status = await Permission.manageExternalStorage.status;
     if (!status.isGranted) {
@@ -125,10 +149,32 @@ class DatabaseHelper {
             .onError((error, stackTrace) => Env.showSnackBar(
                 "operation_failed", "failed_backup", contentType, context));
       }
+    } catch (e) {
+      if (kDebugMode) {
+        print("Exception Message: ${e.toString()}");
+      }
+    }
+  }
 
+  //Direct restore method
+  restoreDirect(contentType, context) async {
+    var status = await Permission.manageExternalStorage.status;
+    if (!status.isGranted) {
+      await Permission.manageExternalStorage.request();
+    }
+    var status1 = await Permission.storage.status;
+    if (!status1.isGranted) {
+      await Permission.storage.request();
+    }
+
+    try {
+      var databasesPath = await getDatabasesPath();
       //Direct method to copy
-      //File newPath = File("/storage/emulated/0/ZaitoonBackup/$databaseName");
-      //await newPath.copy("/data/user/0/com.example.zaitoonnote/databases/$databaseName");
+      File newPath = File("/storage/emulated/0/ZaitoonBackup/$databaseName");
+      await newPath.copy("$databasesPath/$databaseName").whenComplete(() => Env.showSnackBar(
+          "backup", "backup_restored", contentType, context))
+          .onError((error, stackTrace) => Env.showSnackBar(
+          "operation_failed", "failed_backup", contentType, context));
     } catch (e) {
       if (kDebugMode) {
         print("Exception Message: ${e.toString()}");
@@ -137,11 +183,11 @@ class DatabaseHelper {
   }
 
   //Delete Db
-
   deleteDb(contentType, context) async {
     try {
+      final dbPath = await getDatabasesPath();
       deleteDatabase(
-          "/data/user/0/com.example.zaitoonnote/databases/$databaseName").whenComplete(() => Env.showSnackBar(
+          "$dbPath/$databaseName").whenComplete(() => Env.showSnackBar(
           "successfully", "records_deleted", contentType, context));
       if (kDebugMode) {
         print("success deleted");
@@ -156,6 +202,7 @@ class DatabaseHelper {
 
   //Auth
   //-----------------------------------------------
+
   //Login Screen
   Future<bool> authenticateUser(UsersModel user) async {
     final Database db = await initDB();
@@ -166,6 +213,20 @@ class DatabaseHelper {
     } else {
       return false;
     }
+  }
+
+  Future<int> createUser(UsersModel user)async{
+    final Database db = await initDB();
+    var res = await db.insert("users", user.toMap());
+    print("New user $res");
+    return res;
+  }
+
+  Future<UsersModel?> getCurrentUser(int usrId)async{
+    final Database db = await initDB();
+    var res = await db.query('users',where: 'usrId = ?',whereArgs: [usrId]);
+    print("Details: $res");
+    return res.isNotEmpty? UsersModel.fromMap(res.first):null;
   }
 
   //Update note
@@ -579,5 +640,6 @@ class DatabaseHelper {
     final result = await db.rawQuery("select sum(amount) as total from transactions where trnType = ? AND DATE(trnDate) BETWEEN ? AND ?",[type,startDate,endDate]);
     return result;
   }
+
 
 }

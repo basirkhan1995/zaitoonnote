@@ -29,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
   bool isVisible = false;
   String selectedValue = "";
   bool isLoading = false;
+  var db = DatabaseHelper();
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<MyProvider>(context, listen: false);
@@ -150,38 +151,6 @@ class _LoginPageState extends State<LoginPage> {
                                 provider.setRememberMe();
                               },
                             ),
-                            trailing: IconButton(
-                              onPressed: (){
-                                showDialog(context: context, builder: (ctx){
-                                 return  AlertDialog(
-                                   title: LocaleText("default_login_msg",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai"),),
-                                   content: Column(
-                                     mainAxisSize: MainAxisSize.min,
-                                     children: [
-
-                                       ListTile(
-                                         leading: LocaleText("username",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai",fontSize: 16)),
-                                         title: Text("admin",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai")),
-
-                                         visualDensity: const VisualDensity(vertical: -4),
-                                       ),
-                                       ListTile(
-                                         leading: LocaleText("password",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai",fontSize: 16)),
-                                         title: Text("123456",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai")),
-                                         visualDensity: const VisualDensity(vertical: -4),
-                                       ),
-                                       ListTile(
-                                         title: LocaleText("attention",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai",color: Colors.red.shade900,fontWeight: FontWeight.bold)),
-                                         subtitle: LocaleText("attention_msg",style: TextStyle(fontFamily: locale == "en"?"Ubuntu":"Dubai")),
-                                         dense: true,
-                                         visualDensity: const VisualDensity(vertical: -4),
-                                       )
-                                     ],
-                                   ),
-                                 );
-                                });
-                              },
-                              icon: const Icon(Icons.info,color: zPrimaryColor),),
                           );
                         }),
 
@@ -197,8 +166,8 @@ class _LoginPageState extends State<LoginPage> {
                             child: TextButton(
                               child: isLoading? const CircularProgressIndicator(color: Colors.white,strokeWidth: 4) : LocaleText("login",style: TextStyle(fontSize: 18,fontFamily: locale == "en"?"Ubuntu":"Dubai",color: Colors.white),),
                               onPressed: () async {
+                                var usr = await db.getCurrentUser(1);
                                 if (formKey.currentState!.validate()) {
-                                  var db = DatabaseHelper();
                                   loading();
                                   var result = await db.authenticateUser(UsersModel(
                                       usrName: username.text,
@@ -212,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
-                                            const BottomNavBar()));
+                                             BottomNavBar(users: usr)));
                                   } else {
                                     hideLoading();
                                     if (!mounted) return;
@@ -238,14 +207,16 @@ class _LoginPageState extends State<LoginPage> {
                       //Biometric login
                       controller.isFingerOn? TextButton(
                           onPressed: ()async{
-                            bool auth = await BiometricAuth.authenticate();
+                            UsersModel? usr = await db.getCurrentUser(1);
+                            if(!mounted)return;
+                            bool auth = await BiometricAuth.authenticate(context);
                             if(auth){
                               if (!mounted) return;
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                      const BottomNavBar()));
+                                       BottomNavBar(users: usr,)));
                             }
                           },
                           child: const Icon(Icons.fingerprint,size: 35)):const SizedBox(),

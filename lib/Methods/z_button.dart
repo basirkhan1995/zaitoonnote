@@ -27,7 +27,7 @@ class ZButton extends StatelessWidget {
   Widget build(BuildContext context) {
     String locale = Locales.currentLocale(context).toString();
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 10,horizontal: 6),
       width: MediaQuery.of(context).size.width * width,
       height: height,
       decoration: BoxDecoration(

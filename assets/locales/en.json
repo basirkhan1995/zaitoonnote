@@ -148,7 +148,6 @@
   "default_login_msg": "Default login",
   "attention_msg": "You can only change your password in settings.",
   "attention": "Attention",
-  "password_not_matched": "Passwords don't match",
   "old_password_required": "Old password is required",
   "confirm_password_required": "Re-enter your password",
   "colors": "Color",
@@ -163,5 +162,13 @@
   "successfully": "Operation succeed",
   "trn_date": "Transaction date",
   "general_reports": "Gerneral reports of debits and credits",
-  "finger_print": "Fingerprint"
+  "finger_print": "Fingerprint",
+  "get_started": "Get started",
+  "browse": "Browse backup",
+  "fingerprint_msg": "Touch fingerprint to access zWallet",
+  "beneficiary": "Beneficiary",
+  "passwords_don't_match": "Passwords don't match",
+  "next": "Next",
+  "previous": "Previous",
+  "signup_message": "Sign up for zWallet to get started with the app"
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
+import 'package:zaitoonnote/Datebase%20Helper/sqlite.dart';
 import '../../../Provider/provider.dart';
 
 
@@ -12,6 +13,7 @@ class ChangeThemes extends StatefulWidget {
 }
 
 class _ChangeThemesState extends State<ChangeThemes> {
+  final db = DatabaseHelper();
   @override
   Widget build(BuildContext context) {
     final controller = Provider.of<MyProvider>(context, listen: false);
@@ -28,8 +30,15 @@ class _ChangeThemesState extends State<ChangeThemes> {
         ],
       ),
 
-      body: const Center(
-        child: LocaleText("coming_soon",style: TextStyle(fontSize: 20),),
+      body: Center(
+        child: Column(
+          children: [
+             TextButton(onPressed: (){
+
+             }, child: const Text("Create directory")),
+            const LocaleText("coming_soon",style: TextStyle(fontSize: 20),),
+          ],
+        ),
       ),
     );
   }

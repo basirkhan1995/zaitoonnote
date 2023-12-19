@@ -51,7 +51,6 @@ class _CreateTransactionState extends State<CreateTransaction> {
     });
   }
 
-
   //Method to get data from database
   Future<List<PersonModel>> getList() async {
     return await handler.getAllPersons();
@@ -89,6 +88,13 @@ class _CreateTransactionState extends State<CreateTransaction> {
                   children: [
                     Expanded(
                       child: ListTile(
+                        leading: Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: zPrimaryColor,
+                              borderRadius: BorderRadius.circular(100)
+                            ),
+                            child: const Icon(Icons.date_range,size: 25,color: Colors.white,)),
                         title: InkWell(
                           onTap: ()=>setState(() {
                             showGregorianPicker();
@@ -274,8 +280,18 @@ class _CreateTransactionState extends State<CreateTransaction> {
                   title: 'description',
                 ),
 
-                 const ListTile(
-                   title: LocaleText("attachment"),
+                   ListTile(
+                     contentPadding: const EdgeInsets.only(left: 14,right: 4),
+
+                   visualDensity: const VisualDensity(vertical: -4),
+                   leading: const Icon(Icons.attachment_rounded),
+                   title: const LocaleText("attachment",style: TextStyle(fontWeight: FontWeight.bold),),
+                   trailing: _trnImage != null? IconButton(
+                       onPressed: (){
+                         setState(() {
+                           _trnImage = null;
+                         });
+                       }, icon: Icon(Icons.clear,size: 18,color: Colors.red.shade900,)):null,
                  ),
                  //Get Image
                  InkWell(

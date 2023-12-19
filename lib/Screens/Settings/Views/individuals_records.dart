@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:zaitoonnote/Screens/Json%20Models/person_model.dart';
+import 'package:zaitoonnote/Screens/Persons/create_person_trn.dart';
 import 'package:zaitoonnote/Screens/Persons/person_transactions.dart';
 import 'package:zaitoonnote/Screens/Persons/profile.dart';
 import 'package:zaitoonnote/Screens/Persons/reports.dart';
@@ -23,6 +24,16 @@ class _IndividualsRecordsState extends State<IndividualsRecords> {
           length: 3,
           child: Scaffold(
             appBar: AppBar(
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                      onPressed: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> CreatePersonTransaction(person: widget.data)));
+                      },
+                      icon: const Icon(Icons.add)),
+                )
+              ],
               bottom: TabBar(
                 unselectedLabelStyle: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",color: Colors.grey),
                 labelStyle: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontWeight: FontWeight.bold),

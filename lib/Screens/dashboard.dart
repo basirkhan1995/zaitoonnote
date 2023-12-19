@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:unicons/unicons.dart';
+import 'package:zaitoonnote/Screens/Json%20Models/users.dart';
 import 'package:zaitoonnote/Screens/Settings/Views/accounts.dart';
 import '../Datebase Helper/sqlite.dart';
 import '../Methods/colors.dart';
@@ -18,7 +19,8 @@ import 'Notes/create_note.dart';
 import 'Persons/add_person.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({super.key});
+  final UsersModel? usr ;
+  const Dashboard({super.key,this.usr});
 
   @override
   State<Dashboard> createState() => _DashboardState();
@@ -46,7 +48,6 @@ class _DashboardState extends State<Dashboard> {
     });
     _onRefresh();
   }
-
 
   //Method to get data from database
   Future<List<TransactionModel>> getTransactions() async {
@@ -111,8 +112,8 @@ class _DashboardState extends State<Dashboard> {
                     backgroundImage: AssetImage("assets/Photos/no_user.jpg"),
                   ),
                 ):null,
-                title: LocaleText("welcome", style: TextStyle(fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: 16),),
-                trailing: Text( currentLocale == "en" ?DateFormat('MMMMEEEEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: mediumSize),),
+                title: const LocaleText("welcome", style: TextStyle(fontSize: 16),),
+                trailing: Text(currentLocale == "en" ?DateFormat('MEd').format(DateTime.now()): Env.persianFormatWithWeekDay(Jalali.now()),style: TextStyle(fontWeight: FontWeight.bold,fontFamily: currentLocale == "en"?"Ubuntu":"Dubai",fontSize: mediumSize),),
               ),
 
               Container(

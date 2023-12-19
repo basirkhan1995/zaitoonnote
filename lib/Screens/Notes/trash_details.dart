@@ -117,7 +117,7 @@ class _TrashDetailsState extends State<TrashDetails> {
               dense: true,
               title: Container(
                   height: 40,
-                  padding: EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
                       color: Colors.deepPurple.withOpacity(.3)),
@@ -154,11 +154,11 @@ class _TrashDetailsState extends State<TrashDetails> {
                   decoration: BoxDecoration(
                       color: Colors.purple.withOpacity(.2),
                       borderRadius: BorderRadius.circular(10)),
-                  child: Text("Select Category")
+                  child: const Text("Select Category")
                 )
                     : Container(
-                    margin: EdgeInsets.all(8),
-                    padding: EdgeInsets.all(8),
+                    margin: const EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     height: 40,
                     width: MediaQuery.of(context).size.width * .95,
                     decoration: BoxDecoration(

@@ -148,7 +148,6 @@
   "default_login_msg": "ورود پیش فرض",
   "attention_msg": "شما میتوانید فقط کلمه عبور خود را در تنظیمات تغییر دهید.",
   "attention": "توجه",
-  "password_not_matched": "کلمه عبور همخوانی ندارد",
   "old_password_required": "کلمه عبور فعلی خود را وارید نمایید",
   "confirm_password_required": "کلمه عبور خود را تکرار بنویسید",
   "colors": "رنگ",
@@ -163,5 +162,13 @@
   "successfully": "عملیات موفق",
   "trn_date": "تاریخ فعالیت",
   "general_reports": "گزارش عمومی طلبات و دریافتی ها",
-  "finger_print": "اثر انگشت"
+  "finger_print": "اثر انگشت",
+  "get_started": "راه اندازی",
+  "browse": "جستجو کردن",
+  "fingerprint_msg": "نشان انگشت خود را بگذارید",
+  "beneficiary": "شخص",
+  "passwords_don't_match": "کلمه های عبور همخوانی ندارد",
+  "next": "بعدی",
+  "previous": "قبلی",
+  "signup_message": "برای شروع برنامه حساب کاربری خود را بسازید"
 }

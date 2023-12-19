@@ -13,10 +13,10 @@ import 'package:persian_datetime_picker/persian_datetime_picker.dart';
 
    static showSnackBar(String title, String message, snackType, context){
      final snackBar = SnackBar(
-       elevation: 5,
+       elevation: 0,
        duration: const Duration(milliseconds: 1500),
        behavior: SnackBarBehavior.fixed,
-       backgroundColor: Colors.white,
+       backgroundColor: Colors.white.withOpacity(.3),
        content: AwesomeSnackbarContent(
          color: Colors.deepPurple,
          title: Locales.string(context, title),

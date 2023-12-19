@@ -8,9 +8,10 @@ class MyProvider extends ChangeNotifier{
   bool _darkLight = false;
   bool _rememberMe = false;
   bool _showHidePersianDate = false;
-  bool _enableDisableLogin = false;
+  bool _enableDisableLogin = true;
   bool _isLogin = false;
   bool _isFingerOn = true;
+  bool _onBoarding = true;
 
   bool get showHidePersianDate => _showHidePersianDate;
   bool get darkLight => _darkLight;
@@ -18,8 +19,10 @@ class MyProvider extends ChangeNotifier{
   bool get enableDisableLogin => _enableDisableLogin;
   bool get isLogin => _isLogin;
   bool get isFingerOn => _isFingerOn;
+  bool get onBoarding => _onBoarding;
 
   late SharedPreferences secureStorage;
+
 
   //Language Switch
   void switchLanguage(context, languageCode) async {
@@ -39,6 +42,12 @@ class MyProvider extends ChangeNotifier{
     notifyListeners();
   }
 
+   setOnboardingOff(){
+    _onBoarding = false;
+    secureStorage.setBool("isOnboardingOnOff", _onBoarding);
+    notifyListeners();
+   }
+
    logout(context){
     _isLogin = false;
     secureStorage.setBool("isLogin", _isLogin);
@@ -56,7 +65,6 @@ class MyProvider extends ChangeNotifier{
   }
 
    void toggle()async{
-     secureStorage = await SharedPreferences.getInstance();
      _showHidePersianDate = !_showHidePersianDate;
      secureStorage.setBool("persianDate", _showHidePersianDate);
      notifyListeners();
@@ -67,6 +75,7 @@ class MyProvider extends ChangeNotifier{
      _showHidePersianDate = secureStorage.getBool("persianDate")??false;
      _enableDisableLogin = secureStorage.getBool("enableLoginPage")??false;
      _isLogin = secureStorage.getBool("isLogin")??false;
+     _onBoarding = secureStorage.getBool("isOnboardingOnOff")??true;
      notifyListeners();
    }
 

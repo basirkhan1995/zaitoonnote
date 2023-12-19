@@ -1,16 +1,18 @@
 
 class UsersModel{
   final int? usrId;
+  final String? fullName;
+  final String? phone;
   final String usrName;
   final String usrPassword;
-  final int? personInfo;
-  UsersModel({this.usrId, required this.usrName,required this.usrPassword,this.personInfo});
+  UsersModel({this.usrId, required this.usrName,required this.usrPassword,this.fullName, this.phone});
 
   factory UsersModel.fromMap(Map<String, dynamic> json) => UsersModel(
-    usrId: json['usrId'],
-    usrName: json ['usrName'],
-    usrPassword: json['usrPassword'],
-    personInfo:json['personInfo']
+      usrId: json['usrId'],
+      usrName: json ['usrName'],
+      usrPassword: json['usrPassword'],
+      fullName:json['fullName'],
+      phone: json['phone'],
   );
 
   Map<String, dynamic> toMap(){
@@ -18,7 +20,8 @@ class UsersModel{
       'usrId':usrId,
       'usrName':usrName,
       'usrPassword':usrPassword,
-      'personInfo' :personInfo,
+      'fullName' :fullName,
+      'phone':phone,
     };
   }
 

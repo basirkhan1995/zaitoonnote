@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:provider/provider.dart';
-import 'package:zaitoonnote/Screens/Authentications/biometric.dart';
 
 import '../../../Provider/provider.dart';
 
